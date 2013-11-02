@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require 'gitsh/cli'
+
+Gitsh::CLI.new.run
