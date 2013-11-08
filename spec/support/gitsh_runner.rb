@@ -56,9 +56,9 @@ class GitshRunner
   end
 
   def wait_for_output
-    original_output, original_error = String.new(output), String.new(error)
+    output_offset, error_offset = output_stream.pos, error_stream.pos
     yield
-    while output == original_output && error == original_error
+    while output_stream.pos == output_offset && error_stream.pos == error_offset
       sleep 0.01
     end
   end
