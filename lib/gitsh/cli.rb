@@ -1,5 +1,6 @@
 require 'readline'
 require 'gitsh/git_driver'
+require 'gitsh/prompter'
 
 module Gitsh
   class CLI
@@ -29,7 +30,11 @@ module Gitsh
     end
 
     def prompt
-      '>'
+      prompter.prompt
+    end
+
+    def prompter
+      @prompter ||= Prompter.new
     end
   end
 end

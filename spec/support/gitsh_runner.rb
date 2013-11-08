@@ -30,6 +30,10 @@ class GitshRunner
     wait_for_output { readline.type(string) }
   end
 
+  def last_prompt
+    readline.last_prompt
+  end
+
   def output
     output_stream.rewind
     output_stream.read
@@ -45,14 +49,9 @@ class GitshRunner
   attr_reader :output_stream, :error_stream, :readline
 
   def in_a_test_repository(&block)
-    FileUtils.rm_rf(test_repository_path)
-    Dir.mkdir(test_repository_path)
-    Dir.chdir(test_repository_path, &block)
-    FileUtils.rm_rf(test_repository_path)
-  end
-
-  def test_repository_path
-    File.expand_path('../../test_repository', __FILE__)
+    Dir.mktmpdir do |path|
+      Dir.chdir(path, &block)
+    end
   end
 
   def wait_for_output
