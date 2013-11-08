@@ -1,4 +1,5 @@
 require 'thread'
+require 'tempfile'
 
 class GitshRunner
   def self.interactive(&block)
@@ -6,8 +7,8 @@ class GitshRunner
   end
 
   def initialize
-    @output_stream = StringIO.new
-    @error_stream = StringIO.new
+    @output_stream = Tempfile.new('stdout')
+    @error_stream = Tempfile.new('stderr')
     @readline = FakeReadline.new
   end
 
@@ -30,11 +31,13 @@ class GitshRunner
   end
 
   def output
-    output_stream.string
+    output_stream.rewind
+    output_stream.read
   end
 
   def error
-    error_stream.string
+    error_stream.rewind
+    error_stream.read
   end
 
   private

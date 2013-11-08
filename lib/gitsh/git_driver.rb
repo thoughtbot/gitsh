@@ -1,5 +1,3 @@
-require 'open3'
-
 module Gitsh
   class GitDriver
     def initialize(output, error)
@@ -8,10 +6,8 @@ module Gitsh
     end
 
     def execute(command)
-      Open3.popen3("/usr/bin/env git #{command}") do |cmd_in, cmd_out, cmd_err, cmd_exit|
-        IO.copy_stream(cmd_out, output)
-        IO.copy_stream(cmd_err, error)
-      end
+      pid = Process.spawn("/usr/bin/env git #{command}", out: output, err: error)
+      Process.wait(pid)
     end
 
     private
