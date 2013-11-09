@@ -30,8 +30,8 @@ class GitshRunner
     wait_for_output { readline.type(string) }
   end
 
-  def last_prompt
-    readline.last_prompt
+  def prompt
+    readline.prompt
   end
 
   def output

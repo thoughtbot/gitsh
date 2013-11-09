@@ -2,19 +2,20 @@ require 'thread'
 
 class FakeReadline
   def initialize
-    @queue = Queue.new
+    @input_queue = Queue.new
+    @prompt_queue = Queue.new
   end
 
   def readline(prompt, add_to_history)
-    @prompt = prompt
-    @queue.pop
+    @prompt_queue << prompt
+    @input_queue.pop
   end
 
   def type(string)
-    @queue << string
+    @input_queue << string
   end
 
-  def last_prompt
-    @prompt
+  def prompt
+    @prompt_queue.pop
   end
 end
