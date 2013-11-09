@@ -62,3 +62,21 @@ class GitshRunner
     end
   end
 end
+
+RSpec::Matchers.define :prompt_with do |expected|
+  match do |runner|
+    expect(runner.prompt).to eq expected
+  end
+end
+
+RSpec::Matchers.define :output do |expected|
+  match do |runner|
+    expect(runner.output).to match_regex expected
+  end
+end
+
+RSpec::Matchers.define :output_no_errors do
+  match do |runner|
+    expect(runner.error).to be_empty
+  end
+end
