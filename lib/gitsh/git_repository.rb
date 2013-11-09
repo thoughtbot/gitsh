@@ -3,7 +3,7 @@ require 'open3'
 module Gitsh
   class GitRepository
     def initialized?
-      repository_root && File.exist?(repository_root)
+      git_dir && File.exist?(git_dir)
     end
 
     def current_head
@@ -42,7 +42,7 @@ module Gitsh
       StatusParser.new(git_output('status --porcelain'))
     end
 
-    def repository_root
+    def git_dir
       git_output('rev-parse --git-dir')
     end
 
