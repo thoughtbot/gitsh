@@ -1,9 +1,10 @@
 require 'thread'
 require 'tempfile'
+require 'gitsh/cli'
 
 class GitshRunner
-  def self.interactive(&block)
-    new.run_interactive(&block)
+  def self.interactive(env={}, &block)
+    new.run_interactive(env, &block)
   end
 
   def initialize
@@ -12,7 +13,9 @@ class GitshRunner
     @readline = FakeReadline.new
   end
 
-  def run_interactive
+  def run_interactive(env={})
+    setup_env(env)
+
     Thread.abort_on_exception = true
     runner = Thread.new do
       in_a_test_repository do
@@ -44,6 +47,10 @@ class GitshRunner
     error_stream.read
   end
 
+  def inspect
+    'gitsh'
+  end
+
   private
 
   attr_reader :output_stream, :error_stream, :readline
@@ -59,6 +66,12 @@ class GitshRunner
     yield
     while output_stream.pos == output_offset && error_stream.pos == error_offset
       sleep 0.01
+    end
+  end
+
+  def setup_env(env)
+    {'TERM' => 'vt220'}.merge(env).each do |key, value|
+      ENV[key] = value
     end
   end
 end
