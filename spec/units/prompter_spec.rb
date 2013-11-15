@@ -2,6 +2,8 @@ require 'spec_helper'
 require 'gitsh/prompter'
 
 describe Gitsh::Prompter do
+  include Color
+
   describe '#prompt' do
     context 'an un-initialized git repository' do
       it 'displays an uninitialized prompt' do
@@ -57,10 +59,5 @@ describe Gitsh::Prompter do
       }
       double('GitRepository', default_attrs.merge(attrs))
     end
-
-    let(:red) { "\033[00;31m" }
-    let(:orange) { "\033[00;33m" }
-    let(:red_background) { "\033[00;41m" }
-    let(:clear) { "\033[00m" }
   end
 end

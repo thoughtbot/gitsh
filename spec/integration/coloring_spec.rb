@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe 'Colors as determinined from the environemnt' do
+  include Color
+
   it 'is uncolored for old terminals' do
     GitshRunner.interactive do |gitsh|
       expect(gitsh).to prompt_with 'uninitialized!! '
@@ -12,7 +14,4 @@ describe 'Colors as determinined from the environemnt' do
       expect(gitsh).to prompt_with "uninitialized#{red_background}!!#{clear} "
     end
   end
-
-  let(:red_background) { "\033[00;41m" }
-  let(:clear) { "\033[00m" }
 end

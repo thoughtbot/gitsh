@@ -1,12 +1,8 @@
 require 'gitsh/git_repository'
+require 'gitsh/colors'
 
 module Gitsh
   class Prompter
-    COLOR_RED_FG = "\033[00;31m"
-    COLOR_ORANGE_FG = "\033[00;33m"
-    COLOR_RED_BG = "\033[00;41m"
-    COLOR_CLEAR = "\033[00m"
-
     def initialize(options={}, repo=GitRepository.new)
       @repo = repo
       @options = options
@@ -30,11 +26,11 @@ module Gitsh
 
     def terminator
       if !repo.initialized?
-        add_color('!!', COLOR_RED_BG)
+        add_color('!!', Colors::RED_BG)
       elsif repo.has_untracked_files?
-        add_color('!', COLOR_RED_FG)
+        add_color('!', Colors::RED_FG)
       elsif repo.has_modified_files?
-        add_color('&', COLOR_ORANGE_FG)
+        add_color('&', Colors::ORANGE_FG)
       else
         '@'
       end
@@ -42,7 +38,7 @@ module Gitsh
 
     def add_color(str, color)
       if use_color?
-        "#{color}#{str}#{COLOR_CLEAR}"
+        "#{color}#{str}#{Colors::CLEAR}"
       else
         str
       end
