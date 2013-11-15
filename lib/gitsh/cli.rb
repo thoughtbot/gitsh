@@ -14,6 +14,7 @@ module Gitsh
       while command = read_command
         git_driver.execute(command)
       end
+      output.print "\n"
     end
 
     private
@@ -34,7 +35,12 @@ module Gitsh
     end
 
     def prompter
-      @prompter ||= Prompter.new
+      @prompter ||= Prompter.new(color: color_support?)
+    end
+
+    def color_support?
+      output, error, exit_status = Open3.capture3('tput colors')
+      exit_status.success? && output.chomp.to_i > 0
     end
   end
 end
