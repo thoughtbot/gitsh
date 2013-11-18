@@ -105,3 +105,14 @@ RSpec::Matchers.define :output_no_errors do
     "Expected no errors, got #{@actual.inspect}"
   end
 end
+
+RSpec::Matchers.define :output_error do |expected|
+  match do |runner|
+    @actual = runner.error
+    expect(@actual).to match_regex expected
+  end
+
+  failure_message_for_should do |runner|
+    "Expected error #{expected.inspect}, got #{@actual.inspect}"
+  end
+end

@@ -1,3 +1,5 @@
+require 'shellwords'
+
 module Gitsh
   class GitDriver
     def initialize(output, error)
@@ -6,7 +8,8 @@ module Gitsh
     end
 
     def execute(command)
-      pid = Process.spawn("/usr/bin/env git #{command}", out: output, err: error)
+      cmd = ['/usr/bin/env', 'git', *Shellwords.split(command)]
+      pid = Process.spawn(*cmd, out: output, err: error)
       Process.wait(pid)
     end
 
