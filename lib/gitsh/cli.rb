@@ -1,6 +1,7 @@
 require 'readline'
 require 'gitsh/git_driver'
 require 'gitsh/prompter'
+require 'gitsh/completer'
 
 module Gitsh
   class CLI
@@ -11,9 +12,13 @@ module Gitsh
     end
 
     def run
+      readline.completion_append_character = nil
+      readline.completion_proc = Completer.new(readline)
+
       while command = read_command
         git_driver.execute(command)
       end
+
       output.print "\n"
     end
 

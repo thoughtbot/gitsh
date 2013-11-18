@@ -18,6 +18,22 @@ module Gitsh
       status.modified_files.any?
     end
 
+    def heads
+      git_output(%{for-each-ref --format='%(refname:short)'}).
+        lines.
+        map { |line| line.chomp }
+    end
+
+    def commands
+      git_output('help -a').
+        lines.
+        select { |line| line =~ /^  [a-z]/ }.
+        map { |line| line.split(/\s+/) }.
+        flatten.
+        reject { |cmd| cmd.empty? || cmd =~ /--/ }.
+        sort
+    end
+
     private
 
     def current_branch_name

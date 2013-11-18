@@ -88,21 +88,37 @@ describe Gitsh::GitRepository do
     end
   end
 
+  context '#heads' do
+    it 'produces all the branches and tags' do
+      in_a_temporary_directory do
+        repo = Gitsh::GitRepository.new
+        run 'git init'
+        run 'git commit --allow-empty -m "Something swell"'
+        expect(repo.heads).to eq %w( master )
+        run 'git checkout -b awesome-sauce'
+        run 'git tag v2.0'
+        expect(repo.heads).to eq %w( awesome-sauce master v2.0 )
+      end
+    end
+  end
+
+  context '#commands' do
+    it 'produces the list of porcelain commands' do
+      repo = Gitsh::GitRepository.new
+      expect(repo.commands).to include %(add)
+      expect(repo.commands).to include %(commit)
+      expect(repo.commands).to include %(checkout)
+      expect(repo.commands).to include %(status)
+      expect(repo.commands).not_to include %(add--interactive)
+      expect(repo.commands).not_to include ''
+    end
+  end
+
   def repository_root
     File.expand_path('../../../', __FILE__)
   end
 
-  def in_a_temporary_directory(&block)
-    Dir.mktmpdir do |path|
-      Dir.chdir(path, &block)
-    end
-  end
-
   def run(command)
     Open3.capture3(command)
-  end
-
-  def write_file(name, contents="Some content")
-    File.open("./#{name}", 'w') { |f| f << "#{contents}\n" }
   end
 end

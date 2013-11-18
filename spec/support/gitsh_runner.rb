@@ -1,8 +1,11 @@
 require 'thread'
 require 'tempfile'
 require 'gitsh/cli'
+require File.expand_path('../file_system', __FILE__)
 
 class GitshRunner
+  include FileSystemHelper
+
   def self.interactive(env={}, &block)
     new.run_interactive(env, &block)
   end
@@ -14,31 +17,35 @@ class GitshRunner
   end
 
   def run_interactive(env={})
-    setup_env(env)
+    in_a_temporary_directory do
+      setup_env(env)
 
-    Thread.abort_on_exception = true
-    runner = Thread.new do
-      in_a_test_repository do
+      Thread.abort_on_exception = true
+      runner = Thread.new do
         Gitsh::CLI.new(output_stream, error_stream, readline).run
       end
+
+      wait_for_prompt
+
+      yield(self)
+
+      readline.type('exit')
+      runner.join
     end
-
-    yield(self)
-
-    readline.type('exit')
-    runner.join
   end
 
   def type(string)
-    wait_for_output { readline.type(string) }
+    @position_before_command = output_stream.pos
+    readline.type(string)
+    wait_for_prompt
   end
 
   def prompt
-    readline.prompt
+    @prompt
   end
 
   def output
-    output_stream.rewind
+    output_stream.seek(@position_before_command)
     output_stream.read
   end
 
@@ -55,18 +62,8 @@ class GitshRunner
 
   attr_reader :output_stream, :error_stream, :readline
 
-  def in_a_test_repository(&block)
-    Dir.mktmpdir do |path|
-      Dir.chdir(path, &block)
-    end
-  end
-
-  def wait_for_output
-    output_offset, error_offset = output_stream.pos, error_stream.pos
-    yield
-    while output_stream.pos == output_offset && error_stream.pos == error_offset
-      sleep 0.01
-    end
+  def wait_for_prompt
+    @prompt = readline.prompt
   end
 
   def setup_env(env)
@@ -78,18 +75,33 @@ end
 
 RSpec::Matchers.define :prompt_with do |expected|
   match do |runner|
-    expect(runner.prompt).to eq expected
+    @actual = runner.prompt
+    expect(@actual).to eq expected
+  end
+
+  failure_message_for_should do |runner|
+    "Expected #{expected.inspect}, got #{@actual.inspect}"
   end
 end
 
 RSpec::Matchers.define :output do |expected|
   match do |runner|
-    expect(runner.output).to match_regex expected
+    @actual = runner.output
+    expect(@actual).to match_regex expected
+  end
+
+  failure_message_for_should do |runner|
+    "Expected #{expected.inspect}, got #{@actual.inspect}"
   end
 end
 
 RSpec::Matchers.define :output_no_errors do
   match do |runner|
-    expect(runner.error).to be_empty
+    @actual = runner.error
+    expect(@actual).to be_empty
+  end
+
+  failure_message_for_should do |runner|
+    "Expected no errors, got #{@actual.inspect}"
   end
 end
