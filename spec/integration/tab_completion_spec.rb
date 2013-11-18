@@ -11,12 +11,10 @@ describe 'Completing things with tab' do
 
       gitsh.type("com\t --allow-empty -m 'Some commit'")
 
-      expect(gitsh).to output_no_errors
       expect(gitsh).to output /Some commit/
 
-      gitsh.type("br\t")
+      gitsh.type("bra\t")
 
-      expect(gitsh).to output_no_errors
       expect(gitsh).to output /my-feature/
     end
   end
