@@ -28,6 +28,9 @@ module Gitsh
 
     def read_command
       command = readline.readline(prompt, true)
+      if command && command.empty?
+        command = 'status'
+      end
       command != 'exit' && command
     end
 
