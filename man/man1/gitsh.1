@@ -1,0 +1,72 @@
+.Dd November 19, 2013
+.Dt GITSH 1
+.Os
+.Sh NAME
+.Nm gitsh
+.Nd Interactive shell for the git version control system
+.
+.Sh SYNOPSIS
+.Nm gitsh
+.
+.Sh DESCRIPTION
+.Nm gitsh
+is a language for interacting with a
+.Xr git 1
+repository. It supports all git subcommands, custom aliases, and custom
+commands for interacting with the shell itself. Commands, path names,
+branch names, and tag names can all be completed using tab completion.
+.Pp
+Quit by either typing
+.Ic exit
+or sending an EOF character.
+.
+.Sh PROMPT
+The prompt changes based on the status of the repository. It consist of
+two parts: the current HEAD and the terminator sigil.
+.Pp
+The current HEAD is a branch name, tag name, abbreviated SHA, or the text
+.Li uninitialized
+when the present working directory is not a git repository.
+.Pp
+The terminating sigil has a symbol and color pairing:
+.
+.Bl -column "Sigil" "Orange background" "Description" -offset indent
+.It Sigil Ta Color Ta Description
+.It !! Ta red background Ta current directory is not a git repo
+.It ! Ta red foreground Ta repo has untracked files
+.It & Ta orange foreground Ta repo has modified files
+.It @ Ta default Ta all other states
+.El
+.
+.Sh ENVIRONMENT
+.Bl -tag -width Ds
+.It Ev TERM
+The
+.Xr terminfo 1
+name for the terminal. This is used to determine whether to
+show colors.
+.El
+.
+.Sh EXAMPLES
+.Bd -literal -offset indent
+init
+commit --allow-empty
+checkout -b new-feature
+rebase master
+exit
+.Ed
+.
+.Sh SEE ALSO
+.Xr git 1
+.Xr gittutorial 7
+.
+.Sh HISTORY
+Based on a prototype by
+.An "Mike Burns" Aq mburns@thoughtbot.com
+from October 2013, inspired by a talk by
+.An "Reda Lemeden" Aq reda@thoughtbot.com .
+Further development and enthusiasm provided by
+.An "George Brocklehurst" Aq george@thoughtbot.com .
+.
+.Sh AUTHORS
+.An "thoughtbot" Aq hello@thoughtbot.com
