@@ -11,7 +11,7 @@ modifications) or build a new distribution, you will need to:
 1. Clone the repository
 2. Build the configuration files
 
-        aclocal && autoconf
+        aclocal && autoconf && automake
 
 3. Configure the project
 
@@ -22,6 +22,11 @@ modifications) or build a new distribution, you will need to:
     correct version in the `$RUBY` environment variable.
 
         RUBY=/example/bin/ruby ./configure
+
+4. If you make changes to the `bin/gitsh.in` you can regenerate `bin/gitsh`
+   using make.
+
+        make
 
 ## License
 

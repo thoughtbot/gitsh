@@ -12,3 +12,7 @@ configure
 configure.scan
 install-sh
 missing
+depcomp
+
+# Make targets
+bin/gitsh

@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#!@RUBY@
 
 require 'gitsh/cli'
 
