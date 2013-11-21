@@ -20,7 +20,7 @@ AX_PROG_RUBY_VERSION(
 AC_SUBST([RUBY])
 
 # Find a directory on Ruby's load path
-test $RUBY_LIB || RUBY_LIB=`$RUBY -e 'puts RbConfig::CONFIG[["sitedir"]]'`
+test $RUBY_LIB || RUBY_LIB=`$RUBY -e 'puts RbConfig::CONFIG[["sitelibdir"]]'`
 AC_SUBST([RUBY_LIB])
 
 AC_CONFIG_FILES([Makefile bin/Makefile lib/Makefile man/Makefile])
