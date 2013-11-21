@@ -1,1 +1,2 @@
-BUILT_SOURCES = gitsh/*
+datadir = $(RUBY_LIB_DIR)
+dist_pkgdata_DATA = gitsh/*
