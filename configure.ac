@@ -24,4 +24,5 @@ test $RUBY_LIB || RUBY_LIB=`$RUBY -e 'puts RbConfig::CONFIG[["sitelibdir"]]'`
 AC_SUBST([RUBY_LIB])
 
 AC_CONFIG_FILES([Makefile bin/Makefile lib/Makefile man/Makefile])
-AC_OUTPUT([bin/gitsh])
+AC_CONFIG_FILES([bin/gitsh], [chmod +x bin/gitsh])
+AC_OUTPUT
