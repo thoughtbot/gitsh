@@ -1,0 +1,1 @@
+BUILT_SOURCES = gitsh/*
