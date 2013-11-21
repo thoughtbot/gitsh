@@ -15,7 +15,8 @@ AX_PROG_RUBY_VERSION(
   AC_MSG_ERROR(Ruby 2.0 or later is required to install gitsh)
 )
 
-AC_SUBST([RUBY_LIB_DIR],[`$RUBY -e 'puts RbConfig::CONFIG[["sitedir"]]'`])
+# Find a directory on Ruby's load path
+test $RUBY_LIB || RUBY_LIB=`$RUBY -e 'puts RbConfig::CONFIG[["sitedir"]]'`
 
 AC_CONFIG_FILES([Makefile bin/Makefile lib/Makefile man/Makefile])
 AC_OUTPUT([bin/gitsh])
