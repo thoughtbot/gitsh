@@ -11,7 +11,7 @@ modifications) or build a new distribution, you will need to:
 1. Clone the repository
 2. Build the configuration files
 
-        aclocal && autoconf && automake
+        ./autogen.sh
 
 3. Configure the project
 
