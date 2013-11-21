@@ -3,6 +3,26 @@
 The `gitsh` program is an interactive shell for git. From within `gitsh` you can
 issue any git command, even using your local aliases and configuration.
 
+## Developers
+
+If you want to install from the repository (perhaps to try out some
+modifications) or build a new distribution, you will need to:
+
+1. Clone the repository
+2. Build the configuration files
+
+        aclocal && autoconf
+
+3. Configure the project
+
+        ./configure
+
+    Configuration may fail if it can't find Ruby 2.0 or later. If you have
+    multiple Ruby versions installed you can explicitly provide a path to the
+    correct version in the `$RUBY` environment variable.
+
+        RUBY=/example/bin/ruby ./configure
+
 ## License
 
 gitsh is Copyright © 2013 Mike Burns, George Brocklehurst, and thoughtbot. It is
