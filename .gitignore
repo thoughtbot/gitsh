@@ -16,4 +16,5 @@ depcomp
 
 # Make targets
 src/gitsh
+lib/gitsh/version.rb
 gitsh-*.tar.gz

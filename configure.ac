@@ -19,12 +19,12 @@ AX_PROG_RUBY_VERSION(
 
 rubydir=$datadir/ruby
 pkgrubydir=$rubydir/$PACKAGE
-libfiles="$(cd `dirname $0`/lib; echo gitsh/*.rb)"
+libfiles="$(cd `dirname $0`/lib/gitsh; echo *.rb)"
 
 AC_SUBST([RUBY])
 AC_SUBST([rubydir])
 AC_SUBST([pkgrubydir])
 AC_SUBST([libfiles])
 
-AC_CONFIG_FILES([Makefile src/Makefile lib/Makefile man/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile lib/gitsh/Makefile man/Makefile])
 AC_OUTPUT
