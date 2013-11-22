@@ -15,5 +15,5 @@ missing
 depcomp
 
 # Make targets
-bin/gitsh
+src/gitsh
 gitsh-*.tar.gz

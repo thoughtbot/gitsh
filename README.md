@@ -3,7 +3,7 @@
 The `gitsh` program is an interactive shell for git. From within `gitsh` you can
 issue any git command, even using your local aliases and configuration.
 
-## Developers
+## Installing from the repository
 
 If you want to install from the repository (perhaps to try out some
 modifications) or build a new distribution, you will need to:
@@ -13,20 +13,25 @@ modifications) or build a new distribution, you will need to:
 
         ./autogen.sh
 
-3. Configure the project
+3. Configure and build the project.
 
         ./configure
+        make
 
     Configuration may fail if it can't find Ruby 2.0 or later. If you have
     multiple Ruby versions installed you can explicitly provide a path to the
-    correct version in the `$RUBY` environment variable.
+    correct version in the `$RUBY` variable.
 
-        RUBY=/example/bin/ruby ./configure
-
-4. If you make changes to the `bin/gitsh.in` you can regenerate `bin/gitsh`
-   using make.
-
+        ./configure RUBY=/example/bin/ruby
         make
+
+4. If you want to install from the repository, you can do so using make.
+
+        make install
+
+    Alternatively, at this point you can build a new distribution.
+
+        make distcheck
 
 ## License
 

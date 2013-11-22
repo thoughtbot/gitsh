@@ -24,5 +24,5 @@ AC_SUBST([RUBY])
 AC_SUBST([rubydir])
 AC_SUBST([pkgrubydir])
 
-AC_CONFIG_FILES([Makefile bin/Makefile lib/Makefile man/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile lib/Makefile man/Makefile])
 AC_OUTPUT
