@@ -16,3 +16,4 @@ depcomp
 
 # Make targets
 bin/gitsh
+gitsh-*.tar.gz

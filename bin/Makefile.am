@@ -1,4 +1,4 @@
-bin_SCRIPTS = gitsh
+dist_bin_SCRIPTS = gitsh
 
 edit = sed \
 	-e 's|@RUBY[@]|$(RUBY)|g' \

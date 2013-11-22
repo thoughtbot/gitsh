@@ -1,1 +1,1 @@
-pkgruby_SCRIPTS = gitsh/*
+dist_pkgruby_SCRIPTS = gitsh/*
