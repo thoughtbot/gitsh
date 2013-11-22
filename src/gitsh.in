@@ -4,4 +4,8 @@ $LOAD_PATH.unshift('@rubydir@')
 
 require 'gitsh/cli'
 
-Gitsh::CLI.new.run
+begin
+  Gitsh::CLI.new.run
+rescue => e
+  $stderr.puts "gitsh: Error: #{e.message}"
+end
