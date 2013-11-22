@@ -1,0 +1,3 @@
+module Gitsh
+  VERSION = '@PACKAGE_VERSION@'
+end

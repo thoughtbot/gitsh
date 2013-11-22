@@ -1,0 +1,20 @@
+# autotools related files
+Makefile
+Makefile.in
+*/Makefile
+*/Makefile.in
+aclocal.m4
+autom4te.cache
+autoscan.log
+config.log
+config.status
+configure
+configure.scan
+install-sh
+missing
+depcomp
+
+# Make targets
+src/gitsh
+lib/gitsh/version.rb
+gitsh-*.tar.gz

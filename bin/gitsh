@@ -1,5 +1,10 @@
 #!/usr/bin/env ruby
 
+# This bin file is provided for convenience during development, the
+# distribution binary is built from the template at src/gitsh.in
+
+$LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
+
 require 'gitsh/cli'
 
 Gitsh::CLI.new.run
