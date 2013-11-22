@@ -1,1 +1,1 @@
-dist_pkgruby_SCRIPTS = gitsh/*
+dist_pkgruby_DATA = $(wildcard gitsh/*)
