@@ -1,17 +1,36 @@
 require 'readline'
+require 'gitsh/version'
 require 'gitsh/git_driver'
 require 'gitsh/prompter'
 require 'gitsh/completer'
 
 module Gitsh
   class CLI
-    def initialize(output=$stdout, error=$stderr, readline=Readline)
+    EX_USAGE = 64
+
+    def initialize(args=ARGV, output=$stdout, error=$stderr, readline=Readline)
+      @args = args
       @output = output
       @error = error
       @readline = readline
     end
 
     def run
+      if args == %w(--version)
+        output.puts VERSION
+      elsif args.any?
+        error.puts 'usage: gitsh [--version]'
+        exit EX_USAGE
+      else
+        run_interactive
+      end
+    end
+
+    private
+
+    attr_reader :output, :error, :readline, :args
+
+    def run_interactive
       readline.completion_append_character = nil
       readline.completion_proc = Completer.new(readline)
 
@@ -21,10 +40,6 @@ module Gitsh
 
       output.print "\n"
     end
-
-    private
-
-    attr_reader :output, :error, :readline
 
     def read_command
       command = readline.readline(prompt, true)
