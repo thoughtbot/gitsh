@@ -1,5 +1,7 @@
 #!@RUBY@
 
+$LOAD_PATH.unshift('@rubydir@')
+
 require 'gitsh/cli'
 
 Gitsh::CLI.new.run

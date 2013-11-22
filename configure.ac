@@ -6,7 +6,6 @@ AC_INIT(gitsh, 0.1, hello@thoughtbot.com)
 AM_INIT_AUTOMAKE
 
 AC_ARG_VAR([RUBY],[The path of the Ruby binary to use])
-AC_ARG_VAR([RUBY_LIB],[A directory on Ruby's LOAD_PATH to install to])
 
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -17,11 +16,14 @@ AX_PROG_RUBY_VERSION(
   [],
   AC_MSG_ERROR(Ruby 2.0 or later is required to install gitsh)
 )
-AC_SUBST([RUBY])
 
-# Find a directory on Ruby's load path
-test $RUBY_LIB || RUBY_LIB=`$RUBY -e 'puts RbConfig::CONFIG[["sitelibdir"]]'`
-AC_SUBST([RUBY_LIB])
+test "x$prefix" = xNONE && prefix=$ac_default_prefix
+eval "eval rubydir=$datadir/ruby"
+eval "eval pkgrubydir=$rubydir/$PACKAGE"
+
+AC_SUBST([RUBY])
+AC_SUBST([rubydir])
+AC_SUBST([pkgrubydir])
 
 AC_CONFIG_FILES([Makefile bin/Makefile lib/Makefile man/Makefile])
 AC_CONFIG_FILES([bin/gitsh], [chmod +x bin/gitsh])
