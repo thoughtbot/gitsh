@@ -17,14 +17,12 @@ AX_PROG_RUBY_VERSION(
   AC_MSG_ERROR(Ruby 2.0 or later is required to install gitsh)
 )
 
-test "x$prefix" = xNONE && prefix=$ac_default_prefix
-eval "eval rubydir=$datadir/ruby"
-eval "eval pkgrubydir=$rubydir/$PACKAGE"
+rubydir=$datadir/ruby
+pkgrubydir=$rubydir/$PACKAGE
 
 AC_SUBST([RUBY])
 AC_SUBST([rubydir])
 AC_SUBST([pkgrubydir])
 
 AC_CONFIG_FILES([Makefile bin/Makefile lib/Makefile man/Makefile])
-AC_CONFIG_FILES([bin/gitsh], [chmod +x bin/gitsh])
 AC_OUTPUT
