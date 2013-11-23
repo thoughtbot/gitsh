@@ -17,7 +17,7 @@ AX_PROG_RUBY_VERSION(
   AC_MSG_ERROR(Ruby 2.0 or later is required to install gitsh)
 )
 
-rubydir=$datadir/ruby
+rubydir=$datadir/$PACKAGE/ruby
 pkgrubydir=$rubydir/$PACKAGE
 libfiles="$(cd `dirname $0`/lib/gitsh; echo *.rb)"
 
