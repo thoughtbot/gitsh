@@ -9,8 +9,15 @@ AC_ARG_VAR([RUBY],[The path of the Ruby binary to use])
 
 AC_CONFIG_MACRO_DIR([m4])
 
-# Check for Ruby 2.0
+AC_PATH_PROGS([RUBY], [ruby ruby20], [], $(getconf PATH))
 AC_PATH_PROGS([RUBY], [ruby ruby20])
+
+if test -n $RUBY; then
+  case $RUBY in $HOME/*)
+    AC_MSG_WARN([Using a non-system Ruby. Disable rvm, rbenv, etc. or set \$RUBY])
+  esac
+fi
+
 AX_PROG_RUBY_VERSION(
   [2.0],
   [],
