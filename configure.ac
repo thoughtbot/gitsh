@@ -10,7 +10,8 @@ AC_ARG_VAR([RUBY],[The path of the Ruby binary to use])
 AC_CONFIG_MACRO_DIR([m4])
 
 # Check for Ruby 2.0
-AC_PATH_PROGS([RUBY], [ruby ruby20])
+default_system_path=$(env -i sh -c 'echo $PATH')
+AC_PATH_PROGS([RUBY], [ruby ruby20], [], [$default_system_path])
 AX_PROG_RUBY_VERSION(
   [2.0],
   [],
