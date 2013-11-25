@@ -6,7 +6,7 @@ describe '--version' do
     output = StringIO.new
     error = StringIO.new
 
-    Gitsh::CLI.new(%w(--version), output, error).run
+    Gitsh::CLI.new(args: %w(--version), output: output, error: error).run
 
     expect(error.string).to be_empty
     expect(output.string.chomp).to eq Gitsh::VERSION.to_s
@@ -18,7 +18,9 @@ describe 'Unexpected arguments' do
     output = StringIO.new
     error = StringIO.new
 
-    runner = lambda { Gitsh::CLI.new(%w(--badger), output, error).run }
+    runner = lambda do
+      Gitsh::CLI.new(args: %w(--badger), output: output, error: error).run
+    end
 
     expect(runner).to raise_error SystemExit
     expect(output.string).to be_empty

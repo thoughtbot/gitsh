@@ -22,7 +22,12 @@ class GitshRunner
 
       Thread.abort_on_exception = true
       runner = Thread.new do
-        Gitsh::CLI.new([], output_stream, error_stream, readline).run
+        Gitsh::CLI.new(
+          args: [],
+          output: output_stream,
+          error: error_stream,
+          readline: readline
+        ).run
       end
 
       wait_for_prompt

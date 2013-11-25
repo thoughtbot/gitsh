@@ -8,11 +8,14 @@ module Gitsh
   class CLI
     EX_USAGE = 64
 
-    def initialize(args=ARGV, output=$stdout, error=$stderr, readline=Readline)
-      @args = args
-      @output = output
-      @error = error
-      @readline = readline
+    def initialize(opts={})
+      driver_factory = opts.fetch(:driver_factory, GitDriver)
+
+      @args = opts.fetch(:args, ARGV)
+      @output = opts.fetch(:output, $stdout)
+      @error = opts.fetch(:error, $stderr)
+      @readline = opts.fetch(:readline, Readline)
+      @git_driver = driver_factory.new(output, error)
     end
 
     def run
@@ -28,7 +31,7 @@ module Gitsh
 
     private
 
-    attr_reader :output, :error, :readline, :args
+    attr_reader :output, :error, :readline, :args, :git_driver
 
     def run_interactive
       readline.completion_append_character = nil
@@ -47,10 +50,6 @@ module Gitsh
         command = 'status'
       end
       command != 'exit' && command
-    end
-
-    def git_driver
-      @git_driver ||= GitDriver.new(output, error)
     end
 
     def prompt
