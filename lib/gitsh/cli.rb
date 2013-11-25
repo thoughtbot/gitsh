@@ -42,6 +42,9 @@ module Gitsh
       end
 
       output.print "\n"
+    rescue Interrupt
+      output.print "\n"
+      retry
     end
 
     def read_command

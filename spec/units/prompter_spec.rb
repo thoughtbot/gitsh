@@ -57,7 +57,7 @@ describe Gitsh::Prompter do
         has_untracked_files?: false,
         current_head: 'master'
       }
-      double('GitRepository', default_attrs.merge(attrs))
+      stub('GitRepository', default_attrs.merge(attrs))
     end
   end
 end

@@ -1,7 +1,12 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    bourne (1.5.0)
+      mocha (>= 0.13.2, < 0.15)
     diff-lcs (1.2.4)
+    metaclass (0.0.1)
+    mocha (0.14.0)
+      metaclass (~> 0.0.1)
     rspec (2.14.1)
       rspec-core (~> 2.14.0)
       rspec-expectations (~> 2.14.0)
@@ -15,4 +20,5 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bourne
   rspec
