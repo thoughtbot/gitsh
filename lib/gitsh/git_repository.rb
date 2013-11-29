@@ -34,6 +34,13 @@ module Gitsh
         sort
     end
 
+    def aliases
+      git_output('config --get-regexp alias').
+        lines.
+        select { |line| line.start_with?('alias.') }.
+        map { |line| line.split(' ').first.sub(/^alias\./, '') }
+    end
+
     private
 
     def current_branch_name

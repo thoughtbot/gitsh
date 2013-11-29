@@ -2,13 +2,17 @@ require 'spec_helper'
 require 'gitsh/completer'
 
 describe Gitsh::Completer do
-  it 'completes commands' do
+  it 'completes commands and aliases' do
     readline = stub('Readline', line_buffer: '')
-    git_repo = stub('GitRepo', commands: %w( stage stash status add commit ))
+    git_repo = stub(
+      'GitRepo',
+      commands: %w( stage stash status add commit ),
+      aliases: %w( adder )
+    )
     completer = Gitsh::Completer.new(readline, git_repo)
 
     expect(completer.call('sta')).to eq ['stage ', 'stash ', 'status ']
-    expect(completer.call('ad')).to eq ['add ']
+    expect(completer.call('ad')).to eq ['add ', 'adder ']
   end
 
   it 'completes heads when a command has been entered' do

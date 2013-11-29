@@ -114,6 +114,17 @@ describe Gitsh::GitRepository do
     end
   end
 
+  context '#aliases' do
+    it 'produces the list of aliases' do
+      in_a_temporary_directory do
+        repo = Gitsh::GitRepository.new
+        run 'git init'
+        run 'git config --local alias.zecho "!echo zzz"'
+        expect(repo.aliases).to include 'zecho'
+      end
+    end
+  end
+
   def repository_root
     File.expand_path('../../../', __FILE__)
   end

@@ -30,7 +30,7 @@ module Gitsh
         if completing_arguments?
           repo.heads.map { |head| "#{head} " } + paths
         else
-          repo.commands.map { |cmd| "#{cmd} " }
+          (repo.commands + repo.aliases).map { |cmd| "#{cmd} " }
         end
       end
 
