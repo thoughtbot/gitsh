@@ -58,7 +58,8 @@ release_build_arch: DIST_SHA
 
 release_push_arch:
 	cd release-arch &&\
-		git push --tags master
+		git push --tags &&\
+		git push
 
 release_clean_arch:
 	rm -rf release-arch
