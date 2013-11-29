@@ -14,9 +14,9 @@ issue any git command, even using your local aliases and configuration.
 
 * On other operating systems:
 
-        curl -o http://thoughtbot.github.io/gitsh/gitsh-0.1.tar.gz
-        tar -zxf gitsh-0.1.tar.gz
-        cd gitsh-0.1
+        curl -o http://thoughtbot.github.io/gitsh/gitsh-0.2.tar.gz
+        tar -zxf gitsh-0.2.tar.gz
+        cd gitsh-0.2
         ./configure
         make
         make install
