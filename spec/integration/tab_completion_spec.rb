@@ -19,6 +19,18 @@ describe 'Completing things with tab' do
     end
   end
 
+  it 'completes aliases' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type('init')
+      gitsh.type('config --local alias.zecho "!echo zzz"')
+
+      gitsh.type("zec\t")
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output /zzz/
+    end
+  end
+
   it 'completes branch names' do
     GitshRunner.interactive do |gitsh|
       gitsh.type('init')
