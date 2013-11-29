@@ -2,19 +2,22 @@ require 'shellwords'
 
 module Gitsh
   class GitDriver
-    def initialize(output, error)
+    DEFAULT_GIT_COMMAND = '/usr/bin/env git'.freeze
+
+    def initialize(output, error, git_command=nil)
       @output = output
       @error = error
+      @git_command = Shellwords.split(git_command || DEFAULT_GIT_COMMAND)
     end
 
     def execute(command)
-      cmd = ['/usr/bin/env', 'git', *Shellwords.split(command)]
+      cmd = git_command + Shellwords.split(command)
       pid = Process.spawn(*cmd, out: output, err: error)
       Process.wait(pid)
     end
 
     private
 
-    attr_reader :output, :error
+    attr_reader :output, :error, :git_command
   end
 end

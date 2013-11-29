@@ -7,6 +7,9 @@
 .
 .Sh SYNOPSIS
 .Nm gitsh
+.Op Fl -version
+.Op Fl h
+.Op Fl -git Ar CMD
 .
 .Sh DESCRIPTION
 .Nm gitsh
@@ -19,6 +22,18 @@ branch names, and tag names can all be completed using tab completion.
 Quit by either typing
 .Ic exit
 or sending an EOF character.
+.Pp
+It supports these options:
+.
+.Bl -tag
+.It Fl -git Ar CMD
+use the git command specified in CMD, instead of the default (
+.Ic /usr/bin/env git
+).
+.It Fl h , Fl -help
+display a help message and exit.
+.It Fl -version
+display the version number and exit.
 .
 .Sh PROMPT
 The prompt changes based on the status of the repository. It consist of
