@@ -4,8 +4,6 @@ $LOAD_PATH.unshift('@rubydir@')
 
 require 'gitsh/cli'
 
-Signal.trap('INT') { exit 0 }
-
 begin
   Gitsh::CLI.new.run
 rescue => e
