@@ -3,35 +3,44 @@
 The `gitsh` program is an interactive shell for git. From within `gitsh` you can
 issue any git command, even using your local aliases and configuration.
 
-## Installing from the repository
+## Installing gitsh
 
-If you want to install from the repository (perhaps to try out some
-modifications) or build a new distribution, you will need to:
+* On Mac OS X, via homebrew:
 
-1. Clone the repository
-2. Build the configuration files
+        brew tap thoughtbot/gitsh
+        brew install gitsh
 
-        ./autogen.sh
+* On Arch Linux: https://github.com/thoughtbot/gitsh/blob/master/arch/PKGBUILD
 
-3. Configure and build the project.
+* On other operating systems:
 
+        curl -o http://thoughtbot.github.io/gitsh/gitsh-0.1.tar.gz
+        tar -zxf gitsh-0.1.tar.gz
+        cd gitsh-0.1
         ./configure
         make
-
-    Configuration may fail if it can't find Ruby 2.0 or later. If you have
-    multiple Ruby versions installed you can explicitly provide a path to the
-    correct version in the `$RUBY` variable.
-
-        ./configure RUBY=/example/bin/ruby
-        make
-
-4. If you want to install from the repository, you can do so using make.
-
         make install
 
-    Alternatively, at this point you can build a new distribution.
+## Releasing a new version
 
-        make distcheck
+1. If you haven't used the project's Makefile before you'll need to do a little
+bit of setup first:
+
+        ./autogen.sh
+        ./configure
+
+2. Update the version number in `configure.ac`.
+
+3. Build and publish the release:
+
+        make release_build
+        make release_push
+        make release_clean
+
+    Alternatively, you can use a single command that will run them for you. If
+    anything goes wrong, this will be harder to debug:
+
+        make release
 
 ## License
 

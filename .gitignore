@@ -18,3 +18,8 @@ depcomp
 src/gitsh
 lib/gitsh/version.rb
 gitsh-*.tar.gz
+
+# Sub-repositories for release
+gh-pages
+homebrew-gitsh
+release-arch
