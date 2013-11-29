@@ -6,8 +6,8 @@ require File.expand_path('../file_system', __FILE__)
 class GitshRunner
   include FileSystemHelper
 
-  def self.interactive(env={}, &block)
-    new.run_interactive(env, &block)
+  def self.interactive(options={}, &block)
+    new.run_interactive(options, &block)
   end
 
   def initialize
@@ -16,14 +16,14 @@ class GitshRunner
     @readline = FakeReadline.new
   end
 
-  def run_interactive(env={})
+  def run_interactive(options={})
     in_a_temporary_directory do
-      setup_env(env)
+      setup_env(options.fetch(:env, {}))
 
       Thread.abort_on_exception = true
       runner = Thread.new do
         Gitsh::CLI.new(
-          args: [],
+          args: options.fetch(:args, []),
           output: output_stream,
           error: error_stream,
           readline: readline
