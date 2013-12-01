@@ -22,4 +22,12 @@ describe 'Gitsh variables' do
       expect(gitsh).to output /^john@example\.com - An initial commit$/
     end
   end
+
+  it 'does not explode when :set is used incorrectly' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type(':set')
+
+      expect(gitsh).to output_error /usage: :set variable value/
+    end
+  end
 end

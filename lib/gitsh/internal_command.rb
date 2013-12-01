@@ -13,13 +13,21 @@ module Gitsh
       end
 
       def execute
-        key, value = args
-        env[key] = value
+        if valid_arguments?
+          key, value = args
+          env[key] = value
+        else
+          env.puts_error 'usage: :set variable value'
+        end
       end
 
       private
 
       attr_reader :env, :args
+
+      def valid_arguments?
+        args.length == 2
+      end
     end
 
     COMMAND_CLASSES = {
