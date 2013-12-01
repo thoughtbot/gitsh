@@ -28,6 +28,19 @@ describe Gitsh::Parser do
       expect(parser).to parse('status  ').as(git_cmd: 'status')
     end
 
+    it 'parses an internal command with no arguments' do
+      expect(parser).to parse(':set').as(internal_cmd: 'set')
+    end
+
+    it 'parses a command with a long option argument' do
+      expect(parser).to parse('log --format="%ae - %s"').as(
+        git_cmd: 'log',
+        args: [
+          { arg: parser_literals('--format=%ae - %s') }
+        ]
+      )
+    end
+
     it 'parses a command with string arguments' do
       expect(parser).to parse(%(commit -m "A message" -a 'George')).as(
         git_cmd: 'commit',
@@ -39,11 +52,50 @@ describe Gitsh::Parser do
     end
 
     it 'parses a command with unquoted arguments' do
-      expect(parser).to parse('set author "George"').as(
-        git_cmd: 'set',
+      expect(parser).to parse(':set author "George"').as(
+        internal_cmd: 'set',
         args: [{ arg: parser_literals('author') }, { arg: parser_literals('George') }]
       )
     end
 
+    it 'parses a command with variable arguments' do
+      expect(parser).to parse('foo $bar').as(
+        git_cmd: 'foo',
+        args: [{ arg: [{ var: 'bar' }] }]
+      )
+    end
+
+    it 'parses a command with unquoted arguments containing variables' do
+      expect(parser).to parse('foo prefix$bar ${bar}suffix $path/file').as(
+        git_cmd: 'foo',
+        args: [
+          { arg: parser_literals('prefix') + [{ var: 'bar' }] },
+          { arg: [{ var: 'bar' }] + parser_literals('suffix') },
+          { arg: [{ var: 'path' }] + parser_literals('/file') }
+        ]
+      )
+    end
+
+    it 'parses a command with double-quoted arguments containing variables' do
+      expect(parser).to parse('foo "prefix $bar" "${bar}suffix" "$path/file"').as(
+        git_cmd: 'foo',
+        args: [
+          { arg: parser_literals('prefix ') + [{ var: 'bar' }] },
+          { arg: [{ var: 'bar' }] + parser_literals('suffix') },
+          { arg: [{ var: 'path' }] + parser_literals('/file') }
+        ]
+      )
+    end
+
+    it 'parses a command with single-quoted arguments containing variable-like strings' do
+      expect(parser).to parse("foo 'prefix $bar' '${bar}suffix' '$path/file'").as(
+        git_cmd: 'foo',
+        args: [
+          { arg: parser_literals('prefix $bar') },
+          { arg: parser_literals('${bar}suffix') },
+          { arg: parser_literals('$path/file') }
+        ]
+      )
+    end
   end
 end

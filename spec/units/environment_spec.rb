@@ -2,6 +2,18 @@ require 'spec_helper'
 require 'gitsh/environment'
 
 describe Gitsh::Environment do
+  describe '#[]=' do
+    it 'sets a gitsh environment variable' do
+      env = described_class.new
+
+      expect(env[:foo]).to be_nil
+      expect(env['foo']).to be_nil
+      env['foo'] = 'bar'
+      expect(env[:foo]).to eq 'bar'
+      expect(env['foo']).to eq 'bar'
+    end
+  end
+
   describe '#output_stream' do
     it 'returns $stdout by default' do
       env = described_class.new

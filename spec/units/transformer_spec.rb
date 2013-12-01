@@ -18,9 +18,28 @@ describe Gitsh::Transformer do
       expect(output).to be_a Gitsh::GitCommand
     end
 
-    it 'transforms arguments' do
+    it 'transforms internal commands' do
+      output = transformer.apply({ internal_cmd: 'set' }, env: env)
+      expect(output).to be_a Gitsh::InternalCommand::Set
+    end
+
+    it 'transforms internal commands with arguments' do
+      output = transformer.apply(
+        { internal_cmd: 'set', args: [{ arg: parser_literals('hi') }] },
+        env: env
+      )
+      expect(output).to be_a Gitsh::InternalCommand::Set
+    end
+
+    it 'transforms literal arguments' do
       output = transformer.apply({ arg: parser_literals('hi') }, env: env)
       expect(output).to eq 'hi'
+    end
+
+    it 'transforms variable arguments' do
+      env = { 'author' => 'Jane Doe' }
+      output = transformer.apply({ var: 'author' }, env: env)
+      expect(output).to eq 'Jane Doe'
     end
   end
 end

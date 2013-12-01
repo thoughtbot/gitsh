@@ -15,13 +15,14 @@ module Gitsh
     rule(:space) { match('\s').repeat(1) }
 
     rule(:identifier) { match('[a-z]') >> match('[a-z0-9-]').repeat(0) }
-    rule(:command_identifier) { identifier.as(:git_cmd) }
+    rule(:command_identifier) { (match(':') >> identifier.as(:internal_cmd)) | identifier.as(:git_cmd) }
+    rule(:variable) { match('\$') >> (match('{') >> identifier.as(:var) >> match('}') | identifier.as(:var)) }
 
-    rule(:unquoted_string) { match('\S').as(:literal).repeat(1) }
-    rule(:soft_string) { match('"') >> match('[^"]').as(:literal).repeat(0) >> match('"') }
+    rule(:unquoted_string) { (variable | match(%q([^\s'"])).as(:literal)).repeat(1) }
+    rule(:soft_string) { match('"') >> (variable | match('[^"]').as(:literal)).repeat(0) >> match('"') }
     rule(:hard_string) { match("'") >> match("[^']").as(:literal).repeat(0) >> match("'") }
 
-    rule(:argument) { (soft_string | hard_string | unquoted_string).as(:arg) }
+    rule(:argument) { (soft_string | hard_string | unquoted_string).repeat(1).as(:arg) }
     rule(:argument_list) { (space >> argument).repeat(1).as(:args) }
 
     rule(:command) { command_identifier >> argument_list.maybe >> space.maybe }

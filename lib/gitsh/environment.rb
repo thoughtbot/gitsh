@@ -9,6 +9,15 @@ module Gitsh
       @output_stream = options.fetch(:output_stream, $stdout)
       @error_stream = options.fetch(:error_stream, $stderror)
       @git_command = DEFAULT_GIT_COMMAND
+      @variables = Hash.new
+    end
+
+    def [](key)
+      variables[key.to_sym]
+    end
+
+    def []=(key, value)
+      variables[key.to_sym] = value
     end
 
     def print(*args)
@@ -22,5 +31,9 @@ module Gitsh
     def puts_error(*args)
       error_stream.puts(*args)
     end
+
+    private
+
+    attr_reader :variables
   end
 end
