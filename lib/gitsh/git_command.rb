@@ -2,12 +2,13 @@ require 'shellwords'
 
 module Gitsh
   class GitCommand
-    def initialize(command, args=[])
+    def initialize(env, command, args=[])
+      @env = env
       @sub_command = command
       @args = args
     end
 
-    def execute(env)
+    def execute
       git = Shellwords.split(env.git_command)
       cmd = [git, sub_command, args].flatten
       pid = Process.spawn(*cmd, out: env.output_stream, err: env.error_stream)
@@ -16,6 +17,6 @@ module Gitsh
 
     private
 
-    attr_reader :sub_command, :args
+    attr_reader :env, :sub_command, :args
   end
 end

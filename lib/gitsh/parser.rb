@@ -8,8 +8,8 @@ module Gitsh
       @transformer_factory = options.fetch(:transformer_factory, Transformer)
     end
 
-    def parse_and_transform(command)
-      transformer.apply(parse(command))
+    def parse_and_transform(command, env)
+      transformer.apply(parse(command), env: env)
     end
 
     rule(:space) { match('\s').repeat(1) }
@@ -32,7 +32,7 @@ module Gitsh
     attr_reader :transformer_factory
 
     def transformer
-      transformer_factory.new
+      @transformer ||= transformer_factory.new
     end
   end
 end

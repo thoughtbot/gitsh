@@ -8,7 +8,7 @@ module Gitsh
     end
 
     def execute(input)
-      build_command(input).execute(env)
+      build_command(input).execute
     end
 
     private
@@ -16,7 +16,7 @@ module Gitsh
     attr_reader :env, :parser_factory
 
     def build_command(input)
-      parser.parse_and_transform(input)
+      parser.parse_and_transform(input, env)
     end
 
     def parser

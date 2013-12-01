@@ -4,14 +4,15 @@ require 'gitsh/parser'
 describe Gitsh::Parser do
   describe '#parse_and_transform' do
     it 'returns an object built from the parsed command' do
+      env = stub
       transformed = stub
       transformer = stub('Transformer', apply: transformed)
       transformer_factory = stub(new: transformer)
       parser = described_class.new(transformer_factory: transformer_factory)
 
-      result = parser.parse_and_transform('status')
+      result = parser.parse_and_transform('status', env)
 
-      expect(transformer).to have_received(:apply).with(git_cmd: 'status')
+      expect(transformer).to have_received(:apply).with({ git_cmd: 'status' }, env: env)
       expect(result).to eq transformed
     end
   end

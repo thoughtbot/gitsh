@@ -7,7 +7,12 @@ module Gitsh
 
     rule(arg: subtree(:parts)) { parts.join('') }
 
-    rule(git_cmd: simple(:cmd)) { GitCommand.new(cmd) }
-    rule(git_cmd: simple(:cmd), args: subtree(:args)) { GitCommand.new(cmd, args) }
+    rule(git_cmd: simple(:cmd)) do |context|
+      GitCommand.new(context[:env], context[:cmd])
+    end
+
+    rule(git_cmd: simple(:cmd), args: subtree(:args)) do |context|
+      GitCommand.new(context[:env], context[:cmd], context[:args])
+    end
   end
 end

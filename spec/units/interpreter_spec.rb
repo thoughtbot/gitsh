@@ -12,8 +12,8 @@ describe Gitsh::Interpreter do
       interpreter = Gitsh::Interpreter.new(env, parser_factory: parser_factory)
       interpreter.execute('add -p')
 
-      expect(parser).to have_received(:parse_and_transform).with('add -p')
-      expect(parsed).to have_received(:execute).with(env)
+      expect(parser).to have_received(:parse_and_transform).with('add -p', env)
+      expect(parsed).to have_received(:execute)
     end
   end
 end
