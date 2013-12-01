@@ -1,12 +1,12 @@
 require 'shellwords'
 
 module Gitsh
-  class GitDriver
-    def initialize(env)
-      @env = env
+  class GitCommand
+    def initialize(command)
+      @command = command
     end
 
-    def execute(command)
+    def execute(env)
       cmd = Shellwords.split(env.git_command) + Shellwords.split(command)
       pid = Process.spawn(*cmd, out: env.output_stream, err: env.error_stream)
       Process.wait(pid)
@@ -14,6 +14,6 @@ module Gitsh
 
     private
 
-    attr_reader :env
+    attr_reader :command
   end
 end
