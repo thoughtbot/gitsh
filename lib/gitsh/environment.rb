@@ -7,7 +7,7 @@ module Gitsh
 
     def initialize(options={})
       @output_stream = options.fetch(:output_stream, $stdout)
-      @error_stream = options.fetch(:error_stream, $stderror)
+      @error_stream = options.fetch(:error_stream, $stderr)
       @git_command = DEFAULT_GIT_COMMAND
       @variables = Hash.new
     end
