@@ -3,19 +3,17 @@ require 'gitsh/interpreter'
 
 describe Gitsh::Interpreter do
   describe '#execute' do
-    it 'passes the command to a git command' do
-      env = stub('env')
-      git_command = stub('driver', execute: nil)
-      git_command_factory = stub(new: git_command)
+    it 'transforms the command into an command object and executes it' do
+      env = stub
+      parsed = stub(execute: nil)
+      parser = stub('Parser', parse_and_transform: parsed)
+      parser_factory = stub(new: parser)
 
-      interpreter = described_class.new(
-        env,
-        git_command_factory: git_command_factory
-      )
+      interpreter = Gitsh::Interpreter.new(env, parser_factory: parser_factory)
       interpreter.execute('add -p')
 
-      expect(git_command_factory).to have_received(:new).with('add -p')
-      expect(git_command).to have_received(:execute).with(env)
+      expect(parser).to have_received(:parse_and_transform).with('add -p')
+      expect(parsed).to have_received(:execute).with(env)
     end
   end
 end

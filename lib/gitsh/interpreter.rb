@@ -1,10 +1,10 @@
-require 'gitsh/git_command'
+require 'gitsh/parser'
 
 module Gitsh
   class Interpreter
     def initialize(env, options={})
       @env = env
-      @git_command_factory = options.fetch(:git_command_factory, GitCommand)
+      @parser_factory = options.fetch(:parser_factory, Parser)
     end
 
     def execute(input)
@@ -13,10 +13,14 @@ module Gitsh
 
     private
 
-    attr_reader :env, :git_command_factory
+    attr_reader :env, :parser_factory
 
     def build_command(input)
-      git_command_factory.new(input)
+      parser.parse_and_transform(input)
+    end
+
+    def parser
+      @parser ||= parser_factory.new
     end
   end
 end
