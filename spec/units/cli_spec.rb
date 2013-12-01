@@ -3,6 +3,7 @@ require 'gitsh/cli'
 
 describe Gitsh::CLI do
   it 'handles a SIGINT' do
+    env = stub(print: nil)
     readline = stub(
       'readline',
       :'completion_append_character=' => nil,
@@ -19,7 +20,7 @@ describe Gitsh::CLI do
 
     cli = Gitsh::CLI.new(
       args: [],
-      output: StringIO.new,
+      env: env,
       readline: readline,
       driver_factory: driver_factory
     )

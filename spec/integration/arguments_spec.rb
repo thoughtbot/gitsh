@@ -1,13 +1,15 @@
 require 'spec_helper'
 require 'gitsh/cli'
+require 'gitsh/environment'
 
 describe '--version' do
   it 'outputs the version, and then exits' do
     output = StringIO.new
     error = StringIO.new
+    env = Gitsh::Environment.new(output_stream: output, error_stream: error)
 
     runner = lambda do
-      Gitsh::CLI.new(args: %w(--version), output: output, error: error).run
+      Gitsh::CLI.new(args: %w(--version), env: env).run
     end
 
     expect(runner).to raise_error SystemExit
@@ -22,9 +24,10 @@ describe 'Unexpected arguments' do
       it 'outputs a usage message and exits' do
         output = StringIO.new
         error = StringIO.new
+        env = Gitsh::Environment.new(output_stream: output, error_stream: error)
 
         runner = lambda do
-          Gitsh::CLI.new(args: [argument], output: output, error: error).run
+          Gitsh::CLI.new(args: [argument], env: env).run
         end
 
         expect(runner).to raise_error SystemExit

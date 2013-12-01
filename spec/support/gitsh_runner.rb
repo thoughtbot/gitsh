@@ -1,6 +1,7 @@
 require 'thread'
 require 'tempfile'
 require 'gitsh/cli'
+require 'gitsh/environment'
 require File.expand_path('../file_system', __FILE__)
 
 class GitshRunner
@@ -22,10 +23,13 @@ class GitshRunner
 
       Thread.abort_on_exception = true
       runner = Thread.new do
+        env = Gitsh::Environment.new(
+          output_stream: output_stream,
+          error_stream: error_stream
+        )
         Gitsh::CLI.new(
           args: options.fetch(:args, []),
-          output: output_stream,
-          error: error_stream,
+          env: env,
           readline: readline
         ).run
       end
