@@ -15,19 +15,19 @@ describe Gitsh::CLI do
       then.returns('b').
       then.returns('exit')
 
-    driver = stub('driver', execute: nil)
-    driver_factory = stub('driver factory', new: driver)
+    interpreter = stub('interpreter', execute: nil)
+    interpreter_factory = stub('interpreter factory', new: interpreter)
 
     cli = Gitsh::CLI.new(
       args: [],
       env: env,
       readline: readline,
-      driver_factory: driver_factory
+      interpreter_factory: interpreter_factory
     )
     cli.run
 
-    expect(driver).to have_received(:execute).twice
-    expect(driver).to have_received(:execute).with('a')
-    expect(driver).to have_received(:execute).with('b')
+    expect(interpreter).to have_received(:execute).twice
+    expect(interpreter).to have_received(:execute).with('a')
+    expect(interpreter).to have_received(:execute).with('b')
   end
 end

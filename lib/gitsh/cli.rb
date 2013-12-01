@@ -2,7 +2,7 @@ require 'readline'
 require 'optparse'
 require 'gitsh/completer'
 require 'gitsh/environment'
-require 'gitsh/git_driver'
+require 'gitsh/interpreter'
 require 'gitsh/prompter'
 require 'gitsh/version'
 
@@ -12,10 +12,10 @@ module Gitsh
     EX_USAGE = 64
 
     def initialize(opts={})
-      driver_factory = opts.fetch(:driver_factory, GitDriver)
+      interpreter_factory = opts.fetch(:interpreter_factory, Interpreter)
 
       @env = opts.fetch(:env, Environment.new)
-      @git_driver = driver_factory.new(@env)
+      @interpreter = interpreter_factory.new(@env)
       @readline = opts.fetch(:readline, Readline)
       @unparsed_args = opts.fetch(:args, ARGV).clone
     end
@@ -31,14 +31,14 @@ module Gitsh
 
     private
 
-    attr_reader :env, :readline, :unparsed_args, :git_driver
+    attr_reader :env, :readline, :unparsed_args, :interpreter
 
     def run_interactive
       readline.completion_append_character = nil
       readline.completion_proc = Completer.new(readline)
 
       while command = read_command
-        git_driver.execute(command)
+        interpreter.execute(command)
       end
 
       env.print "\n"
