@@ -8,6 +8,11 @@ describe Gitsh::InternalCommand do
       expect(command).to be_a Gitsh::InternalCommand::Set
     end
 
+    it 'returns an Exit command when given the command "exit"' do
+      command = described_class.new(stub('env'), 'exit')
+      expect(command).to be_a Gitsh::InternalCommand::Exit
+    end
+
     it 'returns an Unknown command when given anything else' do
       command = described_class.new(stub('env'), 'notacommand', %w(foo bar))
       expect(command).to be_a Gitsh::InternalCommand::Unknown
@@ -23,6 +28,15 @@ describe Gitsh::InternalCommand do
         command.execute
 
         expect(env).to have_received(:[]=).with('foo', 'bar')
+      end
+    end
+  end
+
+  describe Gitsh::InternalCommand::Exit do
+    describe '#execute' do
+      it 'exits the program' do
+        command = Gitsh::InternalCommand::Exit.new(stub('env'), 'exit')
+        expect { command.execute }.to raise_exception(SystemExit)
       end
     end
   end

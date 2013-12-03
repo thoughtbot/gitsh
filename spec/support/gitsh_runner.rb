@@ -27,18 +27,22 @@ class GitshRunner
           output_stream: output_stream,
           error_stream: error_stream
         )
-        Gitsh::CLI.new(
+        cli = Gitsh::CLI.new(
           args: options.fetch(:args, []),
           env: env,
           readline: readline
-        ).run
+        )
+        begin
+          cli.run
+        rescue SystemExit
+        end
       end
 
       wait_for_prompt
 
       yield(self)
 
-      readline.type('exit')
+      readline.type(':exit')
       runner.join
     end
   end

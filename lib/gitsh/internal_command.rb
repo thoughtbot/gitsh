@@ -12,6 +12,11 @@ module Gitsh
         @args = args
       end
 
+      def execute
+        raise NotImplementedError,
+          'InternalCommand::Base subclasses must provide an #execute method'
+      end
+
       private
 
       attr_reader :env, :command, :args
@@ -34,6 +39,12 @@ module Gitsh
       end
     end
 
+    class Exit < Base
+      def execute
+        exit
+      end
+    end
+
     class Unknown < Base
       def execute
         env.puts_error("gitsh: #{command}: command not found")
@@ -41,7 +52,8 @@ module Gitsh
     end
 
     COMMAND_CLASSES = {
-      set: Set
+      set: Set,
+      exit: Exit
     }.freeze
   end
 end

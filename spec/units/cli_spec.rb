@@ -13,7 +13,7 @@ describe Gitsh::CLI do
       returns('a').
       then.raises(Interrupt).
       then.returns('b').
-      then.returns('exit')
+      then.raises(SystemExit)
 
     interpreter = stub('interpreter', execute: nil)
     interpreter_factory = stub('interpreter factory', new: interpreter)
@@ -24,7 +24,10 @@ describe Gitsh::CLI do
       readline: readline,
       interpreter_factory: interpreter_factory
     )
-    cli.run
+    begin
+      cli.run
+    rescue SystemExit
+    end
 
     expect(interpreter).to have_received(:execute).twice
     expect(interpreter).to have_received(:execute).with('a')
