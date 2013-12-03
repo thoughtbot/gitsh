@@ -12,20 +12,53 @@ module Gitsh
       transformer.apply(parse(command), env: env)
     end
 
-    rule(:space) { match('\s').repeat(1) }
+    rule(:space) do
+      match('\s').repeat(1)
+    end
 
-    rule(:identifier) { match('[a-z]') >> match('[a-z0-9-]').repeat(0) }
-    rule(:command_identifier) { (str(':') >> identifier.as(:internal_cmd)) | identifier.as(:git_cmd) }
-    rule(:variable) { match('\$') >> (str('{') >> identifier.as(:var) >> str('}') | identifier.as(:var)) }
+    rule(:identifier) do
+      match('[a-z]') >> match('[a-z0-9-]').repeat(0)
+    end
 
-    rule(:unquoted_string) { (variable | match(%q([^\s'"])).as(:literal)).repeat(1) }
-    rule(:soft_string) { str('"') >> ((str('\\') >> match('[$"\\\]').as(:literal)) | variable | match('[^"]').as(:literal)).repeat(0) >> str('"') }
-    rule(:hard_string) { str("'") >> match("[^']").as(:literal).repeat(0) >> str("'") }
+    rule(:command_identifier) do
+      (str(':') >> identifier.as(:internal_cmd)) | identifier.as(:git_cmd)
+    end
 
-    rule(:argument) { (soft_string | hard_string | unquoted_string).repeat(1).as(:arg) }
-    rule(:argument_list) { (space >> argument).repeat(1).as(:args) }
+    rule(:variable) do
+      str('$') >> (
+        str('{') >> identifier.as(:var) >> str('}') |
+        identifier.as(:var)
+      )
+    end
 
-    rule(:command) { command_identifier >> argument_list.maybe >> space.maybe }
+    rule(:unquoted_string) do
+      (variable | match(%q([^\s'"])).as(:literal)).repeat(1)
+    end
+
+    rule(:soft_string) do
+      str('"') >> (
+        (str('\\') >> match('[$"\\\]').as(:literal)) |
+        variable |
+        (str('"').absent? >> any).as(:literal)
+      ).repeat(0) >> str('"')
+    end
+
+    rule(:hard_string) do
+      str("'") >> (str("'").absent? >> any).as(:literal).repeat(0) >> str("'")
+    end
+
+    rule(:argument) do
+      (soft_string | hard_string | unquoted_string).repeat(1).as(:arg)
+    end
+
+    rule(:argument_list) do
+      (space >> argument).repeat(1).as(:args)
+    end
+
+    rule(:command) do
+      command_identifier >> argument_list.maybe >> space.maybe
+    end
+
     root(:command)
 
     private
