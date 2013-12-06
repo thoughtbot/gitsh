@@ -19,6 +19,12 @@ describe Gitsh::InternalCommand do
     end
   end
 
+  describe '.commands' do
+    it 'returns a list of recognised commands' do
+      expect(described_class.commands).to eq %w( :set :exit )
+    end
+  end
+
   describe Gitsh::InternalCommand::Set do
     describe '#execute' do
       it 'sets a variable on the environment' do

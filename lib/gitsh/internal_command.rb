@@ -5,6 +5,10 @@ module Gitsh
       klass.new(env, command, args)
     end
 
+    def self.commands
+      COMMAND_CLASSES.keys.map { |key| ":#{key}" }
+    end
+
     class Base
       def initialize(env, command, args=[])
         @env = env
