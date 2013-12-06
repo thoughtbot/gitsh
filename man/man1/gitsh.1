@@ -54,6 +54,14 @@ The terminating sigil has a symbol and color pairing:
 .El
 .
 .Sh BUILT-IN COMMANDS
+.Pp
+Built-in commands are used to give instructions to the shell. To distinguish
+them from git commands, and to avoid collisions with git aliases and
+extensions, they are prefixed with a
+.Ic :
+character.
+.Pp
+The following commands are supported:
 .Bl -tag -width Ds
 .It :set variable value
 sets a variable in the gitsh environment to the given value. The value
@@ -80,7 +88,7 @@ init
 commit --allow-empty
 checkout -b new-feature
 rebase master
-exit
+:exit
 .Ed
 .
 .Sh SEE ALSO
