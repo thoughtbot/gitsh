@@ -53,6 +53,18 @@ The terminating sigil has a symbol and color pairing:
 .It @ Ta default Ta all other states
 .El
 .
+.Sh BUILT-IN COMMANDS
+.Bl -tag -width Ds
+.It :set variable value
+sets a variable in the gitsh environment to the given value. The value
+of the variable can be used in subsequent commands using the variable
+name with a dollar prefix.
+.Bd -literal -offset indent
+@ :set george "George <george@thoughtbot.com>"
+@ commit --author $george
+.Ed
+.It :exit
+ends the gitsh session.
 .Sh ENVIRONMENT
 .Bl -tag -width Ds
 .It Ev TERM
