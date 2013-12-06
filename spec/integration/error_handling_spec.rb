@@ -8,4 +8,12 @@ describe 'Handling errors' do
       expect(gitsh).to output_error /gitsh: foobar: command not found/
     end
   end
+
+  it 'does not explode when given a badly formatted command' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type('commit -m "Unclosed quote')
+
+      expect(gitsh).to output_error /gitsh: parse error/
+    end
+  end
 end

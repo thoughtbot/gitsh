@@ -9,6 +9,8 @@ module Gitsh
 
     def execute(input)
       build_command(input).execute
+    rescue Parslet::ParseFailed
+      env.puts_error('gitsh: parse error')
     end
 
     private
