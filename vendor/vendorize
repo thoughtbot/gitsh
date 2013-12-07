@@ -5,7 +5,7 @@ require 'bundler'
 TARGET_PATH = File.expand_path('../gems', __FILE__)
 SETUP_PATH = File.join(TARGET_PATH, 'setup.rb')
 
-FileUtils.mkdir(TARGET_PATH)
+FileUtils.mkdir_p(TARGET_PATH)
 
 File.open(SETUP_PATH, 'w') do |setup_file|
   Bundler.definition.specs_for([:dist]).each do |gem|
