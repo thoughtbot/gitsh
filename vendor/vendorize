@@ -2,7 +2,12 @@
 
 require 'bundler'
 
-TARGET_PATH = './gems'
+unless ARGV.length == 1
+  $stderr.puts "usage: vendorize path-to-gems"
+  exit 64
+end
+
+TARGET_PATH = ARGV.first
 SETUP_PATH = File.join(TARGET_PATH, 'setup.rb')
 
 FileUtils.mkdir_p(TARGET_PATH)
