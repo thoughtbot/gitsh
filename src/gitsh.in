@@ -2,6 +2,7 @@
 
 $LOAD_PATH.unshift('@rubydir@')
 
+require '@gemsetuppath@'
 require 'gitsh/cli'
 
 begin

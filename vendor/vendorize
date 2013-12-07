@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+require 'bundler'
+
+TARGET_PATH = File.expand_path('../gems', __FILE__)
+SETUP_PATH = File.join(TARGET_PATH, 'setup.rb')
+
+FileUtils.mkdir(TARGET_PATH)
+
+File.open(SETUP_PATH, 'w') do |setup_file|
+  Bundler.definition.specs_for([:dist]).each do |gem|
+    if gem.name != 'bundler'
+      system(
+        '/usr/bin/env', 'gem', 'unpack',
+        '--target', TARGET_PATH,
+        '--version', gem.version.to_s,
+        gem.name
+      )
+
+      setup_file << "$LOAD_PATH.unshift(File.expand_path(%s, __FILE__))\n" % [
+        "../#{gem.name}-#{gem.version}/lib".inspect
+      ]
+    end
+  end
+end

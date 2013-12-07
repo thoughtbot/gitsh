@@ -2,7 +2,9 @@ source 'https://rubygems.org'
 
 ruby '2.0.0'
 
-gem 'parslet'
+group :dist do
+  gem 'parslet'
+end
 
 group :test do
   gem 'rspec'

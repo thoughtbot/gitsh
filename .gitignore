@@ -18,6 +18,7 @@ depcomp
 src/gitsh
 lib/gitsh/version.rb
 gitsh-*.tar.gz
+vendor/gems
 
 # Sub-repositories for release
 gh-pages
