@@ -1,14 +1,9 @@
-EXTRA_DIST = gems vendorize
+nobase_dist_pkgdata_DATA = $(vendorfiles)
+EXTRA_DIST = vendorize
 
 .PHONY: gems
 
 dist-hook: gems
-
-install-data-hook:
-	cp -R $(abs_srcdir)/gems $(DEST_DIR)$(pkgdatadir)
-
-uninstall-local:
-	rm -rf $(DEST_DIR)$(pkgdatadir)/gems
 
 gems:
 	$(srcdir)/vendorize
