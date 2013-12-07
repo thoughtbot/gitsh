@@ -2,7 +2,7 @@
 
 require 'bundler'
 
-TARGET_PATH = File.expand_path('../gems', __FILE__)
+TARGET_PATH = './gems'
 SETUP_PATH = File.join(TARGET_PATH, 'setup.rb')
 
 FileUtils.mkdir_p(TARGET_PATH)

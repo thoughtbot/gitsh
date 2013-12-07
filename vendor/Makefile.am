@@ -8,5 +8,5 @@ dist-hook: gems
 gems:
 	$(srcdir)/vendorize
 
-maintainer-clean-local:
+distclean-local:
 	-rm -rf gems
