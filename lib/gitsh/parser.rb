@@ -15,7 +15,7 @@ module Gitsh
     root(:command)
 
     rule(:command) do
-      command_identifier >> argument_list.maybe >> space.maybe
+      space.maybe >> command_identifier >> argument_list.maybe >> space.maybe
     end
 
     rule(:argument_list) do

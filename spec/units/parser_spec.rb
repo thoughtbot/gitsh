@@ -116,5 +116,9 @@ describe Gitsh::Parser do
         ]
       )
     end
+
+    it 'parses a command with leading whitespace' do
+      expect(parser).to parse("  \t commit").as(git_cmd: 'commit')
+    end
   end
 end
