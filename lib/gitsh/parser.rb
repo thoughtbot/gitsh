@@ -12,23 +12,18 @@ module Gitsh
       transformer.apply(parse(command), env: env)
     end
 
-    rule(:space) do
-      match('\s').repeat(1)
+    root(:command)
+
+    rule(:command) do
+      command_identifier >> argument_list.maybe >> space.maybe
     end
 
-    rule(:identifier) do
-      match('[a-z]') >> match('[a-z0-9-]').repeat(0)
+    rule(:argument_list) do
+      (space >> argument).repeat(1).as(:args)
     end
 
-    rule(:command_identifier) do
-      (str(':') >> identifier.as(:internal_cmd)) | identifier.as(:git_cmd)
-    end
-
-    rule(:variable) do
-      str('$') >> (
-        str('{') >> identifier.as(:var) >> str('}') |
-        identifier.as(:var)
-      )
+    rule(:argument) do
+      (soft_string | hard_string | unquoted_string).repeat(1).as(:arg)
     end
 
     rule(:unquoted_string) do
@@ -47,19 +42,24 @@ module Gitsh
       str("'") >> (str("'").absent? >> any).as(:literal).repeat(0) >> str("'")
     end
 
-    rule(:argument) do
-      (soft_string | hard_string | unquoted_string).repeat(1).as(:arg)
+    rule(:command_identifier) do
+      (str(':') >> identifier.as(:internal_cmd)) | identifier.as(:git_cmd)
     end
 
-    rule(:argument_list) do
-      (space >> argument).repeat(1).as(:args)
+    rule(:variable) do
+      str('$') >> (
+        str('{') >> identifier.as(:var) >> str('}') |
+        identifier.as(:var)
+      )
     end
 
-    rule(:command) do
-      command_identifier >> argument_list.maybe >> space.maybe
+    rule(:identifier) do
+      match('[a-z]') >> match('[a-z0-9-]').repeat(0)
     end
 
-    root(:command)
+    rule(:space) do
+      match('\s').repeat(1)
+    end
 
     private
 
