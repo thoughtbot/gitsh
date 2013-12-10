@@ -3,6 +3,23 @@
 The `gitsh` program is an interactive shell for git. From within `gitsh` you can
 issue any git command, even using your local aliases and configuration.
 
+## Why should you use gitsh?
+
+* Avoid typing `git` over and over and over:
+
+        sh$ gitsh
+        gitsh% status
+        gitsh% add .
+        gitsh% commit -m "Ship it!"
+
+* Hit <kbd>return</kbd> with no command to run `git status`, saving even more
+  typing.
+* Tab completion for git commands, aliases, and branches without modifying your
+  shell settings, and without any extra setup for aliases and third party
+  git commands.
+* Information about the state of your git repository in the prompt, without
+  modifying your shell settings.
+
 ## Installing gitsh
 
 * On Mac OS X, via homebrew:
