@@ -1,21 +1,24 @@
 require 'gitsh/git_repository'
+require 'gitsh/internal_command'
 
 module Gitsh
   class Completer
-    def initialize(readline, repo = Gitsh::GitRepository.new)
+    def initialize(readline, repo=GitRepository.new, internal_command=InternalCommand)
       @readline = readline
       @repo = repo
+      @internal_command = internal_command
     end
 
     def call(input)
-      InputCompleter.new(input, @readline, @repo).complete
+      InputCompleter.new(input, @readline, @repo, @internal_command).complete
     end
 
     class InputCompleter
-      def initialize(input, readline, repo)
+      def initialize(input, readline, repo, internal_command)
         @input = input
         @readline = readline
         @repo = repo
+        @internal_command = internal_command
       end
 
       def complete
@@ -24,14 +27,18 @@ module Gitsh
 
       private
 
-      attr_reader :input, :readline, :repo
+      attr_reader :input, :readline, :repo, :internal_command
 
       def available_completions
         if completing_arguments?
           repo.heads.map { |head| "#{head} " } + paths
         else
-          (repo.commands + repo.aliases).map { |cmd| "#{cmd} " }
+          commands.map { |cmd| "#{cmd} " }
         end
+      end
+
+      def commands
+        repo.commands + repo.aliases + internal_command.commands
       end
 
       def completing_arguments?

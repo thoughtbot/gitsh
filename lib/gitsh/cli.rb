@@ -1,9 +1,10 @@
 require 'readline'
 require 'optparse'
-require 'gitsh/version'
-require 'gitsh/git_driver'
-require 'gitsh/prompter'
 require 'gitsh/completer'
+require 'gitsh/environment'
+require 'gitsh/interpreter'
+require 'gitsh/prompter'
+require 'gitsh/version'
 
 module Gitsh
   class CLI
@@ -11,11 +12,12 @@ module Gitsh
     EX_USAGE = 64
 
     def initialize(opts={})
-      @unparsed_args = opts.fetch(:args, ARGV).clone
-      @output = opts.fetch(:output, $stdout)
-      @error = opts.fetch(:error, $stderr)
+      interpreter_factory = opts.fetch(:interpreter_factory, Interpreter)
+
+      @env = opts.fetch(:env, Environment.new)
+      @interpreter = interpreter_factory.new(@env)
       @readline = opts.fetch(:readline, Readline)
-      @driver_factory = opts.fetch(:driver_factory, GitDriver)
+      @unparsed_args = opts.fetch(:args, ARGV).clone
     end
 
     def run
@@ -29,29 +31,29 @@ module Gitsh
 
     private
 
-    attr_reader :output, :error, :readline, :unparsed_args, :driver_factory,
-      :git_command
+    attr_reader :env, :readline, :unparsed_args, :interpreter
 
     def run_interactive
       readline.completion_append_character = nil
       readline.completion_proc = Completer.new(readline)
 
       while command = read_command
-        git_driver.execute(command)
+        interpreter.execute(command)
       end
 
-      output.print "\n"
+      env.print "\n"
     rescue Interrupt
-      output.print "\n"
+      env.print "\n"
       retry
     end
 
     def read_command
       command = readline.readline(prompt, true)
       if command && command.empty?
-        command = 'status'
+        'status'
+      else
+        command
       end
-      command != 'exit' && command
     end
 
     def prompt
@@ -67,12 +69,8 @@ module Gitsh
       exit_status.success? && output.chomp.to_i > 0
     end
 
-    def git_driver
-      @git_driver ||= driver_factory.new(output, error, git_command)
-    end
-
     def exit_with_usage_message
-      error.puts option_parser.banner
+      env.puts_error option_parser.banner
       exit EX_USAGE
     end
 
@@ -87,16 +85,16 @@ module Gitsh
         opts.banner = 'usage: gitsh [--version] [-h | --help] [--git PATH]'
 
         opts.on('--git [COMMAND]', 'Use the specified git command') do |git_command|
-          @git_command = git_command
+          env.git_command = git_command
         end
 
         opts.on_tail('--version', 'Display the version and exit') do
-          output.puts VERSION
+          env.puts VERSION
           exit EX_OK
         end
 
         opts.on_tail('--help', '-h', 'Display this help message and exit') do
-          output.puts opts
+          env.puts opts
           exit EX_OK
         end
       end

@@ -3,6 +3,7 @@
 # This bin file is provided for convenience during development, the
 # distribution binary is built from the template at src/gitsh.in
 
+require 'bundler/setup'
 $LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
 
 require 'gitsh/cli'

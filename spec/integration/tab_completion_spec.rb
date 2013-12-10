@@ -31,6 +31,19 @@ describe 'Completing things with tab' do
     end
   end
 
+  it 'completes internal commands' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type('init')
+
+      gitsh.type(":se\t arthur 'Arthur Dent <arthur@tea.example.com>'")
+      gitsh.type('commit --allow-empty --author $arthur -m "More tea"')
+      gitsh.type('log --format="%ae - %s"')
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output /^arthur@tea\.example\.com - More tea$/
+    end
+  end
+
   it 'completes branch names' do
     GitshRunner.interactive do |gitsh|
       gitsh.type('init')
