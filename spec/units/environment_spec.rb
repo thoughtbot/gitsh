@@ -14,6 +14,20 @@ describe Gitsh::Environment do
     end
   end
 
+  describe '#config_variables' do
+    it 'returns variables that have a dot in the name' do
+      env = described_class.new
+      env['example'] = '1'
+      env['user.name'] = 'Joe Bloggs'
+      env['user.email'] = 'joe@example.com'
+
+      expect(env.config_variables).to eq(
+        :'user.name' => 'Joe Bloggs',
+        :'user.email' => 'joe@example.com'
+      )
+    end
+  end
+
   describe '#output_stream' do
     it 'returns $stdout by default' do
       env = described_class.new

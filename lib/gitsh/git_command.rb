@@ -10,7 +10,8 @@ module Gitsh
 
     def execute
       git = Shellwords.split(env.git_command)
-      cmd = [git, sub_command, args].flatten
+      config_arguments = env.config_variables.map { |k,v| ['-c', "#{k}=#{v}"] }
+      cmd = [git, config_arguments, sub_command, args].flatten
       pid = Process.spawn(*cmd, out: env.output_stream, err: env.error_stream)
       Process.wait(pid)
     end

@@ -20,6 +20,10 @@ module Gitsh
       variables[key.to_sym] = value
     end
 
+    def config_variables
+      Hash[variables.select { |key, value| key.to_s.include?('.') }]
+    end
+
     def print(*args)
       output_stream.print(*args)
     end
