@@ -14,6 +14,13 @@ issue any git command, even using your local aliases and configuration.
 
 * Hit <kbd>return</kbd> with no command to run `git status`, saving even more
   typing.
+* Make temporary modifications to your git configuration with gitsh config
+  variables. These changes only last as long as the gitsh session.
+
+        gitsh% :set user.name 'George Brocklehurst and Mike Burns'
+        gitsh% :set user.email support+george+mike@thoughtbot.com
+        gitsh% commit -m 'We are pairing'
+
 * Tab completion for git commands, aliases, and branches without modifying your
   shell settings, and without any extra setup for aliases and third party
   git commands.
