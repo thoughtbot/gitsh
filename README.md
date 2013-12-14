@@ -40,13 +40,12 @@ issue any git command, even using your local aliases and configuration.
 
 ## Releasing a new version
 
-1. If you haven't used the project's Makefile before you'll need to do a little
-bit of setup first:
+1. Update the version number in `configure.ac`.
+
+2. Update the `configure` script, `Makefile`, and other dependencies:
 
         ./autogen.sh
         ./configure
-
-2. Update the version number in `configure.ac`.
 
 3. Build and publish the release:
 
