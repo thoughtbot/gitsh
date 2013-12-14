@@ -71,6 +71,24 @@ name with a dollar prefix.
 @ :set george "George <george@thoughtbot.com>"
 @ commit --author $george
 .Ed
+.Pp
+Variable names containing a dot can be used to temporarily override
+.Xr git-config 1
+variables for the duration of a gitsh session.
+.Bd -literal -offset indent
+@ :set user.name George
+@ :set user.email george@thoughtbot.com
+@ commit
+.Ed
+.Pp
+The dollar prefix can also be used to read
+.Xr git-config 1
+variables, whether or not they were set using the
+.Ic :set
+command.
+.Bd -literal -offset indent
+@ commit -m "Commited by $user.name"
+.Ed
 .It :exit
 ends the gitsh session.
 .Sh ENVIRONMENT
