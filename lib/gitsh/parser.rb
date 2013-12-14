@@ -54,7 +54,7 @@ module Gitsh
     end
 
     rule(:identifier) do
-      match('[a-z]') >> match('[a-z0-9-]').repeat(0)
+      match('[a-z]') >> match('[a-z0-9.-]').repeat(0)
     end
 
     rule(:space) do

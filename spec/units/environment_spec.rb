@@ -4,13 +4,46 @@ require 'gitsh/environment'
 describe Gitsh::Environment do
   describe '#[]=' do
     it 'sets a gitsh environment variable' do
-      env = described_class.new
+      repository = stub('GitRepository', config: nil)
+      factory = stub(new: repository)
+      env = described_class.new(repository_factory: factory)
 
       expect(env[:foo]).to be_nil
       expect(env['foo']).to be_nil
       env['foo'] = 'bar'
       expect(env[:foo]).to eq 'bar'
       expect(env['foo']).to eq 'bar'
+    end
+  end
+
+  describe '#[]' do
+    it 'reads a gitsh environment variable' do
+      env = described_class.new
+      env[:foo] = 'bar'
+
+      expect(env[:foo]).to eq 'bar'
+      expect(env['foo']).to eq 'bar'
+    end
+
+    it 'reads a git config variables' do
+      repository = stub('GitRepository')
+      repository.stubs(:config).with('user.name').returns('Joe Bloggs')
+      factory = stub(new: repository)
+      env = described_class.new(repository_factory: factory)
+
+      expect(env['user.name']).to eq 'Joe Bloggs'
+      expect(env[:'user.name']).to eq 'Joe Bloggs'
+    end
+
+    it 'prefers gitsh environment variables to git config variables' do
+      repository = stub
+      repository.stubs(:config).with('user.name').returns('Joe Bloggs')
+      factory = stub(new: repository)
+      env = described_class.new(repository_factory: factory)
+      env[:'user.name'] = 'Jane Doe'
+
+      expect(env['user.name']).to eq 'Jane Doe'
+      expect(env[:'user.name']).to eq 'Jane Doe'
     end
   end
 

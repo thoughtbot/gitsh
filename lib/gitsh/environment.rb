@@ -1,3 +1,5 @@
+require 'gitsh/git_repository'
+
 module Gitsh
   class Environment
     DEFAULT_GIT_COMMAND = '/usr/bin/env git'.freeze
@@ -10,10 +12,11 @@ module Gitsh
       @error_stream = options.fetch(:error_stream, $stderr)
       @git_command = DEFAULT_GIT_COMMAND
       @variables = Hash.new
+      @repo = options.fetch(:repository_factory, Gitsh::GitRepository).new
     end
 
     def [](key)
-      variables[key.to_sym]
+      variables[key.to_sym] || repo.config(key.to_s)
     end
 
     def []=(key, value)
@@ -38,6 +41,6 @@ module Gitsh
 
     private
 
-    attr_reader :variables
+    attr_reader :variables, :repo
   end
 end
