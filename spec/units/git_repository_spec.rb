@@ -120,7 +120,10 @@ describe Gitsh::GitRepository do
         repo = Gitsh::GitRepository.new
         run 'git init'
         run 'git config --local alias.zecho "!echo zzz"'
+        run 'git config --local aliasy.notanalias "not an alias"'
         expect(repo.aliases).to include 'zecho'
+        expect(repo.aliases).not_to include 'aliasy.notanalias'
+        expect(repo.aliases).not_to include 'notanalias'
       end
     end
   end
