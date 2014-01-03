@@ -10,7 +10,11 @@ describe Gitsh::Prompter do
         env = env_double(repo_initialized?: false)
         prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq "#{cwd_basename} uninitialized#{red_background}!!#{clear} "
+        expect(prompter.prompt).to eq(
+          "#{cyan}#{cwd_basename}#{clear} " \
+          "#{blue}uninitialized#{clear}" \
+          "#{red_background}!!#{clear} "
+        )
       end
     end
 
@@ -19,7 +23,11 @@ describe Gitsh::Prompter do
         env = env_double(repo_current_head: 'my-feature')
         prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq "#{cwd_basename} my-feature@ "
+        expect(prompter.prompt).to eq(
+          "#{cyan}#{cwd_basename}#{clear} " \
+          "#{blue}my-feature#{clear}" \
+          "@ "
+        )
       end
     end
 
@@ -28,7 +36,11 @@ describe Gitsh::Prompter do
         env = env_double(repo_has_untracked_files?: true)
         prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq "#{cwd_basename} master#{red}!#{clear} "
+        expect(prompter.prompt).to eq(
+          "#{cyan}#{cwd_basename}#{clear} " \
+          "#{blue}master#{clear}" \
+          "#{red}!#{clear} "
+        )
       end
     end
 
@@ -37,7 +49,11 @@ describe Gitsh::Prompter do
         env = env_double(repo_has_modified_files?: true)
         prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq "#{cwd_basename} master#{orange}&#{clear} "
+        expect(prompter.prompt).to eq(
+          "#{cyan}#{cwd_basename}#{clear} " \
+          "#{blue}master#{clear}" \
+          "#{orange}&#{clear} "
+        )
       end
     end
 
@@ -62,21 +78,21 @@ describe Gitsh::Prompter do
         env = env_double(repo_current_head: 'a-branch', format: '%b')
         prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq "a-branch "
+        expect(prompter.prompt).to eq "#{blue}a-branch#{clear} "
       end
 
       it 'replaces %d with the absolute path of the current directory' do
         env = env_double(format: '%d')
         prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq "#{Dir.getwd} "
+        expect(prompter.prompt).to eq "#{cyan}#{Dir.getwd}#{clear} "
       end
 
       it 'replaces %D with the basename of the current directory' do
         env = env_double(format: '%D')
         prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq "#{File.basename(Dir.getwd)} "
+        expect(prompter.prompt).to eq "#{cyan}#{File.basename(Dir.getwd)}#{clear} "
       end
     end
 

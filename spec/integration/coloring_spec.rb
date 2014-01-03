@@ -11,7 +11,11 @@ describe 'Colors as determinined from the environemnt' do
 
   it 'is colored for color xterm' do
     GitshRunner.interactive(env: { 'TERM' => 'xterm-color' }) do |gitsh|
-      expect(gitsh).to prompt_with "#{cwd_basename} uninitialized#{red_background}!!#{clear} "
+      expect(gitsh).to prompt_with(
+        "#{cyan}#{cwd_basename}#{clear} " \
+        "#{blue}uninitialized#{clear}" \
+        "#{red_background}!!#{clear} "
+      )
     end
   end
 end

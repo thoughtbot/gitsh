@@ -11,9 +11,9 @@ module Gitsh
 
     def prompt
       padded_prompt_format.gsub(/%[bdD#]/, {
-        '%b' => branch_name,
-        '%d' => Dir.getwd,
-        '%D' => File.basename(Dir.getwd),
+        '%b' => add_color(branch_name, Colors::BLUE_FG),
+        '%d' => add_color(Dir.getwd, Colors::CYAN_FG),
+        '%D' => add_color(File.basename(Dir.getwd), Colors::CYAN_FG),
         '%#' => terminator
       })
     end
