@@ -7,6 +7,8 @@ require File.expand_path('../file_system', __FILE__)
 class GitshRunner
   include FileSystemHelper
 
+  UP_ARROW = "\033[A"
+
   def self.interactive(options={}, &block)
     new.run_interactive(options, &block)
   end
@@ -53,6 +55,7 @@ class GitshRunner
   end
 
   def type(string)
+    @error_position_before_command = error_stream.pos
     @position_before_command = output_stream.pos
     readline.type(string)
     wait_for_prompt
@@ -68,7 +71,7 @@ class GitshRunner
   end
 
   def error
-    error_stream.rewind
+    error_stream.seek(@error_position_before_command)
     error_stream.read
   end
 

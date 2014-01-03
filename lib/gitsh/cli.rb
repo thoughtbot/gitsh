@@ -2,6 +2,7 @@ require 'readline'
 require 'optparse'
 require 'gitsh/completer'
 require 'gitsh/environment'
+require 'gitsh/history'
 require 'gitsh/interpreter'
 require 'gitsh/prompter'
 require 'gitsh/version'
@@ -18,6 +19,7 @@ module Gitsh
       @interpreter = interpreter_factory.new(@env)
       @readline = opts.fetch(:readline, Readline)
       @unparsed_args = opts.fetch(:args, ARGV).clone
+      @history = opts.fetch(:history, History.new(@env, @readline))
     end
 
     def run
@@ -31,9 +33,10 @@ module Gitsh
 
     private
 
-    attr_reader :env, :readline, :unparsed_args, :interpreter
+    attr_reader :env, :readline, :unparsed_args, :interpreter, :history
 
     def run_interactive
+      history.load
       readline.completion_append_character = nil
       readline.completion_proc = Completer.new(readline)
 
@@ -45,6 +48,8 @@ module Gitsh
     rescue Interrupt
       env.print "\n"
       retry
+    ensure
+      history.save
     end
 
     def read_command
