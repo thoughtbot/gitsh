@@ -123,4 +123,46 @@ describe Gitsh::Environment do
       expect(error.string).to eq "Oh no!\n"
     end
   end
+
+  context 'delegated methods' do
+    let(:repo) { stub }
+    let(:repo_factory) { stub(new: repo) }
+    let(:env) { described_class.new(repository_factory: repo_factory) }
+
+    describe '#repo_current_head' do
+      it 'is delegated to the GitRepository' do
+        current_head = stub
+        repo.stubs(:current_head).returns(current_head)
+
+        expect(env.repo_current_head).to eq current_head
+      end
+    end
+
+    describe '#repo_initialized?' do
+      it 'is delegated to the GitRepository' do
+        initialized = stub
+        repo.stubs(:initialized?).returns(initialized)
+
+        expect(env.repo_initialized?).to eq initialized
+      end
+    end
+
+    describe '#repo_has_modified_files?' do
+      it 'is delegated to the GitRepository' do
+        has_modified_files = stub
+        repo.stubs(:has_modified_files?).returns(has_modified_files)
+
+        expect(env.repo_has_modified_files?).to eq has_modified_files
+      end
+    end
+
+    describe '#repo_has_untracked_files?' do
+      it 'is delegated to the GitRepository' do
+        has_untracked_files = stub
+        repo.stubs(:has_untracked_files?).returns(has_untracked_files)
+
+        expect(env.repo_has_untracked_files?).to eq has_untracked_files
+      end
+    end
+  end
 end

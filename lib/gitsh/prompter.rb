@@ -1,12 +1,11 @@
-require 'gitsh/git_repository'
 require 'gitsh/colors'
 
 module Gitsh
   class Prompter
     DEFAULT_FORMAT = '%b%#'.freeze
 
-    def initialize(options={}, repo=GitRepository.new)
-      @repo = repo
+    def initialize(options={})
+      @env = options.fetch(:env)
       @options = options
     end
 
@@ -21,30 +20,30 @@ module Gitsh
 
     private
 
-    attr_reader :repo
+    attr_reader :env
 
     def padded_prompt_format
       "#{prompt_format.chomp} "
     end
 
     def prompt_format
-      repo.config('gitsh.prompt') || DEFAULT_FORMAT
+      env['gitsh.prompt'] || DEFAULT_FORMAT
     end
 
     def branch_name
-      if repo.initialized?
-        repo.current_head
+      if env.repo_initialized?
+        env.repo_current_head
       else
         'uninitialized'
       end
     end
 
     def terminator
-      if !repo.initialized?
+      if !env.repo_initialized?
         add_color('!!', Colors::RED_BG)
-      elsif repo.has_untracked_files?
+      elsif env.repo_has_untracked_files?
         add_color('!', Colors::RED_FG)
-      elsif repo.has_modified_files?
+      elsif env.repo_has_modified_files?
         add_color('&', Colors::ORANGE_FG)
       else
         '@'
