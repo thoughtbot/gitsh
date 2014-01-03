@@ -10,7 +10,7 @@ describe Gitsh::Prompter do
         env = env_double(repo_initialized?: false)
         prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq "uninitialized#{red_background}!!#{clear} "
+        expect(prompter.prompt).to eq "#{cwd_basename} uninitialized#{red_background}!!#{clear} "
       end
     end
 
@@ -19,7 +19,7 @@ describe Gitsh::Prompter do
         env = env_double(repo_current_head: 'my-feature')
         prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq 'my-feature@ '
+        expect(prompter.prompt).to eq "#{cwd_basename} my-feature@ "
       end
     end
 
@@ -28,7 +28,7 @@ describe Gitsh::Prompter do
         env = env_double(repo_has_untracked_files?: true)
         prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq "master#{red}!#{clear} "
+        expect(prompter.prompt).to eq "#{cwd_basename} master#{red}!#{clear} "
       end
     end
 
@@ -37,7 +37,7 @@ describe Gitsh::Prompter do
         env = env_double(repo_has_modified_files?: true)
         prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq "master#{orange}&#{clear} "
+        expect(prompter.prompt).to eq "#{cwd_basename} master#{orange}&#{clear} "
       end
     end
 
@@ -46,7 +46,7 @@ describe Gitsh::Prompter do
         env = env_double(repo_has_modified_files?: true)
         prompter = Gitsh::Prompter.new(color: false, env: env)
 
-        expect(prompter.prompt).to eq "master& "
+        expect(prompter.prompt).to eq "#{cwd_basename} master& "
       end
     end
 

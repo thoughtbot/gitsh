@@ -7,7 +7,7 @@ describe 'Completing things with tab' do
 
       gitsh.type("checko\t -b my-feature")
 
-      expect(gitsh).to prompt_with 'my-feature@ '
+      expect(gitsh).to prompt_with "#{cwd_basename} my-feature@ "
 
       gitsh.type("com\t --allow-empty -m 'Some commit'")
 
@@ -52,7 +52,7 @@ describe 'Completing things with tab' do
 
       gitsh.type("checkout my-\t")
 
-      expect(gitsh).to prompt_with 'my-feature@ '
+      expect(gitsh).to prompt_with "#{cwd_basename} my-feature@ "
     end
   end
 
