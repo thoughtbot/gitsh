@@ -34,25 +34,49 @@ use the git command specified in CMD, instead of the default (
 display a help message and exit.
 .It Fl -version
 display the version number and exit.
+.El
 .
 .Sh PROMPT
-The prompt changes based on the status of the repository. It consist of
-two parts: the current HEAD and the terminator sigil.
+The prompt changes based on the status of the repository. By default it consist
+of two parts: the current HEAD and the terminator sigil.
 .Pp
 The current HEAD is a branch name, tag name, abbreviated SHA, or the text
 .Li uninitialized
 when the present working directory is not a git repository.
 .Pp
-The terminating sigil has a symbol and color pairing:
-.
-.Bl -column "Sigil" "Orange background" "Description" -offset indent
-.It Sigil Ta Color Ta Description
+The terminating sigil has a symbol and color pairing indicating the state of the
+repository:
+.Bl -column ".Sy Sigil" ".Sy Orange background" ".Sy Description" -offset indent
+.It Sy Sigil Ta Sy Color Ta Sy Description
 .It !! Ta red background Ta current directory is not a git repo
 .It ! Ta red foreground Ta repo has untracked files
 .It & Ta orange foreground Ta repo has modified files
 .It @ Ta default Ta all other states
 .El
+.Pp
+.Ss Prompt customisation
+The prompt can be customised by setting the
+.Ic gitsh.prompt
+variable using the
+.Xr git-config 1
+command. The following placeholders can be used in the custom prompt:
 .
+.Bl -column ".Sy Placeholder" ".Sy Meaning" -offset indent
+.It Sy Placeholder  Ta Sy Meaning
+.It %#              Ta terminating sigil (see previous table)
+.It %b              Ta current HEAD (branch name, tag name, etc.)
+.It %d              Ta absolute path to current working directory
+.It \&%D            Ta basename of the current working directory
+.El
+.Pp
+For example, setting
+.Ic gitsh.prompt
+to
+.Ic (%b)%d%#
+would produce prompts like
+.Ic (master)/home/me/repo@
+and
+.Ic (uninitialized)/home/me!!
 .Sh BUILT-IN COMMANDS
 .Pp
 Built-in commands are used to give instructions to the shell. To distinguish
@@ -63,7 +87,7 @@ character.
 .Pp
 The following commands are supported:
 .Bl -tag -width Ds
-.It :set variable value
+.It Ic :set variable value
 sets a variable in the gitsh environment to the given value. The value
 of the variable can be used in subsequent commands using the variable
 name with a dollar prefix.
@@ -89,7 +113,7 @@ command.
 .Bd -literal -offset indent
 @ commit -m "Commited by $user.name"
 .Ed
-.It :exit
+.It Ic :exit
 ends the gitsh session.
 .Sh ENVIRONMENT
 .Bl -tag -width Ds
