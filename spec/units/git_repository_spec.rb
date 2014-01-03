@@ -137,6 +137,13 @@ describe Gitsh::GitRepository do
         expect(repo.config('alias.zecho')).to eq '!echo zzz'
       end
     end
+
+    it 'returns nil if the configuration variable is not set' do
+      in_a_temporary_directory do
+        repo = Gitsh::GitRepository.new
+        expect(repo.config('not-a.real-variable')).to be_nil
+      end
+    end
   end
 
   def repository_root

@@ -50,14 +50,47 @@ describe Gitsh::Prompter do
       end
     end
 
+    context 'with a custom prompt format' do
+      it 'replaced %# with the prompt terminator' do
+        repo = git_repo_double(has_modified_files?: true, format: '%#')
+        prompter = Gitsh::Prompter.new({}, repo)
+
+        expect(prompter.prompt).to eq "#{orange}&#{clear} "
+      end
+
+      it 'replaces %b with the current HEAD name' do
+        repo = git_repo_double(current_head: 'a-branch', format: '%b')
+        prompter = Gitsh::Prompter.new({}, repo)
+
+        expect(prompter.prompt).to eq "a-branch "
+      end
+
+      it 'replaces %d with the absolute path of the current directory' do
+        repo = git_repo_double(format: '%d')
+        prompter = Gitsh::Prompter.new({}, repo)
+
+        expect(prompter.prompt).to eq "#{Dir.getwd} "
+      end
+
+      it 'replaces %D with the basename of the current directory' do
+        repo = git_repo_double(format: '%D')
+        prompter = Gitsh::Prompter.new({}, repo)
+
+        expect(prompter.prompt).to eq "#{File.basename(Dir.getwd)} "
+      end
+    end
+
     def git_repo_double(attrs={})
+      format = attrs.delete(:format)
       default_attrs = {
         initialized?: true,
         has_modified_files?: false,
         has_untracked_files?: false,
         current_head: 'master'
       }
-      stub('GitRepository', default_attrs.merge(attrs))
+      stub('GitRepository', default_attrs.merge(attrs)) do |repo|
+        repo.stubs(:config).with('gitsh.prompt').returns(format)
+      end
     end
   end
 end

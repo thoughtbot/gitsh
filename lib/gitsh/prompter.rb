@@ -3,18 +3,33 @@ require 'gitsh/colors'
 
 module Gitsh
   class Prompter
+    DEFAULT_FORMAT = '%b%#'.freeze
+
     def initialize(options={}, repo=GitRepository.new)
       @repo = repo
       @options = options
     end
 
     def prompt
-      "#{branch_name}#{terminator} "
+      padded_prompt_format.gsub(/%[bdD#]/, {
+        '%b' => branch_name,
+        '%d' => Dir.getwd,
+        '%D' => File.basename(Dir.getwd),
+        '%#' => terminator
+      })
     end
 
     private
 
     attr_reader :repo
+
+    def padded_prompt_format
+      "#{prompt_format.chomp} "
+    end
+
+    def prompt_format
+      repo.config('gitsh.prompt') || DEFAULT_FORMAT
+    end
 
     def branch_name
       if repo.initialized?
