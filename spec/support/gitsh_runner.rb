@@ -1,5 +1,6 @@
 require 'thread'
 require 'tempfile'
+require 'tmpdir'
 require 'gitsh/cli'
 require 'gitsh/environment'
 require File.expand_path('../file_system', __FILE__)
@@ -30,6 +31,7 @@ class GitshRunner
           output_stream: output_stream,
           error_stream: error_stream
         )
+        env['gitsh.historyFile'] = File.join(Dir.tmpdir, 'gitsh_test_history')
         cli = Gitsh::CLI.new(
           args: options.fetch(:args, []),
           env: env,
