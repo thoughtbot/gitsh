@@ -36,7 +36,7 @@ module Gitsh
     end
 
     def history_size
-      DEFAULT_HISTORY_SIZE
+      env['gitsh.historySize'] || DEFAULT_HISTORY_SIZE
     end
   end
 end

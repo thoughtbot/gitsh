@@ -46,6 +46,17 @@ describe Gitsh::History do
         "init\n", "add .\n", "commit -m \"Initial\"\n"
       ]
     end
+
+    it 'is limited by the gitsh.historySize setting' do
+      readline::HISTORY.concat(['init', 'add .', 'commit -m "Initial"'])
+      env['gitsh.historySize'] = 2
+
+      described_class.new(env, readline).save
+
+      expect(@history_file.read.lines).to eq [
+        "add .\n", "commit -m \"Initial\"\n"
+      ]
+    end
   end
 
   def write_history_file(commands)
