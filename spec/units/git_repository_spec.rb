@@ -144,6 +144,13 @@ describe Gitsh::GitRepository do
         expect(repo.config('not-a.real-variable')).to be_nil
       end
     end
+
+    it 'returns the default value if the configuration variable is not set' do
+      in_a_temporary_directory do
+        repo = Gitsh::GitRepository.new
+        expect(repo.config('not-a.real-variable', 'a-default')).to eq 'a-default'
+      end
+    end
   end
 
   def repository_root

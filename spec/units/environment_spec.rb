@@ -47,6 +47,24 @@ describe Gitsh::Environment do
     end
   end
 
+  describe '#fetch' do
+    it 'reads a gitsh environment variable' do
+      env = described_class.new
+      env[:foo] = 'bar'
+
+      expect(env.fetch(:foo, 'default')).to eq 'bar'
+      expect(env.fetch('foo', 'default')).to eq 'bar'
+    end
+
+    it 'reads a git config variable when there is no environment variable' do
+      repository = stub('GitRepository')
+      repository.stubs(:config).with('user.name', 'default').returns('John Smith')
+      env = described_class.new(repository_factory: stub(new: repository))
+
+      expect(env.fetch('user.name', 'default')).to eq 'John Smith'
+    end
+  end
+
   describe '#config_variables' do
     it 'returns variables that have a dot in the name' do
       env = described_class.new

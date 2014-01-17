@@ -23,6 +23,10 @@ module Gitsh
       variables[key.to_sym] = value
     end
 
+    def fetch(key, default)
+      variables.fetch(key.to_sym, repo.config(key.to_s, default))
+    end
+
     def config_variables
       Hash[variables.select { |key, value| key.to_s.include?('.') }]
     end

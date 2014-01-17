@@ -27,7 +27,7 @@ module Gitsh
     end
 
     def prompt_format
-      env['gitsh.prompt'] || DEFAULT_FORMAT
+      env.fetch('gitsh.prompt', DEFAULT_FORMAT)
     end
 
     def branch_name

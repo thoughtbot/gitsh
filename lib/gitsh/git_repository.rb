@@ -41,11 +41,13 @@ module Gitsh
         map { |line| line.split(' ').first.sub(/^alias\./, '') }
     end
 
-    def config(name)
+    def config(name, default=nil)
       command = git_command("config --get #{Shellwords.escape(name)}")
       out, err, status = Open3.capture3(command)
       if status.success?
         out.chomp
+      else
+        default
       end
     end
 
