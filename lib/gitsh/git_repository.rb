@@ -1,4 +1,5 @@
 require 'open3'
+require 'shellwords'
 
 module Gitsh
   class GitRepository
@@ -38,6 +39,10 @@ module Gitsh
       git_output(%q(config --get-regexp '^alias\.')).
         lines.
         map { |line| line.split(' ').first.sub(/^alias\./, '') }
+    end
+
+    def config(name)
+      git_output("config --get #{Shellwords.escape(name)}")
     end
 
     private

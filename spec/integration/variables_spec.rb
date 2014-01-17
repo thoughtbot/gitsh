@@ -23,6 +23,34 @@ describe 'Gitsh variables' do
     end
   end
 
+  it 'temporarily adds variables with a dot to git config' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type(':set test.example "This is a test"')
+
+      expect(gitsh).to output_no_errors
+
+      gitsh.type('config --get test.example')
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output /This is a test/
+    end
+  end
+
+  it 'exposes config variables when read with a dot prefix' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type('init')
+      gitsh.type('config test.example "A configuration variable"')
+      gitsh.type('commit --allow-empty -m "test.example: $test.example"')
+
+      expect(gitsh).to output_no_errors
+
+      gitsh.type('log --format="%s" -n 1')
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output /test\.example: A configuration variable/
+    end
+  end
+
   it 'does not explode when :set is used incorrectly' do
     GitshRunner.interactive do |gitsh|
       gitsh.type(':set')

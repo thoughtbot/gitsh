@@ -128,6 +128,17 @@ describe Gitsh::GitRepository do
     end
   end
 
+  context '#config' do
+    it 'returns a git configuration value' do
+      in_a_temporary_directory do
+        repo = Gitsh::GitRepository.new
+        run 'git init'
+        run 'git config --local alias.zecho "!echo zzz"'
+        expect(repo.config('alias.zecho')).to eq '!echo zzz'
+      end
+    end
+  end
+
   def repository_root
     File.expand_path('../../../', __FILE__)
   end
