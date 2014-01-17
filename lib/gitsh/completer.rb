@@ -48,11 +48,34 @@ module Gitsh
       end
 
       def paths
-        Dir["#{input}*"].map do |path|
-          if File.directory?(path)
-            "#{path}/"
+        PathCompleter.new(input).paths
+      end
+
+      class PathCompleter
+        def initialize(original_path)
+          @original_path = original_path
+        end
+
+        def paths
+          Dir["#{expanded_path}*"].map do |path|
+            path.sub!(expanded_path, original_path)
+            if File.directory?(path)
+              "#{path}/"
+            else
+              "#{path} "
+            end
+          end
+        end
+
+        private
+
+        attr_reader :original_path
+
+        def expanded_path
+          if original_path.end_with?('/')
+            File.expand_path(original_path) + '/'
           else
-            "#{path} "
+            File.expand_path(original_path)
           end
         end
       end
