@@ -23,6 +23,10 @@ module Gitsh
       variables[key.to_sym] = value
     end
 
+    def fetch(key, default)
+      variables.fetch(key.to_sym, repo.config(key.to_s, default))
+    end
+
     def config_variables
       Hash[variables.select { |key, value| key.to_s.include?('.') }]
     end
@@ -37,6 +41,22 @@ module Gitsh
 
     def puts_error(*args)
       error_stream.puts(*args)
+    end
+
+    def repo_current_head
+      repo.current_head
+    end
+
+    def repo_initialized?
+      repo.initialized?
+    end
+
+    def repo_has_modified_files?
+      repo.has_modified_files?
+    end
+
+    def repo_has_untracked_files?
+      repo.has_untracked_files?
     end
 
     private

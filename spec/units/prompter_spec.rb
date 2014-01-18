@@ -7,57 +7,98 @@ describe Gitsh::Prompter do
   describe '#prompt' do
     context 'an un-initialized git repository' do
       it 'displays an uninitialized prompt' do
-        repo = git_repo_double(initialized?: false)
-        prompter = Gitsh::Prompter.new({}, repo)
+        env = env_double(repo_initialized?: false)
+        prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq "uninitialized#{red_background}!!#{clear} "
+        expect(prompter.prompt).to eq(
+          "#{cwd_basename} uninitialized" \
+          "#{red_background}!!#{clear} "
+        )
       end
     end
 
     context 'a clean repository' do
       it 'displays the branch name and a clean symbol' do
-        repo = git_repo_double(current_head: 'my-feature')
-        prompter = Gitsh::Prompter.new({}, repo)
+        env = env_double(repo_current_head: 'my-feature')
+        prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq 'my-feature@ '
+        expect(prompter.prompt).to eq("#{cwd_basename} my-feature@ ")
       end
     end
 
     context 'a repository with untracked files' do
       it 'displays the branch name and an untracked symbol' do
-        repo = git_repo_double(has_untracked_files?: true)
-        prompter = Gitsh::Prompter.new({}, repo)
+        env = env_double(repo_has_untracked_files?: true)
+        prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq "master#{red}!#{clear} "
+        expect(prompter.prompt).to eq("#{cwd_basename} master#{red}!#{clear} ")
       end
     end
 
     context 'a repository with uncommitted changes' do
       it 'displays the branch name an a modified symbol' do
-        repo = git_repo_double(has_modified_files?: true)
-        prompter = Gitsh::Prompter.new({}, repo)
+        env = env_double(repo_has_modified_files?: true)
+        prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq "master#{orange}&#{clear} "
+        expect(prompter.prompt).to eq(
+          "#{cwd_basename} master#{orange}&#{clear} "
+        )
       end
     end
 
     context 'with color disabled' do
       it 'displays the prompt without colors' do
-        repo = git_repo_double(has_modified_files?: true)
-        prompter = Gitsh::Prompter.new({color: false}, repo)
+        env = env_double(repo_has_modified_files?: true)
+        prompter = Gitsh::Prompter.new(color: false, env: env)
 
-        expect(prompter.prompt).to eq "master& "
+        expect(prompter.prompt).to eq "#{cwd_basename} master& "
       end
     end
 
-    def git_repo_double(attrs={})
+    context 'with a custom prompt format' do
+      it 'replaced %# with the prompt terminator' do
+        env = env_double(repo_has_modified_files?: true, format: '%#')
+        prompter = Gitsh::Prompter.new(env: env)
+
+        expect(prompter.prompt).to eq "#{orange}&#{clear} "
+      end
+
+      it 'replaces %b with the current HEAD name' do
+        env = env_double(repo_current_head: 'a-branch', format: '%b')
+        prompter = Gitsh::Prompter.new(env: env)
+
+        expect(prompter.prompt).to eq "a-branch "
+      end
+
+      it 'replaces %d with the absolute path of the current directory' do
+        env = env_double(format: '%d')
+        prompter = Gitsh::Prompter.new(env: env)
+
+        expect(prompter.prompt).to eq "#{Dir.getwd} "
+      end
+
+      it 'replaces %D with the basename of the current directory' do
+        env = env_double(format: '%D')
+        prompter = Gitsh::Prompter.new(env: env)
+
+        expect(prompter.prompt).to eq "#{File.basename(Dir.getwd)} "
+      end
+    end
+
+    def env_double(attrs={})
+      format = attrs.delete(:format)
       default_attrs = {
-        initialized?: true,
-        has_modified_files?: false,
-        has_untracked_files?: false,
-        current_head: 'master'
+        repo_initialized?: true,
+        repo_has_modified_files?: false,
+        repo_has_untracked_files?: false,
+        repo_current_head: 'master'
       }
-      stub('GitRepository', default_attrs.merge(attrs))
+      stub('Environment', default_attrs.merge(attrs)) do |env|
+        env.stubs(:[]).with('gitsh.prompt').returns(format)
+        env.stubs(:fetch).with('gitsh.prompt', Gitsh::Prompter::DEFAULT_FORMAT).returns(
+          format || Gitsh::Prompter::DEFAULT_FORMAT
+        )
+      end
     end
   end
 end

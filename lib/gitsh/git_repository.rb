@@ -41,8 +41,14 @@ module Gitsh
         map { |line| line.split(' ').first.sub(/^alias\./, '') }
     end
 
-    def config(name)
-      git_output("config --get #{Shellwords.escape(name)}")
+    def config(name, default=nil)
+      command = git_command("config --get #{Shellwords.escape(name)}")
+      out, err, status = Open3.capture3(command)
+      if status.success?
+        out.chomp
+      else
+        default
+      end
     end
 
     private
@@ -74,7 +80,11 @@ module Gitsh
     end
 
     def git_output(command)
-      Open3.capture3("/usr/bin/env git #{command}").first.chomp
+      Open3.capture3(git_command(command)).first.chomp
+    end
+
+    def git_command(sub_command)
+      "/usr/bin/env git #{sub_command}"
     end
 
     class StatusParser

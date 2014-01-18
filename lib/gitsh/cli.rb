@@ -61,7 +61,7 @@ module Gitsh
     end
 
     def prompter
-      @prompter ||= Prompter.new(color: color_support?)
+      @prompter ||= Prompter.new(env: env, color: color_support?)
     end
 
     def color_support?

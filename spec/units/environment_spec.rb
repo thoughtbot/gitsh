@@ -47,6 +47,24 @@ describe Gitsh::Environment do
     end
   end
 
+  describe '#fetch' do
+    it 'reads a gitsh environment variable' do
+      env = described_class.new
+      env[:foo] = 'bar'
+
+      expect(env.fetch(:foo, 'default')).to eq 'bar'
+      expect(env.fetch('foo', 'default')).to eq 'bar'
+    end
+
+    it 'reads a git config variable when there is no environment variable' do
+      repository = stub('GitRepository')
+      repository.stubs(:config).with('user.name', 'default').returns('John Smith')
+      env = described_class.new(repository_factory: stub(new: repository))
+
+      expect(env.fetch('user.name', 'default')).to eq 'John Smith'
+    end
+  end
+
   describe '#config_variables' do
     it 'returns variables that have a dot in the name' do
       env = described_class.new
@@ -121,6 +139,38 @@ describe Gitsh::Environment do
       env.puts_error 'Oh no!'
 
       expect(error.string).to eq "Oh no!\n"
+    end
+  end
+
+  context 'delegated methods' do
+    let(:repo) { stub }
+    let(:repo_factory) { stub(new: repo) }
+    let(:env) { described_class.new(repository_factory: repo_factory) }
+
+    describe '#repo_current_head' do
+      it 'is delegated to the GitRepository' do
+        expect(env).to delegate(:repo_current_head).to(repo, :current_head)
+      end
+    end
+
+    describe '#repo_initialized?' do
+      it 'is delegated to the GitRepository' do
+        expect(env).to delegate(:repo_initialized?).to(repo, :initialized?)
+      end
+    end
+
+    describe '#repo_has_modified_files?' do
+      it 'is delegated to the GitRepository' do
+        expect(env).to delegate(:repo_has_modified_files?).
+          to(repo, :has_modified_files?)
+      end
+    end
+
+    describe '#repo_has_untracked_files?' do
+      it 'is delegated to the GitRepository' do
+        expect(env).to delegate(:repo_has_untracked_files?).
+          to(repo, :has_untracked_files?)
+      end
     end
   end
 end
