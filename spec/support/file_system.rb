@@ -5,7 +5,18 @@ module FileSystemHelper
 
   def in_a_temporary_directory(&block)
     Dir.mktmpdir do |path|
-      Dir.chdir(path, &block)
+      chdir_and_allow_nesting(path, &block)
+    end
+  end
+
+  def chdir_and_allow_nesting(path)
+    original_path = Dir.getwd
+    Dir.chdir(path)
+
+    begin
+      yield
+    ensure
+      Dir.chdir(original_path)
     end
   end
 end

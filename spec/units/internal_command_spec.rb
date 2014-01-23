@@ -13,6 +13,11 @@ describe Gitsh::InternalCommand do
       expect(command).to be_a Gitsh::InternalCommand::Exit
     end
 
+    it 'returns a Chdir command when given the command "cd"' do
+      command = described_class.new(stub('env'), 'cd', '/some/path')
+      expect(command).to be_a Gitsh::InternalCommand::Chdir
+    end
+
     it 'returns an Unknown command when given anything else' do
       command = described_class.new(stub('env'), 'notacommand', %w(foo bar))
       expect(command).to be_a Gitsh::InternalCommand::Unknown
@@ -21,7 +26,7 @@ describe Gitsh::InternalCommand do
 
   describe '.commands' do
     it 'returns a list of recognised commands' do
-      expect(described_class.commands).to eq %w( :set :exit )
+      expect(described_class.commands).to eq %w( :set :cd :exit )
     end
   end
 

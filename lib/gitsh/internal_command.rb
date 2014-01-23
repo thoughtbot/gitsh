@@ -43,6 +43,34 @@ module Gitsh
       end
     end
 
+    class Chdir < Base
+      def execute
+        if valid_arguments?
+          change_directory
+        else
+          env.puts_error 'usage: :cd path'
+        end
+      end
+
+      private
+
+      def valid_arguments?
+        args.length == 1
+      end
+
+      def change_directory
+        Dir.chdir(path)
+      rescue Errno::ENOENT
+        env.puts_error 'gitsh: cd: No such directory'
+      rescue Errno::ENOTDIR
+        env.puts_error 'gitsh: cd: Not a directory'
+      end
+
+      def path
+        File.expand_path(args.first)
+      end
+    end
+
     class Exit < Base
       def execute
         exit
@@ -57,6 +85,7 @@ module Gitsh
 
     COMMAND_CLASSES = {
       set: Set,
+      cd: Chdir,
       exit: Exit
     }.freeze
   end
