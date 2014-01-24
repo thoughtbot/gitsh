@@ -2,7 +2,7 @@ require 'gitsh/colors'
 
 module Gitsh
   class Prompter
-    DEFAULT_FORMAT = '%D %b%#'.freeze
+    DEFAULT_FORMAT = '%D %b%c%#%w'.freeze
 
     def initialize(options={})
       @env = options.fetch(:env)
@@ -10,17 +10,27 @@ module Gitsh
     end
 
     def prompt
-      padded_prompt_format.gsub(/%[bdD#]/, {
-        '%b' => branch_name,
-        '%d' => Dir.getwd,
-        '%D' => File.basename(Dir.getwd),
-        '%#' => terminator
-      })
+      if use_color?
+        prompt_with_color
+      else
+        Colors.strip_color_codes(prompt_with_color)
+      end
     end
 
     private
 
     attr_reader :env
+
+    def prompt_with_color
+      padded_prompt_format.gsub(/%[bcdDw#]/, {
+        '%b' => branch_name,
+        '%c' => status_color,
+        '%d' => Dir.getwd,
+        '%D' => File.basename(Dir.getwd),
+        '%w' => Colors::CLEAR,
+        '%#' => terminator
+      })
+    end
 
     def padded_prompt_format
       "#{prompt_format.chomp} "
@@ -40,21 +50,25 @@ module Gitsh
 
     def terminator
       if !env.repo_initialized?
-        add_color('!!', Colors::RED_BG)
+        '!!'
       elsif env.repo_has_untracked_files?
-        add_color('!', Colors::RED_FG)
+        '!'
       elsif env.repo_has_modified_files?
-        add_color('&', Colors::ORANGE_FG)
+        '&'
       else
         '@'
       end
     end
 
-    def add_color(str, color)
-      if use_color?
-        "#{color}#{str}#{Colors::CLEAR}"
+    def status_color
+      if !env.repo_initialized?
+        Colors::RED_BG
+      elsif env.repo_has_untracked_files?
+        Colors::RED_FG
+      elsif env.repo_has_modified_files?
+        Colors::ORANGE_FG
       else
-        str
+        Colors::BLUE_FG
       end
     end
 
