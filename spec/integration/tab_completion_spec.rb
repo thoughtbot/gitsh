@@ -74,4 +74,17 @@ describe 'Completing things with tab' do
       expect(gitsh).to output /foo\.txt/
     end
   end
+
+  it 'completes after punctuation' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type('init')
+      gitsh.type('commit --allow-empty -m First')
+      gitsh.type('commit --allow-empty -m Second')
+      gitsh.type('commit --allow-empty -m Third')
+      gitsh.type("log --format=%s master~2..mas\t")
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output /\AThird\nSecond\n\Z/
+    end
+  end
 end

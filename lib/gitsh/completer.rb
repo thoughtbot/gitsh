@@ -21,23 +21,19 @@ module Gitsh
       end
 
       def complete
-        available_completions.select { |option| option.start_with?(input) }
+        available_completers.map(&:completions).flatten
       end
 
       private
 
       attr_reader :input, :readline, :env, :internal_command
 
-      def available_completions
+      def available_completers
         if completing_arguments?
-          env.repo_heads.map { |head| "#{head} " } + paths
+          [heads, paths]
         else
-          commands.map { |cmd| "#{cmd} " }
+          [commands]
         end
-      end
-
-      def commands
-        env.git_commands + env.git_aliases + internal_command.commands
       end
 
       def completing_arguments?
@@ -46,36 +42,100 @@ module Gitsh
         tokens.any? && full_input.end_with?(' ') || tokens.size > 1
       end
 
-      def paths
-        PathCompleter.new(input).paths
+      def commands
+        CommandCompleter.new(input, env, internal_command)
       end
 
-      class PathCompleter
-        def initialize(original_path)
-          @original_path = original_path
+      def heads
+        HeadCompleter.new(input, env)
+      end
+
+      def paths
+        PathCompleter.new(input)
+      end
+
+      class TextCompleter
+        def initialize(input)
+          @input = input
         end
 
-        def paths
-          Dir["#{expanded_path}*"].map do |path|
-            path.sub!(expanded_path, original_path)
-            if File.directory?(path)
-              "#{path}/"
-            else
-              "#{path} "
-            end
-          end
+        def completions
+          collection.
+            select { |option| option.start_with?(matchable_input) }.
+            map { |option| option.sub(matchable_input, input) + suffix(option) }
         end
 
         private
 
-        attr_reader :original_path
+        attr_reader :input
 
-        def expanded_path
-          if original_path.end_with?('/')
-            File.expand_path(original_path) + '/'
+        def suffix(_)
+          ' '
+        end
+      end
+
+      class HeadCompleter < TextCompleter
+        SEPARATORS = /(?:\.+|[:^~\\])/
+
+        def initialize(input, env)
+          super(input)
+          @env = env
+        end
+
+        private
+
+        attr_reader :env
+
+        def collection
+          env.repo_heads
+        end
+
+        def matchable_input
+          input.split(SEPARATORS, -1).last || ''
+        end
+      end
+
+      class PathCompleter < TextCompleter
+        private
+
+        def collection
+          Dir["#{matchable_input}*"]
+        end
+
+        def suffix(path)
+          if File.directory?(path)
+            '/'
           else
-            File.expand_path(original_path)
+            ' '
           end
+        end
+
+        def matchable_input
+          if input.end_with?('/')
+            File.expand_path(input) + '/'
+          else
+            File.expand_path(input)
+          end
+        end
+      end
+
+      class CommandCompleter < TextCompleter
+        def initialize(input, env, internal_command)
+          super(input)
+          @env = env
+          @internal_command = internal_command
+        end
+
+        private
+
+        attr_reader :env, :internal_command
+
+        def collection
+          env.git_commands + env.git_aliases + internal_command.commands
+        end
+
+        def matchable_input
+          input
         end
       end
     end

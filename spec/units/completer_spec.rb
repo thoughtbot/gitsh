@@ -57,6 +57,24 @@ describe Gitsh::Completer do
     expect(completer.call("#{path}/")).to include "#{first_regular_file(path)} "
   end
 
+  it 'completes heads starting with :' do
+    readline = stub('Readline', line_buffer: 'push ')
+    env = stub('Environment', repo_heads: %w( master hello-branch ))
+    internal_command = stub('InternalCommand')
+    completer = Gitsh::Completer.new(readline, env, internal_command)
+
+    expect(completer.call('master:h')).to include 'master:hello-branch '
+  end
+
+  it 'ignores input before punctuation when completing heads' do
+    readline = stub('Readline', line_buffer: 'push ')
+    env = stub('Environment', repo_heads: %w( master ))
+    internal_command = stub('InternalCommand')
+    completer = Gitsh::Completer.new(readline, env, internal_command)
+
+    expect(completer.call('mas:')).to eq [ 'mas:master ' ]
+  end
+
   def first_regular_file(directory)
     expanded_directory = File.expand_path(directory)
     Dir["#{expanded_directory}/*"].
