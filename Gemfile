@@ -4,6 +4,7 @@ ruby '2.0.0'
 
 group :dist do
   gem 'parslet'
+  gem 'rb-readline'
 end
 
 group :test do

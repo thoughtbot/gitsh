@@ -10,6 +10,7 @@ GEM
       metaclass (~> 0.0.1)
     parslet (1.5.0)
       blankslate (~> 2.0)
+    rb-readline (0.5.1)
     rspec (2.14.1)
       rspec-core (~> 2.14.0)
       rspec-expectations (~> 2.14.0)
@@ -25,4 +26,5 @@ PLATFORMS
 DEPENDENCIES
   bourne
   parslet
+  rb-readline
   rspec
