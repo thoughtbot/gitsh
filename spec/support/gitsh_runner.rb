@@ -18,6 +18,7 @@ class GitshRunner
   end
 
   def run_interactive(options={})
+    runner = nil
     in_a_temporary_directory do
       setup_env(options.fetch(:env, {}))
 
@@ -45,6 +46,10 @@ class GitshRunner
       readline.type(':exit')
       runner.join
     end
+  rescue RSpec::Expectations::ExpectationNotMetError => e
+    runner.kill
+    runner.join
+    raise
   end
 
   def type(string)
