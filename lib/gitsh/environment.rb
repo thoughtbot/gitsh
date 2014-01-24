@@ -43,6 +43,10 @@ module Gitsh
       error_stream.puts(*args)
     end
 
+    def repo_heads
+      repo.heads
+    end
+
     def repo_current_head
       repo.current_head
     end
@@ -57,6 +61,14 @@ module Gitsh
 
     def repo_has_untracked_files?
       repo.has_untracked_files?
+    end
+
+    def git_commands
+      repo.commands
+    end
+
+    def git_aliases
+      repo.aliases
     end
 
     private
