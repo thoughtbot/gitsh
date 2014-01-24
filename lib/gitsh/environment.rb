@@ -68,11 +68,17 @@ module Gitsh
     end
 
     def git_aliases
-      repo.aliases
+      (repo.aliases + local_aliases).sort
     end
 
     private
 
     attr_reader :variables, :repo
+
+    def local_aliases
+      variables.keys.
+        select { |key| key.to_s.start_with?('alias.') }.
+        map { |key| key.to_s.sub('alias.', '') }
+    end
   end
 end

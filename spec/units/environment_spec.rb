@@ -142,6 +142,17 @@ describe Gitsh::Environment do
     end
   end
 
+  describe '#git_aliases' do
+    it 'combines locally-set aliases with global aliases' do
+      repo = stub('GitRepository', aliases: %w( foo bar ))
+      env = described_class.new(repository_factory: stub(new: repo))
+      env['aliasish'] = 'not relevant'
+      env['alias.baz'] = '!echo baz'
+
+      expect(env.git_aliases).to eq %w( foo bar baz ).sort
+    end
+  end
+
   context 'delegated methods' do
     let(:repo) { stub }
     let(:repo_factory) { stub(new: repo) }
@@ -182,12 +193,6 @@ describe Gitsh::Environment do
     describe '#git_commands' do
       it 'is delegated to the GitRepository' do
         expect(env).to delegate(:git_commands).to(repo, :commands)
-      end
-    end
-
-    describe '#git_aliases' do
-      it 'is delegated to the GitRepository' do
-        expect(env).to delegate(:git_aliases).to(repo, :aliases)
       end
     end
   end
