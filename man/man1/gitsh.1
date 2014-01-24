@@ -118,6 +118,23 @@ command.
 changes directory to the given path.
 .It Ic :exit
 ends the gitsh session.
+.Sh CONFIGURATION
+The following
+.Xr git-config 1
+variables can be used to customise the behaviour of gitsh:
+.Bl -tag -width Ds
+.It Ic gitsh.historyFile
+The path to the gitsh history file. The default is
+.Ic ~/.gitsh_history
+.It Ic gitsh.historySize
+The number of lines of history to save in the gitsh history file.
+The default is 500.
+.It Ic gitsh.prompt
+The format of the prompt. See the
+.Sx PROMPT
+section above for details.
+.El
+.
 .Sh ENVIRONMENT
 .Bl -tag -width Ds
 .It Ev TERM

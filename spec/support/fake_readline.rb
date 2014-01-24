@@ -1,9 +1,10 @@
 require 'thread'
 
-class FakeReadline
+class FakeReadline < Module
   def initialize
     @prompt_queue = Queue.new
     @input_read, @input_write = IO.pipe
+    self.const_set('HISTORY', Readline::HISTORY)
   end
 
   def method_missing(method_name, *args, &block)

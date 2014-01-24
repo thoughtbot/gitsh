@@ -18,11 +18,14 @@ describe Gitsh::CLI do
     interpreter = stub('interpreter', execute: nil)
     interpreter_factory = stub('interpreter factory', new: interpreter)
 
+    history = stub('history', load: nil, save: nil)
+
     cli = Gitsh::CLI.new(
       args: [],
       env: env,
       readline: readline,
-      interpreter_factory: interpreter_factory
+      interpreter_factory: interpreter_factory,
+      history: history
     )
     begin
       cli.run

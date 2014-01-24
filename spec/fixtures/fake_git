@@ -1,3 +1,21 @@
 #!/bin/sh
 
-echo "Fake git: $@"
+cmd=""
+
+# Drop `-c ...` arguments which are used to pass gitsh environment
+# variables to git as configuration, and therefore do not form part
+# of the command the user issued.
+while [ "$1" != "" ]; do
+    case $1 in
+        -c)
+            shift
+            shift
+            ;;
+        *)
+            cmd="$cmd $1"
+            shift
+            ;;
+    esac
+done
+
+echo "Fake git:$cmd"
