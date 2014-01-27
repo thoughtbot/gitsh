@@ -38,7 +38,7 @@ module Gitsh
     def run_interactive
       history.load
       readline.completion_append_character = nil
-      readline.completion_proc = Completer.new(readline)
+      readline.completion_proc = Completer.new(readline, env)
 
       while command = read_command
         interpreter.execute(command)

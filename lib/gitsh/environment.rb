@@ -43,6 +43,10 @@ module Gitsh
       error_stream.puts(*args)
     end
 
+    def repo_heads
+      repo.heads
+    end
+
     def repo_current_head
       repo.current_head
     end
@@ -59,8 +63,22 @@ module Gitsh
       repo.has_untracked_files?
     end
 
+    def git_commands
+      repo.commands
+    end
+
+    def git_aliases
+      (repo.aliases + local_aliases).sort
+    end
+
     private
 
     attr_reader :variables, :repo
+
+    def local_aliases
+      variables.keys.
+        select { |key| key.to_s.start_with?('alias.') }.
+        map { |key| key.to_s.sub('alias.', '') }
+    end
   end
 end

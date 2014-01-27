@@ -28,6 +28,13 @@ describe 'Completing things with tab' do
 
       expect(gitsh).to output_no_errors
       expect(gitsh).to output /zzz/
+
+      gitsh.type(':set alias.yecho "!echo yyy"')
+
+      gitsh.type("yec\t")
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output /yyy/
     end
   end
 
