@@ -22,5 +22,5 @@ vendor/gems
 
 # Sub-repositories for release
 gh-pages
-homebrew-gitsh
+homebrew-formulae
 release-arch
