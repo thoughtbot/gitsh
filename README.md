@@ -67,6 +67,6 @@ issue any git command, even using your local aliases and configuration.
 
 ## License
 
-gitsh is Copyright © 2013 Mike Burns, George Brocklehurst, and thoughtbot. It is
+gitsh is Copyright © 2014 Mike Burns, George Brocklehurst, and thoughtbot. It is
 free software, and may be redistributed under the terms specified in the
 [LICENSE](https://github.com/thoughtbot/gitsh/blob/master/LICENSE) file.
