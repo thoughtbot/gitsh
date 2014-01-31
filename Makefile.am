@@ -38,9 +38,9 @@ release_clean_tarball:
 
 release_build_homebrew: DIST_SHA
 	git clone git@github.com:thoughtbot/homebrew-gitsh.git homebrew-gitsh
+	$(edit_package) homebrew/gitsh.rb.in > homebrew-gitsh/Formula/gitsh.rb
 	cd homebrew-gitsh &&\
-		$(edit_package) Formula/gitsh.rb.in > Formula/gitsh.rb &&\
-		git commit -am "Release version $(PACKAGE_VERSION)"
+		git commit -am "gitsh: Release version $(PACKAGE_VERSION)"
 
 release_push_homebrew:
 	cd homebrew-gitsh &&\
