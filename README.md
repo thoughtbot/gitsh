@@ -31,7 +31,7 @@ issue any git command, even using your local aliases and configuration.
 
 * On Mac OS X, via homebrew:
 
-        brew tap thoughtbot/gitsh
+        brew tap thoughtbot/formulae
         brew install gitsh
 
 * On Arch Linux: https://github.com/thoughtbot/gitsh/blob/master/arch/PKGBUILD

@@ -37,17 +37,17 @@ release_clean_tarball:
 	rm -rf gh-pages
 
 release_build_homebrew: DIST_SHA
-	git clone git@github.com:thoughtbot/homebrew-gitsh.git homebrew-gitsh
-	$(edit_package) homebrew/gitsh.rb.in > homebrew-gitsh/Formula/gitsh.rb
-	cd homebrew-gitsh &&\
+	git clone git@github.com:thoughtbot/homebrew-formulae.git homebrew-formulae
+	$(edit_package) homebrew/gitsh.rb.in > homebrew-formulae/Formula/gitsh.rb
+	cd homebrew-formulae &&\
 		git commit -am "gitsh: Release version $(PACKAGE_VERSION)"
 
 release_push_homebrew:
-	cd homebrew-gitsh &&\
+	cd homebrew-formulae &&\
 		git push
 
 release_clean_homebrew:
-	rm -rf homebrew-gitsh
+	rm -rf homebrew-formulae
 
 release_build_arch: DIST_SHA
 	git clone --branch master git@github.com:thoughtbot/gitsh.git release-arch
