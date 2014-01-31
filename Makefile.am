@@ -37,23 +37,23 @@ release_clean_tarball:
 	rm -rf gh-pages
 
 release_build_homebrew: DIST_SHA
-	git clone git@github.com:thoughtbot/homebrew-gitsh.git homebrew-gitsh
-	cd homebrew-gitsh &&\
-		$(edit_package) Formula/gitsh.rb.in > Formula/gitsh.rb &&\
-		git commit -am "Release version $(PACKAGE_VERSION)"
+	git clone git@github.com:thoughtbot/homebrew-formulae.git homebrew-formulae
+	$(edit_package) homebrew/gitsh.rb.in > homebrew-formulae/Formula/gitsh.rb
+	cd homebrew-formulae &&\
+		git commit -am "gitsh: Release version $(PACKAGE_VERSION)"
 
 release_push_homebrew:
-	cd homebrew-gitsh &&\
+	cd homebrew-formulae &&\
 		git push
 
 release_clean_homebrew:
-	rm -rf homebrew-gitsh
+	rm -rf homebrew-formulae
 
 release_build_arch: DIST_SHA
 	git clone --branch master git@github.com:thoughtbot/gitsh.git release-arch
 	cd release-arch &&\
 		$(edit_package) arch/PKGBUILD.in > arch/PKGBUILD &&\
-		git commit -m "Release version $(PACKAGE_VERSION)" -- arch/PKGBUILD &&\
+		git commit -m "Arch package for version $(PACKAGE_VERSION)" -- arch/PKGBUILD &&\
 		git tag v$(PACKAGE_VERSION)
 
 release_push_arch:
