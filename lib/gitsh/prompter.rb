@@ -10,27 +10,19 @@ module Gitsh
     end
 
     def prompt
-      if use_color?
-        prompt_with_color
-      else
-        Colors.strip_color_codes(prompt_with_color)
-      end
-    end
-
-    private
-
-    attr_reader :env
-
-    def prompt_with_color
       padded_prompt_format.gsub(/%[bcdDw#]/, {
         '%b' => branch_name,
         '%c' => status_color,
         '%d' => Dir.getwd,
         '%D' => File.basename(Dir.getwd),
-        '%w' => Colors::CLEAR,
+        '%w' => clear_color,
         '%#' => terminator
       })
     end
+
+    private
+
+    attr_reader :env
 
     def padded_prompt_format
       "#{prompt_format.chomp} "
@@ -61,7 +53,9 @@ module Gitsh
     end
 
     def status_color
-      if !env.repo_initialized?
+      if !use_color?
+        ''
+      elsif !env.repo_initialized?
         Colors::RED_BG
       elsif env.repo_has_untracked_files?
         Colors::RED_FG
@@ -69,6 +63,14 @@ module Gitsh
         Colors::ORANGE_FG
       else
         Colors::BLUE_FG
+      end
+    end
+
+    def clear_color
+      if use_color?
+        Colors::CLEAR
+      else
+        ''
       end
     end
 

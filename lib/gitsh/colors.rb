@@ -10,11 +10,5 @@ module Gitsh
     CYAN_FG = "\033[00;36m"
     WHITE_FG = "\033[00;37m"
     RED_BG = "\033[00;41m"
-
-    COLOR_CODE_FORMAT = /\033\[[0-9;]+m/
-
-    def self.strip_color_codes(string_with_colors)
-      string_with_colors.gsub(COLOR_CODE_FORMAT, '')
-    end
   end
 end
