@@ -2,7 +2,7 @@ require 'gitsh/colors'
 
 module Gitsh
   class Prompter
-    DEFAULT_FORMAT = "#{Colors::CYAN_FG}%D %c%b%#%w".freeze
+    DEFAULT_FORMAT = "%D %c%b%#%w".freeze
 
     def initialize(options={})
       @env = options.fetch(:env)

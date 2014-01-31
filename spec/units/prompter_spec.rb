@@ -11,7 +11,7 @@ describe Gitsh::Prompter do
         prompter = Gitsh::Prompter.new(env: env)
 
         expect(prompter.prompt).to eq(
-          "#{cyan}#{cwd_basename} #{red_background}uninitialized!!#{clear} "
+          "#{cwd_basename} #{red_background}uninitialized!!#{clear} "
         )
       end
     end
@@ -22,7 +22,7 @@ describe Gitsh::Prompter do
         prompter = Gitsh::Prompter.new(env: env)
 
         expect(prompter.prompt).to eq(
-          "#{cyan}#{cwd_basename} #{blue}my-feature@#{clear} "
+          "#{cwd_basename} #{blue}my-feature@#{clear} "
         )
       end
     end
@@ -33,7 +33,7 @@ describe Gitsh::Prompter do
         prompter = Gitsh::Prompter.new(env: env)
 
         expect(prompter.prompt).to eq(
-          "#{cyan}#{cwd_basename} #{red}master!#{clear} "
+          "#{cwd_basename} #{red}master!#{clear} "
         )
       end
     end
@@ -44,7 +44,7 @@ describe Gitsh::Prompter do
         prompter = Gitsh::Prompter.new(env: env)
 
         expect(prompter.prompt).to eq(
-          "#{cyan}#{cwd_basename} #{orange}master&#{clear} "
+          "#{cwd_basename} #{orange}master&#{clear} "
         )
       end
     end
