@@ -45,14 +45,14 @@ The current HEAD is a branch name, tag name, abbreviated SHA, or the text
 .Li uninitialized
 when the present working directory is not a git repository.
 .Pp
-The terminating sigil has a symbol and color pairing indicating the state of the
-repository:
-.Bl -column ".Sy Sigil" ".Sy Orange background" ".Sy Description" -offset indent
-.It Sy Sigil Ta Sy Color Ta Sy Description
-.It !! Ta red background Ta current directory is not a git repo
-.It ! Ta red foreground Ta repo has untracked files
-.It & Ta orange foreground Ta repo has modified files
-.It @ Ta default Ta all other states
+The state of the repository is reflected by the terminating sigil and the color
+of both the current HEAD and the sigil:
+.Bl -column "Current directory is not a git repo" ".Sy Sigil" "Orange foreground" -offset indent
+.It Sy Status                               Ta Sy Sigil     Ta Sy Color
+.It Current directory is not a git repo     Ta !!           Ta Red background
+.It Repo has untracked files                Ta !            Ta Red foreground
+.It Repo has modified files                 Ta &            Ta Orange foreground
+.It All other states                        Ta @            Ta Blue foreground
 .El
 .Pp
 .Ss Prompt customisation
@@ -68,6 +68,8 @@ command. The following placeholders can be used in the custom prompt:
 .It %b              Ta current HEAD (branch name, tag name, etc.)
 .It %d              Ta absolute path to current working directory
 .It \&%D            Ta basename of the current working directory
+.It %c              Ta start coloring based on status (see previous table)
+.It %w              Ta return to default color (e.g. after using %c)
 .El
 .Pp
 For example, setting

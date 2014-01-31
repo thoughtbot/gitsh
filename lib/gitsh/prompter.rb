@@ -2,7 +2,7 @@ require 'gitsh/colors'
 
 module Gitsh
   class Prompter
-    DEFAULT_FORMAT = '%D %b%#'.freeze
+    DEFAULT_FORMAT = "%D %c%b%#%w".freeze
 
     def initialize(options={})
       @env = options.fetch(:env)
@@ -10,10 +10,12 @@ module Gitsh
     end
 
     def prompt
-      padded_prompt_format.gsub(/%[bdD#]/, {
+      padded_prompt_format.gsub(/%[bcdDw#]/, {
         '%b' => branch_name,
+        '%c' => status_color,
         '%d' => Dir.getwd,
         '%D' => File.basename(Dir.getwd),
+        '%w' => clear_color,
         '%#' => terminator
       })
     end
@@ -40,21 +42,35 @@ module Gitsh
 
     def terminator
       if !env.repo_initialized?
-        add_color('!!', Colors::RED_BG)
+        '!!'
       elsif env.repo_has_untracked_files?
-        add_color('!', Colors::RED_FG)
+        '!'
       elsif env.repo_has_modified_files?
-        add_color('&', Colors::ORANGE_FG)
+        '&'
       else
         '@'
       end
     end
 
-    def add_color(str, color)
-      if use_color?
-        "#{color}#{str}#{Colors::CLEAR}"
+    def status_color
+      if !use_color?
+        ''
+      elsif !env.repo_initialized?
+        Colors::RED_BG
+      elsif env.repo_has_untracked_files?
+        Colors::RED_FG
+      elsif env.repo_has_modified_files?
+        Colors::ORANGE_FG
       else
-        str
+        Colors::BLUE_FG
+      end
+    end
+
+    def clear_color
+      if use_color?
+        Colors::CLEAR
+      else
+        ''
       end
     end
 

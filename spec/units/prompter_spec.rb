@@ -11,8 +11,7 @@ describe Gitsh::Prompter do
         prompter = Gitsh::Prompter.new(env: env)
 
         expect(prompter.prompt).to eq(
-          "#{cwd_basename} uninitialized" \
-          "#{red_background}!!#{clear} "
+          "#{cwd_basename} #{red_background}uninitialized!!#{clear} "
         )
       end
     end
@@ -22,7 +21,9 @@ describe Gitsh::Prompter do
         env = env_double(repo_current_head: 'my-feature')
         prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq("#{cwd_basename} my-feature@ ")
+        expect(prompter.prompt).to eq(
+          "#{cwd_basename} #{blue}my-feature@#{clear} "
+        )
       end
     end
 
@@ -31,7 +32,9 @@ describe Gitsh::Prompter do
         env = env_double(repo_has_untracked_files?: true)
         prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq("#{cwd_basename} master#{red}!#{clear} ")
+        expect(prompter.prompt).to eq(
+          "#{cwd_basename} #{red}master!#{clear} "
+        )
       end
     end
 
@@ -41,7 +44,7 @@ describe Gitsh::Prompter do
         prompter = Gitsh::Prompter.new(env: env)
 
         expect(prompter.prompt).to eq(
-          "#{cwd_basename} master#{orange}&#{clear} "
+          "#{cwd_basename} #{orange}master&#{clear} "
         )
       end
     end
@@ -56,11 +59,25 @@ describe Gitsh::Prompter do
     end
 
     context 'with a custom prompt format' do
-      it 'replaced %# with the prompt terminator' do
+      it 'replaces %# with the prompt terminator' do
         env = env_double(repo_has_modified_files?: true, format: '%#')
         prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq "#{orange}&#{clear} "
+        expect(prompter.prompt).to eq "& "
+      end
+
+      it 'replaces %c with a color code based on the status' do
+        env = env_double(repo_has_modified_files?: true, format: '%c')
+        prompter = Gitsh::Prompter.new(env: env)
+
+        expect(prompter.prompt).to eq "#{orange} "
+      end
+
+      it 'replaces %w with the code to restore the default color' do
+        env = env_double(format: '%w')
+        prompter = Gitsh::Prompter.new(env: env)
+
+        expect(prompter.prompt).to eq "#{clear} "
       end
 
       it 'replaces %b with the current HEAD name' do
