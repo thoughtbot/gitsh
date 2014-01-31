@@ -53,7 +53,7 @@ release_build_arch: DIST_SHA
 	git clone --branch master git@github.com:thoughtbot/gitsh.git release-arch
 	cd release-arch &&\
 		$(edit_package) arch/PKGBUILD.in > arch/PKGBUILD &&\
-		git commit -m "Release version $(PACKAGE_VERSION)" -- arch/PKGBUILD &&\
+		git commit -m "Arch package for version $(PACKAGE_VERSION)" -- arch/PKGBUILD &&\
 		git tag v$(PACKAGE_VERSION)
 
 release_push_arch:
