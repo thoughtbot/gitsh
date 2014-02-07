@@ -1,4 +1,4 @@
-# gitsh
+# <img src="http://thoughtbot.github.io/gitsh/images/gitsh-logo.png" alt="gitsh" width="150" height="178">
 
 The `gitsh` program is an interactive shell for git. From within `gitsh` you can
 issue any git command, even using your local aliases and configuration.
