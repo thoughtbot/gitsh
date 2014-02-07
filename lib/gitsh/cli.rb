@@ -57,7 +57,7 @@ module Gitsh
     def read_command
       command = readline.readline(prompt, true)
       if command && command.empty?
-        'status'
+        env.fetch('gitsh.defaultCommand', 'status')
       else
         command
       end
