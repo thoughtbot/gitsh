@@ -40,6 +40,8 @@ module Gitsh
       readline.completion_append_character = nil
       readline.completion_proc = Completer.new(readline, env)
 
+      greet_user
+
       while command = read_command
         interpreter.execute(command)
       end
@@ -102,6 +104,13 @@ module Gitsh
           env.puts opts
           exit EX_OK
         end
+      end
+    end
+
+    def greet_user
+      unless env['gitsh.noGreeting'] == 'true'
+        env.puts "gitsh #{Gitsh::VERSION}"
+        env.puts "Type :exit to exit"
       end
     end
   end
