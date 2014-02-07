@@ -18,6 +18,8 @@ class GitshRunner
     @output_stream = Tempfile.new('stdout')
     @error_stream = Tempfile.new('stderr')
     @readline = FakeReadline.new
+    @position_before_command = 0
+    @error_position_before_command = 0
   end
 
   def run_interactive(options={})
@@ -32,6 +34,9 @@ class GitshRunner
           error_stream: error_stream
         )
         env['gitsh.historyFile'] = File.join(Dir.tmpdir, 'gitsh_test_history')
+        options.fetch(:settings, {}).each do |key, value|
+          env[key] = value
+        end
         cli = Gitsh::CLI.new(
           args: options.fetch(:args, []),
           env: env,
@@ -104,6 +109,17 @@ RSpec::Matchers.define :prompt_with do |expected|
 
   failure_message_for_should do |runner|
     "Expected #{expected.inspect}, got #{@actual.inspect}"
+  end
+end
+
+RSpec::Matchers.define :output_nothing do
+  match do |runner|
+    @actual = runner.output
+    expect(@actual).to be_empty
+  end
+
+  failure_message_for_should do |runner|
+    "Expected no output, got #{@actual.inspect}"
   end
 end
 

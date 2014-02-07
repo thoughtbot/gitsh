@@ -3,12 +3,17 @@ require 'gitsh/cli'
 
 describe Gitsh::CLI do
   it 'handles a SIGINT' do
-    env = stub('Environment', print: nil, repo_initialized?: false, fetch: '')
-    readline = stub(
-      'readline',
+    env = stub('Environment', {
+      print: nil,
+      puts: nil,
+      repo_initialized?: false,
+      fetch: '',
+      :[] => nil
+    })
+    readline = stub('readline', {
       :'completion_append_character=' => nil,
       :'completion_proc=' => nil
-    )
+    })
     readline.stubs(:readline).
       returns('a').
       then.raises(Interrupt).
