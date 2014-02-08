@@ -2,6 +2,7 @@ require 'formula'
 
 class Gitsh < Formula
   SYSTEM_RUBY_PATH = '/usr/bin/ruby'
+  HOMEBREW_RUBY_PATH = "#{HOMEBREW_PREFIX}/bin/ruby"
 
   homepage 'http://thoughtbot.github.io/@PACKAGE@/'
   url 'http://thoughtbot.github.io/@PACKAGE@/@DIST_ARCHIVES@'
@@ -32,8 +33,8 @@ class Gitsh < Formula
   private
 
   def set_ruby_path
-    if self.class.old_system_ruby?
-      ENV['RUBY'] = "#{HOMEBREW_PREFIX}/bin/ruby"
+    if self.class.old_system_ruby? || File.exist?(HOMEBREW_RUBY_PATH)
+      ENV['RUBY'] = HOMEBREW_RUBY_PATH
     else
       ENV['RUBY'] = SYSTEM_RUBY_PATH
     end
