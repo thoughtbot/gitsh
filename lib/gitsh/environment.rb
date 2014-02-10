@@ -12,7 +12,7 @@ module Gitsh
       @error_stream = options.fetch(:error_stream, $stderr)
       @git_command = DEFAULT_GIT_COMMAND
       @variables = Hash.new
-      @repo = options.fetch(:repository_factory, Gitsh::GitRepository).new
+      @repo = options.fetch(:repository_factory, Gitsh::GitRepository).new(self)
     end
 
     def [](key)
