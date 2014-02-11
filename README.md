@@ -60,12 +60,12 @@ sh$</code></pre>
 
 * On other operating systems:
 
-        curl -O http://thoughtbot.github.io/gitsh/gitsh-0.3.tar.gz
-        tar -zxf gitsh-0.3.tar.gz
-        cd gitsh-0.3
+        curl -O http://thoughtbot.github.io/gitsh/gitsh-0.4.tar.gz
+        tar -zxf gitsh-0.4.tar.gz
+        cd gitsh-0.4
         ./configure
         make
-        make install
+        sudo make install
 
 ## Contributing to gitsh
 
