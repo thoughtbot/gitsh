@@ -40,5 +40,6 @@ describe Gitsh::CLI do
     expect(interpreter).to have_received(:execute).twice
     expect(interpreter).to have_received(:execute).with('a')
     expect(interpreter).to have_received(:execute).with('b')
+    expect(env).to have_received(:puts).once
   end
 end
