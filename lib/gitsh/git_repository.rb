@@ -54,7 +54,10 @@ module Gitsh
     private
 
     def current_branch_name
-      git_output('symbolic-ref HEAD').split('/').last
+      branch_name = git_output('symbolic-ref HEAD --short')
+      unless branch_name.empty?
+        branch_name
+      end
     end
 
     def current_tag_name

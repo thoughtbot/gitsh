@@ -28,6 +28,15 @@ describe Gitsh::GitRepository do
       end
     end
 
+    it 'returns the name of the current git branch with a forward slash' do
+      in_a_temporary_directory do
+        repo = Gitsh::GitRepository.new
+        run 'git init'
+        run 'git checkout -b feature/foo'
+        expect(repo.current_head).to eq 'feature/foo'
+      end
+    end
+
     it 'returns the name of an annotated tag if there is no branch' do
       in_a_temporary_directory do
         repo = Gitsh::GitRepository.new
