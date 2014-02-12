@@ -47,6 +47,15 @@ describe Gitsh::Completer do
         expect(completer.call('fix-v1.')).to include 'fix-v1.5 ', 'fix-v1.6 '
       end
 
+      it 'completes paths containing spaces' do
+        in_a_temporary_directory do
+          write_file('some text file.txt', "Some text\n")
+          completer = build_completer(input: 'add ')
+
+          expect(completer.call('som')).to include 'some\ text\ file.txt '
+        end
+      end
+
       it 'completes heads starting with :' do
         completer = build_completer(
           input: 'checkout ',
