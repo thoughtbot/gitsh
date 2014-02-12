@@ -44,9 +44,9 @@ issue any git command, even using your local aliases and configuration.
   modifying your shell settings. This includes the name of the current HEAD, and
   a colour and sigil to indicate the status.
 
-* It works with [`hub`][hub]:
+* It works with [`hub`][hub] and [`gh`][gh]:
 
-        sh$ gitsh --git $(which hub)
+        sh$ gitsh --git $(which gh)
         gitsh% pull-request
 
 ## Installing gitsh
@@ -79,5 +79,6 @@ free software, and may be redistributed under the terms specified in the
 [LICENSE][LICENSE] file.
 
 [hub]: http://hub.github.com/
+[gh]: https://github.com/jingweno/gh
 [CONTRIBUTING]: https://github.com/thoughtbot/gitsh/blob/master/CONTRIBUTING.md
 [LICENSE]: https://github.com/thoughtbot/gitsh/blob/master/LICENSE
