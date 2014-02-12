@@ -78,7 +78,17 @@ gitsh is Copyright © 2014 Mike Burns, George Brocklehurst, and thoughtbot. It i
 free software, and may be redistributed under the terms specified in the
 [LICENSE][LICENSE] file.
 
+## Similar projects
+
+* [git-sh][] - A customised bash shell with a Git prompt, aliases, and
+  completion.
+* [gitsh][] - A simple Git shell written in Perl.
+* [repl][] - Wraps any program with subcommands in a REPL.
+
 [hub]: http://hub.github.com/
 [gh]: https://github.com/jingweno/gh
 [CONTRIBUTING]: https://github.com/thoughtbot/gitsh/blob/master/CONTRIBUTING.md
 [LICENSE]: https://github.com/thoughtbot/gitsh/blob/master/LICENSE
+[git-sh]: https://github.com/rtomayko/git-sh
+[gitsh]: https://github.com/caglar/gitsh
+[repl]: https://github.com/defunkt/repl
