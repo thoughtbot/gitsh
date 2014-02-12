@@ -1,5 +1,5 @@
 language: ruby
 rvm:
   - "2.0.0"
-install: bundle install && ./autogen.sh && ./configure && make
-script: bundle exec rspec
+install: bundle install && ./autogen.sh && git config --global user.name 'Travis' && git config --global user.email 'travis@example.com'
+script: RUBY=$(which ruby) ./configure && make && bundle exec rspec
