@@ -11,13 +11,13 @@ issue any git command, even using your local aliases and configuration.
 * Git commands tend to come in groups. Avoid typing `git` over and over and over
   by running them in a dedicated git shell:
 
-        sh$ gitsh
-        gitsh% status
-        gitsh% add .
-        gitsh% commit -m "Ship it!"
-        gitsh% push
-        gitsh% :exit
-        sh$
+    <pre><code>sh$ gitsh
+gitsh% status
+gitsh% add .
+gitsh% commit -m "Ship it!"
+gitsh% push
+gitsh% <kbd>ctrl</kbd>-<kbd>d</kbd>
+sh$</code></pre>
 
 * Hit <kbd>return</kbd> with no command to run `git status`, saving even more
   typing:
@@ -60,12 +60,12 @@ issue any git command, even using your local aliases and configuration.
 
 * On other operating systems:
 
-        curl -O http://thoughtbot.github.io/gitsh/gitsh-0.3.tar.gz
-        tar -zxf gitsh-0.3.tar.gz
-        cd gitsh-0.3
+        curl -O http://thoughtbot.github.io/gitsh/gitsh-0.4.tar.gz
+        tar -zxf gitsh-0.4.tar.gz
+        cd gitsh-0.4
         ./configure
         make
-        make install
+        sudo make install
 
 ## Contributing to gitsh
 
