@@ -19,9 +19,9 @@ if test -n $RUBY; then
 fi
 
 AX_PROG_RUBY_VERSION(
-  [2.0],
+  [1.9.3],
   [],
-  AC_MSG_ERROR(Ruby 2.0 or later is required to install gitsh)
+  AC_MSG_ERROR(Ruby 1.9.3 or later is required to install gitsh)
 )
 
 newer=$(ls -t $srcdir/Gemfile.lock $srcdir/vendor/gems/setup.rb 2>/dev/null | (read n; echo $n))
