@@ -10,7 +10,7 @@ class Gitsh < Formula
 
   def self.old_system_ruby?
     system_ruby_version = `#{SYSTEM_RUBY_PATH} -e "puts RUBY_VERSION"`.chomp
-    system_ruby_version < '2.0.0'
+    system_ruby_version < '1.9.3'
   end
 
   if old_system_ruby?

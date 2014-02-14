@@ -5,8 +5,8 @@ describe Gitsh::GitCommand do
   let(:env) do
     stub('Environment', {
       git_command: '/usr/bin/env git',
-      output_stream: stub,
-      error_stream: stub
+      output_stream: stub(to_i: 1),
+      error_stream: stub(to_i: 2)
     })
   end
 
@@ -23,8 +23,8 @@ describe Gitsh::GitCommand do
         '/usr/bin/env', 'git',
         'commit',
         '-m', 'A test commit',
-        out: env.output_stream,
-        err: env.error_stream
+        out: env.output_stream.to_i,
+        err: env.error_stream.to_i
       )
     end
 
@@ -43,8 +43,8 @@ describe Gitsh::GitCommand do
         '-c', 'foo.bar=1',
         'commit',
         '-m', 'A test commit',
-        out: env.output_stream,
-        err: env.error_stream
+        out: env.output_stream.to_i,
+        err: env.error_stream.to_i
       )
     end
   end

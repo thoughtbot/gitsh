@@ -6,7 +6,7 @@ pkgdesc='An interactive shell for git'
 arch=('any')
 url="http://thoughtbot.github.io/@PACKAGE@/"
 license=('custom')
-depends=('ruby>=2.0')
+depends=('ruby>=1.9.3')
 source=("http://thoughtbot.github.io/@PACKAGE@/@DIST_ARCHIVES@")
 sha1sums=('@DIST_SHA@')
 

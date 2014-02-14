@@ -42,7 +42,7 @@ describe Gitsh::History do
 
       described_class.new(env, readline).save
 
-      expect(@history_file.read.lines).to eq [
+      expect(history_file_lines).to eq [
         "init\n", "add .\n", "commit -m \"Initial\"\n"
       ]
     end
@@ -53,7 +53,7 @@ describe Gitsh::History do
 
       described_class.new(env, readline).save
 
-      expect(@history_file.read.lines).to eq [
+      expect(history_file_lines).to eq [
         "add .\n", "commit -m \"Initial\"\n"
       ]
     end
@@ -64,5 +64,9 @@ describe Gitsh::History do
       @history_file.write("#{command}\n")
     end
     @history_file.rewind
+  end
+
+  def history_file_lines
+    @history_file.each_line.to_a
   end
 end
