@@ -37,21 +37,26 @@ module Gitsh
 
     def run_interactive
       history.load
+      setup_readline
+      greet_user
+      interactive_loop
+    ensure
+      history.save
+    end
+
+    def setup_readline
       readline.completion_append_character = nil
       readline.completion_proc = Completer.new(readline, env)
+    end
 
-      greet_user
-
+    def interactive_loop
       while command = read_command
         interpreter.execute(command)
       end
-
       env.print "\n"
     rescue Interrupt
       env.print "\n"
       retry
-    ensure
-      history.save
     end
 
     def read_command
@@ -109,8 +114,7 @@ module Gitsh
 
     def greet_user
       unless env['gitsh.noGreeting'] == 'true'
-        env.puts "gitsh #{Gitsh::VERSION}"
-        env.puts "Type :exit to exit"
+        env.puts "gitsh #{Gitsh::VERSION}\nType :exit to exit"
       end
     end
   end
