@@ -17,7 +17,7 @@ module Gitsh
 
       @env = opts.fetch(:env, Environment.new)
       @interpreter = interpreter_factory.new(@env)
-      @readline = opts.fetch(:readline, Readline)
+      @readline = ReadlineBlankFilter.new(opts.fetch(:readline, Readline))
       @unparsed_args = opts.fetch(:args, ARGV).clone
       @history = opts.fetch(:history, History.new(@env, @readline))
     end
