@@ -1,26 +1,19 @@
 require 'thread'
+require 'gitsh/module_delegator'
 
-class FakeReadline < Module
+class FakeReadline < ModuleDelegator
   def initialize
     @prompt_queue = Queue.new
     @input_read, @input_write = IO.pipe
-    self.const_set('HISTORY', Readline::HISTORY)
-  end
-
-  def method_missing(method_name, *args, &block)
-    Readline.send(method_name, *args, &block)
-  end
-
-  def respond_to_missing?(method_name, include_private = false)
-    Readline.respond_to?(method_name, include_private)
+    super(Readline)
   end
 
   def readline(prompt, add_to_history)
-    Readline.input = input_read
-    Readline.output = output_file
+    module_delegator_target.input = input_read
+    module_delegator_target.output = output_file
     prompt_queue.clear
     prompt_queue << prompt
-    Readline.readline(prompt, add_to_history)
+    module_delegator_target.readline(prompt, add_to_history)
   end
 
   def type(string)
