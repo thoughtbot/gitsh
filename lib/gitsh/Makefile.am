@@ -1,6 +1,5 @@
-dist_pkgruby_DATA = $(libfiles)
-dist_pkgruby_SCRIPTS = version.rb
-CLEANFILES = $(dist_pkgruby_SCRIPTS)
+dist_pkgruby_DATA = $(libfiles) version.rb
+CLEANFILES = version.rb
 EXTRA_DIST = version.rb.in
 
 replace_version = sed \
