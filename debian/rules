@@ -1,0 +1,3 @@
+#!/usr/bin/make -f
+%:
+	RUBY=`which ruby2.0` dh $@ --with autoreconf
