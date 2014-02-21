@@ -43,7 +43,9 @@ module Gitsh
     end
 
     rule(:command_identifier) do
-      (str(':') >> identifier.as(:internal_cmd)) | identifier.as(:git_cmd)
+      (str(':') >> identifier.as(:internal_cmd)) |
+      (str('!') >> identifier.as(:shell_cmd)) |
+      identifier.as(:git_cmd)
     end
 
     rule(:variable) do

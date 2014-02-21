@@ -35,6 +35,24 @@ display a help message and exit.
 .It Fl -version
 display the version number and exit.
 .El
+.Pp
+Within the shell you can use the following types of commands:
+.Bl -tag
+.It Ic command [arguments]
+execute a Git command or alias with the given arguments, e.g.
+.Ic status
+will execute
+.Xr git-status 1 .
+.It Ic !command [arguments]
+execute a shell command with the given arguments, e.g.
+.Ic !ls
+will execute
+.Xr ls 1 .
+.It Ic :command [arguments]
+execute a built-in gitsh command. See the section on
+.Sx BUILT-IN COMMANDS
+for a list of supported commands.
+.El
 .
 .Sh PROMPT
 The prompt changes based on the status of the repository. By default it consist
