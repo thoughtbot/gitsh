@@ -31,5 +31,17 @@ module Gitsh
     command_rule(:git_cmd, GitCommand)
     command_rule(:internal_cmd, InternalCommand)
     command_rule(:shell_cmd, ShellCommand)
+
+    rule(multi: { left: subtree(:left), right: subtree(:right) }) do
+      Tree::Multi.new(left, right)
+    end
+
+    rule(or: { left: subtree(:left), right: subtree(:right) }) do
+      Tree::Or.new(left, right)
+    end
+
+    rule(and: { left: subtree(:left), right: subtree(:right) }) do
+      Tree::And.new(left, right)
+    end
   end
 end

@@ -136,5 +136,103 @@ describe Gitsh::Parser do
     it 'parses a command with leading whitespace' do
       expect(parser).to parse("  \t commit").as(git_cmd: 'commit')
     end
+
+    it 'parses mutliple commands separated by semicolons' do
+      expect(parser).to parse('add -p; commit -v').as(
+        multi: {
+          left: {
+            git_cmd: 'add',
+            args: [
+              { arg: parser_literals('-p') }
+            ]
+          },
+          right: {
+            git_cmd: 'commit',
+            args: [
+              { arg: parser_literals('-v') }
+            ]
+          }
+        }
+      )
+    end
+
+    it 'parses mutliple commands separated by &&' do
+      expect(parser).to parse('add -p && commit -v').as(
+        and: {
+          left: {
+            git_cmd: 'add',
+            args: [
+              { arg: parser_literals('-p') }
+            ]
+          },
+          right: {
+            git_cmd: 'commit',
+            args: [
+              { arg: parser_literals('-v') }
+            ]
+          }
+        }
+      )
+    end
+
+    it 'parses mutliple commands separated by ||' do
+      expect(parser).to parse('add -p || commit -v').as(
+        or: {
+          left: {
+            git_cmd: 'add',
+            args: [
+              { arg: parser_literals('-p') }
+            ]
+          },
+          right: {
+            git_cmd: 'commit',
+            args: [
+              { arg: parser_literals('-v') }
+            ]
+          }
+        }
+      )
+    end
+
+    it 'parses mutliple commands separated by ||, &&, and semicolons' do
+      command = 'add -p && commit -v; push origin || reset --soft HEAD'
+      expect(parser).to parse(command).as(
+        multi: {
+          left: {
+            and: {
+              left: {
+                git_cmd: 'add',
+                args: [
+                  { arg: parser_literals('-p') }
+                ]
+              },
+              right: {
+                git_cmd: 'commit',
+                args: [
+                  { arg: parser_literals('-v') }
+                ]
+              }
+            }
+          },
+          right: {
+            or: {
+              left: {
+                git_cmd: 'push',
+                args: [
+                  { arg: parser_literals('origin') }
+                ]
+              },
+              right: {
+                git_cmd: 'reset',
+                args: [
+                  { arg: parser_literals('--soft') },
+                  { arg: parser_literals('HEAD') }
+                ]
+              }
+            }
+          }
+        }
+      )
+    end
   end
 end

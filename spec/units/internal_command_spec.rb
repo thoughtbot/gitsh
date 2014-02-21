@@ -30,6 +30,24 @@ describe Gitsh::InternalCommand do
     end
   end
 
+  describe Gitsh::InternalCommand::Chdir do
+    describe '#execute' do
+      it 'returns true for correct directories' do
+        env = stub(:[]= => true, puts_error: true)
+        command = Gitsh::InternalCommand::Chdir.new(env, 'cd', ['./'])
+
+        expect(command.execute).to be_true
+      end
+
+      it 'returns false with invalid arguments' do
+        env = stub(:[]= => true, puts_error: true)
+        command = Gitsh::InternalCommand::Chdir.new(env, 'cd', ['foo'])
+
+        expect(command.execute).to be_false
+      end
+    end
+  end
+
   describe Gitsh::InternalCommand::Set do
     describe '#execute' do
       it 'sets a variable on the environment' do
@@ -39,6 +57,20 @@ describe Gitsh::InternalCommand do
         command.execute
 
         expect(env).to have_received(:[]=).with('foo', 'bar')
+      end
+
+      it 'returns true with correct arguments' do
+        env = stub(:[]= => true, puts_error: true)
+        command = Gitsh::InternalCommand::Set.new(env, 'set', %w(foo bar))
+
+        expect(command.execute).to be_true
+      end
+
+      it 'returns false with invalid arguments' do
+        env = stub(:[]= => true, puts_error: true)
+        command = Gitsh::InternalCommand::Set.new(env, 'set', %w(foo))
+
+        expect(command.execute).to be_false
       end
     end
   end

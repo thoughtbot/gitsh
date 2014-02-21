@@ -6,7 +6,7 @@ describe 'Escaping commands' do
       gitsh.type('init ; echo Injection')
 
       expect(gitsh).not_to output /Injection/
-      expect(gitsh).to output_error /usage/
+      expect(gitsh).to output_error /echo/
     end
   end
 end
