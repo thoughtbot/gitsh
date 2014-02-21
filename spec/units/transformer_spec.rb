@@ -41,5 +41,21 @@ describe Gitsh::Transformer do
       output = transformer.apply({ var: 'author' }, env: env)
       expect(output).to eq 'Jane Doe'
     end
+
+    it 'transforms multi commands' do
+      output = transformer.apply(multi: { left: 1, right: 2 })
+      expect(output).to be_a Gitsh::Tree::Multi
+    end
+
+    it 'transforms or commands' do
+      output = transformer.apply(or: { left: 1, right: 2 })
+      expect(output).to be_a Gitsh::Tree::Or
+    end
+
+    it 'transforms and commands' do
+      output = transformer.apply(and: { left: 1, right: 2 })
+      expect(output).to be_a Gitsh::Tree::And
+    end
+
   end
 end

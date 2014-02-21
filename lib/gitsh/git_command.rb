@@ -14,6 +14,7 @@ module Gitsh
       cmd = [git, config_arguments, sub_command, args].flatten
       pid = Process.spawn(*cmd, out: env.output_stream.to_i, err: env.error_stream.to_i)
       Process.wait(pid)
+      $? && $?.success?
     end
 
     private

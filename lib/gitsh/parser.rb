@@ -1,5 +1,6 @@
 require 'parslet'
 require 'gitsh/transformer'
+require 'gitsh/tree'
 
 module Gitsh
   class Parser < Parslet::Parser
@@ -12,7 +13,35 @@ module Gitsh
       transformer.apply(parse(command), env: env)
     end
 
-    root(:command)
+    root(:program)
+
+    rule(:program) do
+      multi_command
+    end
+
+    rule(:multi_command) do
+      (
+        or_operation.as(:left) >>
+        semicolon_operator >>
+        multi_command.as(:right)
+      ).as(:multi) | or_operation
+    end
+
+    rule(:or_operation) do
+      (
+        and_operation.as(:left) >>
+        or_operator >>
+        or_operation.as(:right)
+      ).as(:or) | and_operation
+    end
+
+    rule(:and_operation) do
+      (
+        command.as(:left) >>
+        and_operator >>
+        and_operation.as(:right)
+      ).as(:and) | command
+    end
 
     rule(:command) do
       space.maybe >> command_identifier >> argument_list.maybe >> space.maybe
@@ -27,7 +56,7 @@ module Gitsh
     end
 
     rule(:unquoted_string) do
-      (variable | match(%q([^\s'"])).as(:literal)).repeat(1)
+      (variable | match(%q([^\s'"&|;])).as(:literal)).repeat(1)
     end
 
     rule(:soft_string) do
@@ -59,6 +88,18 @@ module Gitsh
 
     rule(:space) do
       match('\s').repeat(1)
+    end
+
+    rule(:and_operator) do
+      str('&&') >> space.maybe
+    end
+
+    rule(:or_operator)  do
+      str('||')  >> space.maybe
+    end
+
+    rule(:semicolon_operator)  do
+      str(';')  >> space.maybe
     end
 
     private
