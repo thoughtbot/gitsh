@@ -5,6 +5,7 @@ require 'gitsh/environment'
 require 'gitsh/history'
 require 'gitsh/interpreter'
 require 'gitsh/prompter'
+require 'gitsh/readline_blank_filter'
 require 'gitsh/version'
 
 module Gitsh
