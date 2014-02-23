@@ -18,6 +18,11 @@ describe Gitsh::Transformer do
       expect(output).to be_a Gitsh::GitCommand
     end
 
+    it 'transforms args with empty strings passed to them' do
+      output = transformer.apply({ arg: '' }, env: env)
+      expect(output).to eq ''
+    end
+
     it 'transforms internal commands' do
       output = transformer.apply({ internal_cmd: 'set' }, env: env)
       expect(output).to be_a Gitsh::InternalCommand::Set
