@@ -7,4 +7,5 @@ end
 group :test do
   gem 'rspec'
   gem 'bourne'
+  gem 'pry'
 end
