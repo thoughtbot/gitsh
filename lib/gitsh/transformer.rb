@@ -11,7 +11,7 @@ module Gitsh
       context[:env][key]
     end
 
-    rule(arg: subtree(:parts)) { parts.join('') }
+    rule(arg: subtree(:parts)) { Array(parts).join('') }
 
     rule(git_cmd: simple(:cmd)) do |context|
       GitCommand.new(context[:env], context[:cmd])
