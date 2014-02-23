@@ -7,6 +7,7 @@ module Gitsh
       end
 
       private
+
       attr_reader :left, :right
     end
 

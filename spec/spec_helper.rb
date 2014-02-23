@@ -8,6 +8,7 @@ end
 
 RSpec.configure do |config|
   config.mock_with :mocha
+  config.order = 'random'
 end
 
 Pry.config.tap do |config|
