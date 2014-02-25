@@ -42,6 +42,7 @@ module Gitsh
     def aliases
       git_output(%q(config --get-regexp '^alias\.')).
         lines.
+        grep(/^alias\./).
         map { |line| line.split(' ').first.sub(/^alias\./, '') }
     end
 
