@@ -28,6 +28,21 @@ describe Gitsh::GitCommand do
       )
     end
 
+    it 'gracefully handles accidental inclusion of "git " in command' do
+      env.stubs(config_variables: {})
+      command = described_class.new(env, 'git', ['commit', '-m', 'commit msg'])
+
+      command.execute
+
+      expect(Process).to have_received(:spawn).with(
+        '/usr/bin/env', 'git',
+        'commit',
+        '-m', 'A test commit',
+        out: env.output_stream.to_i,
+        err: env.error_stream.to_i
+      )
+    end
+
     it 'passes on configuration variables from the environment' do
       env.stubs(config_variables: {
         :'test.example' => 'This is an example',

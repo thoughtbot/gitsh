@@ -22,6 +22,7 @@ describe Gitsh::InternalCommand do
       command = described_class.new(stub('env'), 'notacommand', %w(foo bar))
       expect(command).to be_a Gitsh::InternalCommand::Unknown
     end
+
   end
 
   describe '.commands' do
