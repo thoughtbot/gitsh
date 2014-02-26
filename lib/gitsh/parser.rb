@@ -15,7 +15,7 @@ module Gitsh
     root(:command)
 
     rule(:command) do
-      space.maybe >> command_identifier >> argument_list.maybe >> space.maybe
+      space.maybe >> git_literal.maybe >> space.maybe >> command_identifier >> argument_list.maybe >> space.maybe
     end
 
     rule(:argument_list) do
@@ -59,6 +59,10 @@ module Gitsh
 
     rule(:space) do
       match('\s').repeat(1)
+    end
+
+    rule(:git_literal) do
+      str('git').repeat(0)
     end
 
     private
