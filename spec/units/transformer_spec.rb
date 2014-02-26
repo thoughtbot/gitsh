@@ -18,11 +18,8 @@ describe Gitsh::Transformer do
       expect(output).to be_a Gitsh::GitCommand
     end
 
-    it 'transforms args wit h empty strings passed to them' do
-      output = transformer.apply(
-        { arg: '' },
-        env: env
-      )
+    it 'transforms args with empty strings passed to them' do
+      output = transformer.apply({ arg: '' }, env: env)
       expect(output).to eq ''
     end
 
