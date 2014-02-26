@@ -30,7 +30,7 @@ describe Gitsh::GitCommand do
 
     it 'gracefully handles accidental inclusion of "git " in command' do
       env.stubs(config_variables: {})
-      command = described_class.new(env, 'git', ['commit', '-m', 'A test commit'])
+      command = described_class.new(env, 'git', ['commit', '-m', 'commit msg'])
 
       command.execute
 
