@@ -22,6 +22,11 @@ describe Gitsh::InternalCommand do
       command = described_class.new(stub('env'), 'notacommand', %w(foo bar))
       expect(command).to be_a Gitsh::InternalCommand::Unknown
     end
+
+    it 'gracefully handles accidental inclusion of "git " in command' do
+      command = described_class.new(stub('env'), 'git push', %w(foo bar))
+      expect(command).to_not be_a Gitsh::InternalCommand::Unknown
+    end
   end
 
   describe '.commands' do
