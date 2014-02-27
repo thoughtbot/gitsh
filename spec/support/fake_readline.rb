@@ -20,6 +20,10 @@ class FakeReadline < ModuleDelegator
     input_write << "#{string}\n"
   end
 
+  def send_eof
+    input_write.close
+  end
+
   def prompt
     prompt_queue.pop
   end
