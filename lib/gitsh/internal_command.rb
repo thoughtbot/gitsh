@@ -31,8 +31,10 @@ module Gitsh
         if valid_arguments?
           key, value = args
           env[key] = value
+          true
         else
           env.puts_error 'usage: :set variable value'
+          false
         end
       end
 
@@ -49,6 +51,7 @@ module Gitsh
           change_directory
         else
           env.puts_error 'usage: :cd path'
+          false
         end
       end
 
@@ -62,8 +65,10 @@ module Gitsh
         Dir.chdir(path)
       rescue Errno::ENOENT
         env.puts_error 'gitsh: cd: No such directory'
+        false
       rescue Errno::ENOTDIR
         env.puts_error 'gitsh: cd: Not a directory'
+        false
       end
 
       def path
@@ -80,6 +85,7 @@ module Gitsh
     class Unknown < Base
       def execute
         env.puts_error("gitsh: #{command}: command not found")
+        false
       end
     end
 

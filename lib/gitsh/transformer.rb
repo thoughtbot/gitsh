@@ -28,5 +28,18 @@ module Gitsh
     rule(internal_cmd: simple(:cmd), args: subtree(:args)) do |context|
       InternalCommand.new(context[:env], context[:cmd], context[:args])
     end
+
+    rule(multi: { left: subtree(:left), right: subtree(:right) }) do
+      Tree::Multi.new(left, right)
+    end
+
+    rule(or: { left: subtree(:left), right: subtree(:right) }) do
+      Tree::Or.new(left, right)
+    end
+
+    rule(and: { left: subtree(:left), right: subtree(:right) }) do
+      Tree::And.new(left, right)
+    end
+
   end
 end
