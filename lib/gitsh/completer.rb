@@ -75,7 +75,7 @@ module Gitsh
       end
 
       class HeadCompleter < TextCompleter
-        SEPARATORS = /(?:\.+|[:^~\\])/
+        SEPARATORS = /(?:\.\.+|[:^~\\])/
 
         def initialize(input, env)
           super(input)
