@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'gitsh/transformer'
 
 describe Gitsh::Transformer do
   describe '#apply' do
@@ -34,6 +35,19 @@ describe Gitsh::Transformer do
         env: env
       )
       expect(output).to be_a Gitsh::InternalCommand::Set
+    end
+
+    it 'transforms shell commands' do
+      output = transformer.apply({ shell_cmd: '!pwd' }, env: env)
+      expect(output).to be_a Gitsh::ShellCommand
+    end
+
+    it 'transforms shell commands with arguments' do
+      output = transformer.apply(
+        { shell_cmd: '!echo', args: [{ arg: parser_literals('Hello') }] },
+        env: env
+      )
+      expect(output).to be_a Gitsh::ShellCommand
     end
 
     it 'transforms literal arguments' do

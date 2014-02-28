@@ -32,6 +32,10 @@ describe Gitsh::Parser do
       expect(parser).to parse(':set').as(internal_cmd: 'set')
     end
 
+    it 'parses a shell command with no arguments' do
+      expect(parser).to parse('!pwd').as(shell_cmd: 'pwd')
+    end
+
     it 'parses a command with a long option argument' do
       expect(parser).to parse('log --format="%ae - %s"').as(
         git_cmd: 'log',
@@ -116,6 +120,15 @@ describe Gitsh::Parser do
           { arg: parser_literals('prefix $bar') },
           { arg: parser_literals('${bar}suffix') },
           { arg: parser_literals('$path/file') }
+        ]
+      )
+    end
+
+    it 'parses a shell command with arguments' do
+      expect(parser).to parse("!echo 'Hello World'").as(
+        shell_cmd: 'echo',
+        args: [
+          { arg: parser_literals('Hello World') }
         ]
       )
     end
