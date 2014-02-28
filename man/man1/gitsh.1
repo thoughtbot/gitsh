@@ -53,6 +53,30 @@ execute a built-in gitsh command. See the section on
 .Sx BUILT-IN COMMANDS
 for a list of supported commands.
 .El
+.Pp
+Commands can be combined using the following operators, which have similar
+semantics to
+.Xr sh 1 :
+.Bl -tag
+.It Ic left && right
+only execute
+.Ic right
+if
+.Ic left
+succeeds.
+.It Ic left || right
+only execute
+.Ic right
+if
+.Ic left
+fails.
+.It Ic left\ ; right
+execute
+.Ic left ,
+and then
+.Ic right.
+.El
+
 .
 .Sh PROMPT
 The prompt changes based on the status of the repository. By default it consist

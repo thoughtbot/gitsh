@@ -27,6 +27,16 @@ sh$</code></pre>
         nothing to commit, working directory clean
         gitsh% 
 
+* Easily execute shell commands:
+
+        gitsh% !echo Hello world
+        Hello world
+        gitsh%
+
+* Combine commands with `&&`, `||`, and `;`:
+
+        gitsh% commit && push
+
 * Make temporary modifications to your git configuration with gitsh config
   variables. These changes only effect git commands issues in this gitsh
   session and are forgotten when you exit, just like shell environment
