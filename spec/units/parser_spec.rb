@@ -32,6 +32,10 @@ describe Gitsh::Parser do
       expect(parser).to parse(':set').as(internal_cmd: 'set')
     end
 
+    it 'parses upper and lower case letters' do
+      expect(parser).to parse('STATUS').as(git_cmd: 'STATUS')
+    end
+
     it 'parses a shell command with no arguments' do
       expect(parser).to parse('!pwd').as(shell_cmd: 'pwd')
     end
