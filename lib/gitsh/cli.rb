@@ -7,6 +7,7 @@ require 'gitsh/interpreter'
 require 'gitsh/prompter'
 require 'gitsh/readline_blank_filter'
 require 'gitsh/version'
+require 'gitsh/program_name'
 
 module Gitsh
   class CLI
@@ -14,6 +15,7 @@ module Gitsh
     EX_USAGE = 64
 
     def initialize(opts={})
+      $PROGRAM_NAME = PROGRAM_NAME
       interpreter_factory = opts.fetch(:interpreter_factory, Interpreter)
 
       @env = opts.fetch(:env, Environment.new)
