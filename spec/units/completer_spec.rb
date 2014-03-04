@@ -56,6 +56,15 @@ describe Gitsh::Completer do
         end
       end
 
+      it 'completes double quoted paths' do
+        in_a_temporary_directory do
+          write_file('some text file.txt', "Some text\n")
+          completer = build_completer(input: 'add "som')
+
+          expect(completer.call('som')).to include 'some text file.txt'
+        end
+      end
+
       it 'completes heads starting with :' do
         completer = build_completer(
           input: 'checkout ',
