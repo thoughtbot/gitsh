@@ -114,7 +114,7 @@ module Gitsh
         end
 
         def suffix(path)
-          if single_quoted?
+          if quoted?
             ''
           elsif File.directory?(path)
             '/'
@@ -132,15 +132,15 @@ module Gitsh
         end
 
         def escape(path)
-          if single_quoted?
+          if quoted?
             path
           else
             path.gsub(' ', '\ ')
           end
         end
 
-        def single_quoted?
-          line_buffer[0...-input.length].end_with?("'")
+        def quoted?
+          line_buffer[0...-input.length].end_with?('"', "'")
         end
       end
 
