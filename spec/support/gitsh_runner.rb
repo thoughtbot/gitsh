@@ -11,49 +11,31 @@ class GitshRunner
   UP_ARROW = "\033[A"
 
   def self.interactive(options={}, &block)
-    new.run_interactive(options, &block)
+    new(options).run_interactive(&block)
   end
 
-  def initialize
+  def initialize(options)
     @output_stream = Tempfile.new('stdout')
     @error_stream = Tempfile.new('stderr')
     @readline = FakeReadline.new
     @position_before_command = 0
     @error_position_before_command = 0
+    @options = options
   end
 
-  def run_interactive(options={})
+  def run_interactive
     runner = nil
-    in_a_temporary_directory do
-      setup_env(options.fetch(:env, {}))
+    with_a_temporary_home_directory do
+      in_a_temporary_directory do
+        setup_unix_env
+        runner = start_runner_thread
+        wait_for_prompt
 
-      Thread.abort_on_exception = true
-      runner = Thread.new do
-        env = Gitsh::Environment.new(
-          output_stream: output_stream,
-          error_stream: error_stream
-        )
-        env['gitsh.historyFile'] = File.join(Dir.tmpdir, 'gitsh_test_history')
-        options.fetch(:settings, {}).each do |key, value|
-          env[key] = value
-        end
-        cli = Gitsh::CLI.new(
-          args: options.fetch(:args, []),
-          env: env,
-          readline: readline
-        )
-        begin
-          cli.run
-        rescue SystemExit
-        end
+        yield(self)
+
+        readline.type(':exit')
+        runner.join
       end
-
-      wait_for_prompt
-
-      yield(self)
-
-      readline.type(':exit')
-      runner.join
     end
   rescue RSpec::Expectations::ExpectationNotMetError => e
     runner.kill
@@ -88,13 +70,44 @@ class GitshRunner
 
   private
 
-  attr_reader :output_stream, :error_stream, :readline
+  attr_reader :output_stream, :error_stream, :readline, :options
+
+  def start_runner_thread
+    Thread.abort_on_exception = true
+    Thread.new do
+      begin
+        cli.run
+      rescue SystemExit
+      end
+    end
+  end
+
+  def cli
+    Gitsh::CLI.new(
+      args: options.fetch(:args, []),
+      env: env,
+      readline: readline
+    )
+  end
+
+  def env
+    env = Gitsh::Environment.new(
+      output_stream: output_stream,
+      error_stream: error_stream
+    )
+    env['gitsh.historyFile'] = File.join(Dir.tmpdir, 'gitsh_test_history')
+    options.fetch(:settings, {}).each do |key, value|
+      env[key] = value
+    end
+    env
+  end
 
   def wait_for_prompt
     @prompt = readline.prompt
   end
 
-  def setup_env(env)
+  def setup_unix_env
+    env = options.fetch(:env, {})
     {'TERM' => 'vt220'}.merge(env).each do |key, value|
       ENV[key] = value
     end
