@@ -96,7 +96,7 @@ describe Gitsh::Parser do
       )
     end
 
-    it 'parses a command with unquoted arguments containing escaped spaces, quotes and slashes' do
+    it 'parses a command with unquoted arguments containing escaped characters' do
       expect(parser).to parse(%q(add some\ file.txt hello\"world \\)).as(
         git_cmd: 'add',
         args: [
@@ -147,7 +147,7 @@ describe Gitsh::Parser do
       )
     end
 
-    it 'parses a command with string arguments containing escaped spaces, quotes and slashes' do
+    it 'parses a command with string arguments containing escaped characters' do
       expect(parser).to parse(%q(commit "It's\ \"great\"" "C:\\foo\bar")).as(
         git_cmd: 'commit',
         args: [
