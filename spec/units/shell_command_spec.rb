@@ -33,6 +33,13 @@ describe Gitsh::ShellCommand do
 
       expect(command.execute).to eq false
     end
+
+    it 'returns false when Process.spawn raises' do
+      Process.stubs(:spawn).raises(Errno::ENOENT, 'No such file')
+      command = described_class.new(env, 'badcommand', ['Hello world'])
+
+      expect(command.execute).to eq false
+    end
   end
 
   def ensure_exit_status_exists
@@ -43,7 +50,8 @@ describe Gitsh::ShellCommand do
   let(:env) do
     stub('Environment',
       output_stream: stub(to_i: 1),
-      error_stream: stub(to_i: 2)
+      error_stream: stub(to_i: 2),
+      puts_error: nil
     )
   end
 end

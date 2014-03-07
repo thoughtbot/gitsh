@@ -18,4 +18,13 @@ describe 'Executing a shell command' do
       expect(gitsh).to output(Dir.getwd)
     end
   end
+
+  it 'handles errors gracefully' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type '!notarealcommand'
+
+      expect(gitsh).to output_error(/No such file or directory - notarealcommand/)
+      expect(gitsh).to output_nothing
+    end
+  end
 end
