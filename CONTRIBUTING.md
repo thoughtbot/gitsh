@@ -20,7 +20,7 @@ We love pull requests. Here's a quick guide:
    to know that you have a clean slate:
 
         bundle
-        rspec
+        make check
 
 4. Add a test for your change. Only refactoring and documentation changes
    require no new tests. If you are adding functionality or fixing a bug, we
@@ -43,6 +43,21 @@ Some things that will increase the chance that your pull request is accepted:
 * Follow the [thoughtbot style guide][style-guide].
 
 And in case we didn't emphasize it enough: we love tests!
+
+## Testing
+
+We use the autotools structure for running tests. To run the full suite,
+use the `check` target:
+
+    make check
+
+You can run a subset of the tests by file name:
+
+    env TESTS="spec/integration/tab_completion_spec" make -e check
+
+The full test output is available in `test-suite.log`, and partial
+output is available in the log for the test itself (e.g.
+`spec/integration/arguments_spec.log`).
 
 ## Releasing a new version
 

@@ -13,6 +13,7 @@ configure.scan
 install-sh
 missing
 depcomp
+test-driver
 
 # Make targets
 src/gitsh
@@ -24,3 +25,8 @@ vendor/gems
 gh-pages
 homebrew-formulae
 release-arch
+
+# Test output
+spec/**/*log
+test-suite.log
+spec/**/*trs
