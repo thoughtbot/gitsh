@@ -15,6 +15,9 @@ module Gitsh
       )
       Process.wait(pid)
       $? && $?.success?
+    rescue SystemCallError => e
+      env.puts_error e.message
+      false
     end
 
     private
