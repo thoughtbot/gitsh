@@ -7,9 +7,8 @@ module Gitsh
     end
 
     def execute
-      cmd = [command, args].flatten
       pid = Process.spawn(
-        *cmd,
+        *command_with_arguments,
         out: env.output_stream.to_i,
         err: env.error_stream.to_i
       )
@@ -23,5 +22,9 @@ module Gitsh
     private
 
     attr_reader :env, :command, :args
+
+    def command_with_arguments
+      [command, args].flatten
+    end
   end
 end
