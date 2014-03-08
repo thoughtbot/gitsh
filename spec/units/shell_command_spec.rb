@@ -4,7 +4,7 @@ require 'gitsh/shell_command'
 describe Gitsh::ShellCommand do
   describe '#execute' do
     before do
-      Process.stubs(spawn: 1, wait: nil)
+      Process.stubs(spawn: 1, wait: nil, kill: nil)
       ensure_exit_status_exists
     end
 
@@ -39,6 +39,18 @@ describe Gitsh::ShellCommand do
       command = described_class.new(env, 'badcommand', ['Hello world'])
 
       expect(command.execute).to eq false
+    end
+
+    it 'forwards interrupts to the child process' do
+      pid = 12
+      Process.stubs(:spawn).returns(pid)
+      Process.stubs(:wait).with(pid).raises(Interrupt).then.returns(nil)
+      command = described_class.new(env, 'vim', [])
+
+      command.execute
+
+      expect(Process).to have_received(:wait).with(pid).twice
+      expect(Process).to have_received(:kill).with('INT', pid).once
     end
   end
 
