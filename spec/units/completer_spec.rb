@@ -66,9 +66,14 @@ describe Gitsh::Completer do
       end
 
       it 'completes paths beginning with a ~ character' do
-        completer = build_completer(input: 'add ')
+        with_a_temporary_home_directory do
+          completer = build_completer(input: 'add ')
+          Dir.chdir do
+            FileUtils.touch('file')
+          end
 
-        expect(completer.call('~/')).to include "#{first_regular_file('~')} "
+          expect(completer.call('~/')).to include "#{first_regular_file('~')} "
+        end
       end
 
       it 'completes paths containing .. and .' do
@@ -77,6 +82,12 @@ describe Gitsh::Completer do
         path = File.join(project_root, 'spec/./units/../units')
 
         expect(completer.call("#{path}/")).to include "#{first_regular_file(path)} "
+      end
+
+      it 'completes directories with a trailing slash' do
+        completer = build_completer(input: 'add ')
+
+        expect(completer.call('../')).to include "#{first_directory('..')}/"
       end
     end
   end
@@ -98,6 +109,13 @@ describe Gitsh::Completer do
     expanded_directory = File.expand_path(directory)
     Dir["#{expanded_directory}/*"].
       find { |path| File.file?(path) }.
+      sub(expanded_directory, directory)
+  end
+
+  def first_directory(directory)
+    expanded_directory = File.expand_path(directory)
+    Dir["#{expanded_directory}/*"].
+      find { |path| File.directory?(path) }.
       sub(expanded_directory, directory)
   end
 end
