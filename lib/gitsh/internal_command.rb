@@ -45,6 +45,13 @@ module Gitsh
       end
     end
 
+    class Echo < Base
+      def execute
+        env.puts args.join(' ')
+        true
+      end
+    end
+
     class Chdir < Base
       def execute
         if valid_arguments?
@@ -92,7 +99,8 @@ module Gitsh
     COMMAND_CLASSES = {
       set: Set,
       cd: Chdir,
-      exit: Exit
+      exit: Exit,
+      echo: Echo,
     }.freeze
   end
 end

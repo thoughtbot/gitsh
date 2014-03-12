@@ -76,7 +76,6 @@ execute
 and then
 .Ic right.
 .El
-
 .
 .Sh PROMPT
 The prompt changes based on the status of the repository. By default it consist
@@ -123,7 +122,6 @@ would produce prompts like
 and
 .Ic (uninitialized)/home/me!!
 .Sh BUILT-IN COMMANDS
-.Pp
 Built-in commands are used to give instructions to the shell. To distinguish
 them from git commands, and to avoid collisions with git aliases and
 extensions, they are prefixed with a
@@ -157,6 +155,18 @@ variables, whether or not they were set using the
 command.
 .Bd -literal -offset indent
 @ commit -m "Commited by $user.name"
+.Ed
+.It Ic :echo string ...
+prints the given strings to standard output, followed by a newline. All
+whitespace is collapsed into one space. This can be useful for viewing
+the value of a variable:
+.Bd -literal -offset indent
+@ :echo $user.name
+.Ed
+.Pp
+Or for a mix of variables and arbitrary strings:
+.Bd -literal -offset indent
+@ :echo "This is ${user.name}'s work"
 .Ed
 .It Ic :cd path
 changes directory to the given path.
