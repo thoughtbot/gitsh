@@ -58,4 +58,14 @@ describe 'Gitsh variables' do
       expect(gitsh).to output_error /usage: :set variable value/
     end
   end
+
+  it 'allows echoing of set variables' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type(':set greeting hello')
+      gitsh.type(':echo $greeting')
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output /hello/
+    end
+  end
 end

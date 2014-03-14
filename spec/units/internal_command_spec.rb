@@ -26,7 +26,7 @@ describe Gitsh::InternalCommand do
 
   describe '.commands' do
     it 'returns a list of recognised commands' do
-      expect(described_class.commands).to eq %w( :set :cd :exit )
+      expect(described_class.commands).to eq %w( :set :cd :exit :echo )
     end
   end
 
@@ -71,6 +71,26 @@ describe Gitsh::InternalCommand do
         command = Gitsh::InternalCommand::Set.new(env, 'set', %w(foo))
 
         expect(command.execute).to be_false
+      end
+    end
+  end
+
+  describe Gitsh::InternalCommand::Echo do
+    describe '#execute' do
+      it 'prints all arguments to the environment joined with a space' do
+        env = stub('env', puts: nil)
+        command = Gitsh::InternalCommand::Echo.new(env, 'echo', %w(foo bar))
+
+        expect(command.execute).to be_true
+        expect(env).to have_received(:puts).with('foo bar')
+      end
+
+      it 'prints a newline when no arguments are passed' do
+        env = stub('env', puts: nil)
+        command = Gitsh::InternalCommand::Echo.new(env, 'echo', [])
+
+        expect(command.execute).to be_true
+        expect(env).to have_received(:puts).with('')
       end
     end
   end
