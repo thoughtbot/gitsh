@@ -1,4 +1,5 @@
-dist_pkgruby_DATA = $(libfiles) version.rb
+pkgruby_DATA = version.rb
+dist_pkgruby_DATA = $(libfiles)
 CLEANFILES = version.rb
 EXTRA_DIST = version.rb.in
 
