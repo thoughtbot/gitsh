@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = src man lib/gitsh vendor
+SUBDIRS = src man lib/gitsh vendor spec
 EXTRA_DIST = LICENSE README.md
 
 .PHONY: release \

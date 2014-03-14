@@ -34,6 +34,7 @@ rubydir=$datadir/$PACKAGE/ruby
 pkgrubydir=$rubydir/$PACKAGE
 libfiles="$(cd "$(dirname "$0")/lib/gitsh"; echo *.rb)"
 vendorfiles="$(cd "$(dirname "$0")/vendor"; echo $(find gems -type f))"
+testfiles="$(cd "$(dirname "$0")/spec"; echo $(find integration units -type f -name \*rb))"
 gemsetuppath=$datadir/$PACKAGE/gems/setup.rb
 
 AC_SUBST([RUBY])
@@ -41,7 +42,8 @@ AC_SUBST([rubydir])
 AC_SUBST([pkgrubydir])
 AC_SUBST([libfiles])
 AC_SUBST([vendorfiles])
+AC_SUBST([testfiles])
 AC_SUBST([gemsetuppath])
 
-AC_CONFIG_FILES([Makefile src/Makefile lib/gitsh/Makefile man/Makefile vendor/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile lib/gitsh/Makefile man/Makefile vendor/Makefile spec/Makefile])
 AC_OUTPUT
