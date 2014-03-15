@@ -59,6 +59,12 @@ The full test output is available in `test-suite.log`, and partial
 output is available in the log for the test itself (e.g.
 `spec/integration/arguments_spec.log`).
 
+## Manual testing
+
+To run your cloned version of gitsh locally, simply run:
+
+    ./bin/gitsh
+
 ## Releasing a new version
 
 gitsh is packaged and installed using GNU autotools.
