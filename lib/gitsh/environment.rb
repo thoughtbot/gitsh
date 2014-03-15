@@ -43,6 +43,10 @@ module Gitsh
       error_stream.puts(*args)
     end
 
+    def repo_remotes
+      repo.remotes
+    end
+
     def repo_heads
       repo.heads
     end
