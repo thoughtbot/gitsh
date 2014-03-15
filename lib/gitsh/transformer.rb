@@ -10,7 +10,7 @@ module Gitsh
         command_class.new(context[:env], context[:cmd])
       end
 
-      rule(type => simple(:cmd), args: subtree(:args)) do |context|
+      rule(type => simple(:cmd), args: sequence(:args)) do |context|
         command_class.new(context[:env], context[:cmd], context[:args])
       end
     end
