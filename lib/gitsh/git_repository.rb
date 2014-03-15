@@ -46,6 +46,10 @@ module Gitsh
         map { |line| line.split(' ').first.sub(/^alias\./, '') }
     end
 
+    def remotes
+      git_output('remote').lines
+    end
+
     def config(name, default=nil)
       command = git_command("config --get #{Shellwords.escape(name)}")
       out, err, status = Open3.capture3(command)

@@ -89,6 +89,16 @@ describe Gitsh::Completer do
 
         expect(completer.call('../')).to include "#{first_directory('..')}/"
       end
+
+      it 'completes remotes' do
+        completer = build_completer(
+          input: 'fetch ',
+          repo_remotes: %w( origin upstream )
+        )
+
+        expect(completer.call('')).to include 'upstream ', 'origin '
+        expect(completer.call('up')).to include 'upstream '
+      end
     end
   end
 
@@ -97,7 +107,8 @@ describe Gitsh::Completer do
     env = stub('Environment', {
       git_commands: options.fetch(:git_commands, %w( add commit )),
       git_aliases: options.fetch(:git_aliases, %w( graph )),
-      repo_heads: options.fetch(:repo_heads, %w( master ))
+      repo_heads: options.fetch(:repo_heads, %w( master )),
+      repo_remotes: options.fetch(:repo_remotes, %w( remote )),
     })
     internal_command = stub('InternalCommand', {
       commands: options.fetch(:internal_commands, %w( :set :exit ))

@@ -30,7 +30,7 @@ module Gitsh
 
       def available_completers
         if completing_arguments?
-          [heads, paths]
+          [heads, paths, remotes]
         else
           [commands]
         end
@@ -52,6 +52,10 @@ module Gitsh
 
       def paths
         PathCompleter.new(input)
+      end
+
+      def remotes
+        RemoteCompleter.new(input, env)
       end
 
       class TextCompleter
@@ -132,6 +136,25 @@ module Gitsh
 
         def collection
           env.git_commands + env.git_aliases + internal_command.commands
+        end
+
+        def matchable_input
+          input
+        end
+      end
+
+      class RemoteCompleter < TextCompleter
+        def initialize(input, env)
+          super(input)
+          @env = env
+        end
+
+        private
+
+        attr_reader :env
+
+        def collection
+          env.repo_remotes
         end
 
         def matchable_input
