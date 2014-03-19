@@ -140,7 +140,11 @@ module Gitsh
         end
 
         def completing_quoted_argument?
-          @_quoted ||= line_buffer[0...-input.length].end_with?('"', "'")
+          @_quoted ||= input_before_current_argument.end_with?('"', "'")
+        end
+
+        def input_before_current_argument
+          line_buffer[0...-input.length]
         end
       end
 
