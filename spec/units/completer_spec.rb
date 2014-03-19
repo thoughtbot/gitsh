@@ -56,7 +56,7 @@ describe Gitsh::Completer do
         end
       end
 
-      it 'completes double quoted paths' do
+      it 'completes double quoted paths without escaping spaces' do
         in_a_temporary_directory do
           write_file('some text file.txt', "Some text\n")
           completer = build_completer(input: 'add "som')
@@ -65,7 +65,7 @@ describe Gitsh::Completer do
         end
       end
 
-      it 'completes single quoted paths' do
+      it 'completes single quoted paths without escaping spaces' do
         in_a_temporary_directory do
           write_file('some text file.txt', "Some text\n")
           completer = build_completer(input: "add 'som")
