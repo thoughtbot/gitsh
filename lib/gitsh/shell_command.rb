@@ -7,13 +7,12 @@ module Gitsh
     end
 
     def execute
-      cmd = [command, args].flatten
       pid = Process.spawn(
-        *cmd,
+        *command_with_arguments,
         out: env.output_stream.to_i,
         err: env.error_stream.to_i
       )
-      Process.wait(pid)
+      wait_for_process(pid)
       $? && $?.success?
     rescue SystemCallError => e
       env.puts_error e.message
@@ -23,5 +22,16 @@ module Gitsh
     private
 
     attr_reader :env, :command, :args
+
+    def command_with_arguments
+      [command, args].flatten
+    end
+
+    def wait_for_process(pid)
+      Process.wait(pid)
+    rescue Interrupt
+      Process.kill('INT', pid)
+      retry
+    end
   end
 end
