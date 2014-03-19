@@ -106,8 +106,8 @@ describe Gitsh::Completer do
     readline = stub('Readline', line_buffer: options.fetch(:input))
     env = stub('Environment', {
       git_commands: options.fetch(:git_commands, %w( add commit )),
-      git_aliases:  options.fetch(:git_aliases,  %w( graph )),
-      repo_heads:   options.fetch(:repo_heads,   %w( master )),
+      git_aliases: options.fetch(:git_aliases, %w( graph )),
+      repo_heads: options.fetch(:repo_heads, %w( master )),
       repo_remotes: options.fetch(:repo_remotes, %w( remote )),
     })
     internal_command = stub('InternalCommand', {
