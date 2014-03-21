@@ -47,6 +47,33 @@ describe Gitsh::Completer do
         expect(completer.call('fix-v1.')).to include 'fix-v1.5 ', 'fix-v1.6 '
       end
 
+      it 'completes heads starting with :' do
+        completer = build_completer(
+          input: 'checkout ',
+          repo_heads: %w( master my-feature )
+        )
+
+        expect(completer.call('master:m')).to include 'master:my-feature '
+      end
+
+      it 'ignores input before punctuation when completing heads' do
+        completer = build_completer(
+          input: 'checkout ',
+          repo_heads: %w( master my-feature )
+        )
+
+        expect(completer.call('mas:')).to include 'mas:master ', 'mas:my-feature '
+      end
+
+      it 'completes quoted heads' do
+        completer = build_completer(
+          input: 'checkout "mas',
+          repo_heads: %w( master )
+        )
+
+        expect(completer.call('mas')).to include 'master'
+      end
+
       it 'completes paths containing spaces' do
         in_a_temporary_directory do
           write_file('some text file.txt', "Some text\n")
@@ -72,24 +99,6 @@ describe Gitsh::Completer do
 
           expect(completer.call('som')).to include 'some text file.txt'
         end
-      end
-
-      it 'completes heads starting with :' do
-        completer = build_completer(
-          input: 'checkout ',
-          repo_heads: %w( master my-feature )
-        )
-
-        expect(completer.call('master:m')).to include 'master:my-feature '
-      end
-
-      it 'ignores input before punctuation when completing heads' do
-        completer = build_completer(
-          input: 'checkout ',
-          repo_heads: %w( master my-feature )
-        )
-
-        expect(completer.call('mas:')).to include 'mas:master ', 'mas:my-feature '
       end
 
       it 'completes paths beginning with a ~ character' do
