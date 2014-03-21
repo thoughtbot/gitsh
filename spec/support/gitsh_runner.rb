@@ -86,20 +86,27 @@ class GitshRunner
     Gitsh::CLI.new(
       args: options.fetch(:args, []),
       env: env,
-      readline: readline
+      interactive_runner: interactive_runner
+    )
+  end
+
+  def interactive_runner
+    Gitsh::InteractiveRunner.new(
+      readline: readline,
+      env: env
     )
   end
 
   def env
-    env = Gitsh::Environment.new(
+    @env ||= Gitsh::Environment.new(
       output_stream: output_stream,
       error_stream: error_stream
-    )
-    env['gitsh.historyFile'] = File.join(Dir.tmpdir, 'gitsh_test_history')
-    options.fetch(:settings, {}).each do |key, value|
-      env[key] = value
+    ).tap do |env|
+      env['gitsh.historyFile'] = File.join(Dir.tmpdir, 'gitsh_test_history')
+      options.fetch(:settings, {}).each do |key, value|
+        env[key] = value
+      end
     end
-    env
   end
 
   def wait_for_prompt

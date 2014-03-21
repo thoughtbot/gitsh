@@ -1,13 +1,8 @@
-require 'readline'
 require 'optparse'
-require 'gitsh/completer'
 require 'gitsh/environment'
-require 'gitsh/history'
-require 'gitsh/interpreter'
-require 'gitsh/prompter'
-require 'gitsh/readline_blank_filter'
-require 'gitsh/version'
+require 'gitsh/interactive_runner'
 require 'gitsh/program_name'
+require 'gitsh/version'
 
 module Gitsh
   class CLI
@@ -16,13 +11,13 @@ module Gitsh
 
     def initialize(opts={})
       $PROGRAM_NAME = PROGRAM_NAME
-      interpreter_factory = opts.fetch(:interpreter_factory, Interpreter)
 
       @env = opts.fetch(:env, Environment.new)
-      @interpreter = interpreter_factory.new(@env)
-      @readline = ReadlineBlankFilter.new(opts.fetch(:readline, Readline))
       @unparsed_args = opts.fetch(:args, ARGV).clone
-      @history = opts.fetch(:history, History.new(@env, @readline))
+      @interactive_runner = opts.fetch(
+        :interactive_runner,
+        InteractiveRunner.new(env: @env)
+      )
     end
 
     def run
@@ -30,59 +25,13 @@ module Gitsh
       if unparsed_args.any?
         exit_with_usage_message
       else
-        run_interactive
+        interactive_runner.run
       end
     end
 
     private
 
-    attr_reader :env, :readline, :unparsed_args, :interpreter, :history
-
-    def run_interactive
-      history.load
-      setup_readline
-      greet_user
-      interactive_loop
-    ensure
-      history.save
-    end
-
-    def setup_readline
-      readline.completion_append_character = nil
-      readline.completion_proc = Completer.new(readline, env)
-    end
-
-    def interactive_loop
-      while command = read_command
-        interpreter.execute(command)
-      end
-      env.print "\n"
-    rescue Interrupt
-      env.print "\n"
-      retry
-    end
-
-    def read_command
-      command = readline.readline(prompt, true)
-      if command && command.empty?
-        env.fetch('gitsh.defaultCommand', 'status')
-      else
-        command
-      end
-    end
-
-    def prompt
-      prompter.prompt
-    end
-
-    def prompter
-      @prompter ||= Prompter.new(env: env, color: color_support?)
-    end
-
-    def color_support?
-      output, error, exit_status = Open3.capture3('tput colors')
-      exit_status.success? && output.chomp.to_i > 0
-    end
+    attr_reader :env, :unparsed_args, :interactive_runner
 
     def exit_with_usage_message
       env.puts_error option_parser.banner
@@ -112,12 +61,6 @@ module Gitsh
           env.puts opts
           exit EX_OK
         end
-      end
-    end
-
-    def greet_user
-      unless env['gitsh.noGreeting'] == 'true'
-        env.puts "gitsh #{Gitsh::VERSION}\nType :exit to exit"
       end
     end
   end
