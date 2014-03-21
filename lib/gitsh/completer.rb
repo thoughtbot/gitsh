@@ -21,7 +21,7 @@ module Gitsh
       end
 
       def complete
-        available_completers.map(&:completions).flatten
+        available_completers.map(&:completions).flatten.map { |arg| escape(arg) }
       end
 
       private
@@ -37,9 +37,28 @@ module Gitsh
       end
 
       def completing_arguments?
-        full_input = readline.line_buffer
         tokens = full_input.split
         tokens.any? && full_input.end_with?(' ') || tokens.size > 1
+      end
+
+      def completing_quoted_argument?
+        @_quoted ||= input_before_current_argument.end_with?('"', "'")
+      end
+
+      def full_input
+        readline.line_buffer
+      end
+
+      def input_before_current_argument
+        full_input[0...-input.length]
+      end
+
+      def escape(arg)
+        if completing_quoted_argument?
+          arg.strip
+        else
+          arg.gsub(/ (.)/, '\ \1')
+        end
       end
 
       def commands
@@ -51,7 +70,7 @@ module Gitsh
       end
 
       def paths
-        PathCompleter.new(input, readline.line_buffer)
+        PathCompleter.new(input)
       end
 
       def remotes
@@ -100,23 +119,14 @@ module Gitsh
       end
 
       class PathCompleter < TextCompleter
-        def initialize(input, line_buffer)
-          super(input)
-          @line_buffer = line_buffer
-        end
-
         private
 
-        attr_reader :line_buffer
-
         def collection
-          Dir["#{matchable_input}*"].map { |path| escape(path) }
+          Dir["#{matchable_input}*"]
         end
 
         def suffix(path)
-          if completing_quoted_argument?
-            ''
-          elsif File.directory?(path)
+          if File.directory?(path)
             '/'
           else
             ' '
@@ -129,22 +139,6 @@ module Gitsh
           else
             File.expand_path(input)
           end
-        end
-
-        def escape(path)
-          if completing_quoted_argument?
-            path
-          else
-            path.gsub(' ', '\ ')
-          end
-        end
-
-        def completing_quoted_argument?
-          @_quoted ||= input_before_current_argument.end_with?('"', "'")
-        end
-
-        def input_before_current_argument
-          line_buffer[0...-input.length]
         end
       end
 
