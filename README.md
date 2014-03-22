@@ -77,6 +77,12 @@ sh$</code></pre>
         make
         sudo make install
 
+* With rubygems from source:
+
+        ./autogen.sh
+        make
+        gem build gitsh.gemspec && gem install gitsh-0.5.gem
+
 ## Contributing to gitsh
 
 Pull requests are very welcome. See the [contributing guide][CONTRIBUTING] for

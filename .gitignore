@@ -20,6 +20,7 @@ src/gitsh
 lib/gitsh/version.rb
 gitsh-*.tar.gz
 vendor/gems
+*.gem
 
 # Sub-repositories for release
 gh-pages
