@@ -1,3 +1,9 @@
+PATH
+  remote: .
+  specs:
+    gitsh (0.5)
+      parslet
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -31,6 +37,6 @@ PLATFORMS
 
 DEPENDENCIES
   bourne
-  parslet
+  gitsh!
   pry
   rspec
