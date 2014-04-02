@@ -36,14 +36,6 @@ module Gitsh
         end
       end
 
-      def full_input
-        readline.line_buffer
-      end
-
-      def input_before_current_argument
-        full_input[0...-input.length]
-      end
-
       def escape(arg)
         if completing_quoted_argument?
           arg.strip
@@ -59,6 +51,14 @@ module Gitsh
 
       def completing_quoted_argument?
         @_quoted ||= input_before_current_argument.end_with?('"', "'")
+      end
+
+      def input_before_current_argument
+        full_input[0...-input.length]
+      end
+
+      def full_input
+        readline.line_buffer
       end
 
       def commands
