@@ -36,15 +36,6 @@ module Gitsh
         end
       end
 
-      def completing_arguments?
-        tokens = full_input.split
-        tokens.any? && full_input.end_with?(' ') || tokens.size > 1
-      end
-
-      def completing_quoted_argument?
-        @_quoted ||= input_before_current_argument.end_with?('"', "'")
-      end
-
       def full_input
         readline.line_buffer
       end
@@ -59,6 +50,15 @@ module Gitsh
         else
           arg.gsub(/ (.)/, '\ \1')
         end
+      end
+
+      def completing_arguments?
+        tokens = full_input.split
+        tokens.any? && full_input.end_with?(' ') || tokens.size > 1
+      end
+
+      def completing_quoted_argument?
+        @_quoted ||= input_before_current_argument.end_with?('"', "'")
       end
 
       def commands
