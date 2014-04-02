@@ -21,7 +21,7 @@ module Gitsh
       end
 
       def complete
-        available_completers.map(&:completions).flatten.map { |arg| escape(arg) }
+        available_completers.flat_map(&:completions).map { |arg| escape(arg) }
       end
 
       private
