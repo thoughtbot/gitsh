@@ -62,7 +62,10 @@ describe Gitsh::Completer do
           repo_heads: %w( master my-feature )
         )
 
-        expect(completer.call('mas:')).to include 'mas:master ', 'mas:my-feature '
+        expect(completer.call('mas:')).to include(
+          'mas:master ',
+          'mas:my-feature '
+        )
       end
 
       it 'completes quoted heads' do
