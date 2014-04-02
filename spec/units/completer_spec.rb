@@ -80,9 +80,13 @@ describe Gitsh::Completer do
       it 'completes paths containing spaces' do
         in_a_temporary_directory do
           write_file('some text file.txt', "Some text\n")
+          write_file('some  other  file.txt', "Some other text\n")
           completer = build_completer(input: 'add ')
 
-          expect(completer.call('som')).to include 'some\ text\ file.txt '
+          expect(completer.call('som')).to include(
+            'some\ text\ file.txt ',
+            'some\ \ other\ \ file.txt '
+          )
         end
       end
 

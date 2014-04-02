@@ -48,7 +48,7 @@ module Gitsh
         if completing_quoted_argument?
           arg.strip
         else
-          arg.gsub(/ (.)/, '\ \1')
+          arg.gsub(/ (?!$)/, '\ ')
         end
       end
 
