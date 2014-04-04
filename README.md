@@ -70,9 +70,9 @@ sh$</code></pre>
 
 * On other operating systems:
 
-        curl -O http://thoughtbot.github.io/gitsh/gitsh-0.5.tar.gz
-        tar -zxf gitsh-0.5.tar.gz
-        cd gitsh-0.5
+        curl -O http://thoughtbot.github.io/gitsh/gitsh-0.6.tar.gz
+        tar -zxf gitsh-0.6.tar.gz
+        cd gitsh-0.6
         ./configure
         make
         sudo make install
