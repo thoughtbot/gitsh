@@ -36,7 +36,7 @@ class FakeReadline < ModuleDelegator
     if ENV['DEBUG']
       $stdout
     else
-      File.open(Tempfile.new('readline_out').path)
+      File.open(Tempfile.new('readline_out').path, 'w')
     end
   end
 end
