@@ -5,14 +5,24 @@ module Gitsh
     DEFAULT_GIT_COMMAND = '/usr/bin/env git'.freeze
 
     attr_reader :output_stream, :error_stream
-    attr_accessor :git_command
 
     def initialize(options={})
       @output_stream = options.fetch(:output_stream, $stdout)
       @error_stream = options.fetch(:error_stream, $stderr)
-      @git_command = DEFAULT_GIT_COMMAND
       @variables = Hash.new
       @repo = options.fetch(:repository_factory, Gitsh::GitRepository).new(self)
+    end
+
+    def git_command(force_default = false)
+      if force_default
+        DEFAULT_GIT_COMMAND
+      else
+        fetch('gitsh.gitCommand', DEFAULT_GIT_COMMAND, true)
+      end
+    end
+
+    def git_command=(git_command)
+      self['gitsh.gitCommand'] = git_command
     end
 
     def [](key)
@@ -23,8 +33,11 @@ module Gitsh
       variables[key.to_sym] = value
     end
 
-    def fetch(key, default)
-      variables.fetch(key.to_sym, repo.config(key.to_s, default))
+    def fetch(key, default, force_default_git_command = false)
+      variables.fetch(
+        key.to_sym,
+        repo.config(key.to_s, default, force_default_git_command)
+      )
     end
 
     def config_variables

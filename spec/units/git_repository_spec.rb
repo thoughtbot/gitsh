@@ -19,46 +19,54 @@ describe Gitsh::GitRepository do
 
   describe '#current_head' do
     it 'returns the name of the current git branch' do
-      in_a_temporary_directory do
-        repo = Gitsh::GitRepository.new(env)
-        run 'git init'
-        expect(repo.current_head).to eq 'master'
-        run 'git checkout -b my-feature'
-        expect(repo.current_head).to eq 'my-feature'
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          run 'git init'
+          expect(repo.current_head).to eq 'master'
+          run 'git checkout -b my-feature'
+          expect(repo.current_head).to eq 'my-feature'
+        end
       end
     end
 
     it 'returns the name of the current git branch with a forward slash' do
-      in_a_temporary_directory do
-        repo = Gitsh::GitRepository.new(env)
-        run 'git init'
-        run 'git checkout -b feature/foo'
-        expect(repo.current_head).to eq 'feature/foo'
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          run 'git init'
+          run 'git checkout -b feature/foo'
+          expect(repo.current_head).to eq 'feature/foo'
+        end
       end
     end
 
     it 'returns the name of an annotated tag if there is no branch' do
-      in_a_temporary_directory do
-        repo = Gitsh::GitRepository.new(env)
-        run 'git init'
-        run 'git commit --allow-empty -m "First"'
-        run 'git tag -m "Tag pointing to first" first'
-        run 'git commit --allow-empty -m "Second"'
-        run 'git checkout first'
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          run 'git init'
+          run 'git commit --allow-empty -m "First"'
+          run 'git tag -m "Tag pointing to first" first'
+          run 'git commit --allow-empty -m "Second"'
+          run 'git checkout first'
 
-        expect(repo.current_head).to eq 'first'
+          expect(repo.current_head).to eq 'first'
+        end
       end
     end
 
     it 'returns the an abbreviated SHA if there is no branch or tag' do
-      in_a_temporary_directory do
-        repo = Gitsh::GitRepository.new(env)
-        run 'git init'
-        run 'git commit --allow-empty -m "First"'
-        run 'git commit --allow-empty -m "Second"'
-        run 'git checkout HEAD^'
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          run 'git init'
+          run 'git commit --allow-empty -m "First"'
+          run 'git commit --allow-empty -m "Second"'
+          run 'git checkout HEAD^'
 
-        expect(repo.current_head).to match /^[a-f0-9]{7}...$/
+          expect(repo.current_head).to match /^[a-f0-9]{7}...$/
+        end
       end
     end
 
@@ -72,41 +80,47 @@ describe Gitsh::GitRepository do
 
   context '#has_untracked_files?' do
     it 'returns true when there are untracked files in the repository' do
-      in_a_temporary_directory do
-        repo = Gitsh::GitRepository.new(env)
-        run 'git init'
-        expect(repo).not_to have_untracked_files
-        write_file 'example.txt'
-        expect(repo).to have_untracked_files
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          run 'git init'
+          expect(repo).not_to have_untracked_files
+          write_file 'example.txt'
+          expect(repo).to have_untracked_files
+        end
       end
     end
   end
 
   context '#has_modified_files?' do
     it 'returns true when there are modified files' do
-      in_a_temporary_directory do
-        repo = Gitsh::GitRepository.new(env)
-        run 'git init'
-        write_file 'example.txt'
-        expect(repo).not_to have_modified_files
-        run 'git add example.txt'
-        expect(repo).to have_modified_files
-        run 'git commit -m "Add example.txt"'
-        expect(repo).not_to have_modified_files
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          run 'git init'
+          write_file 'example.txt'
+          expect(repo).not_to have_modified_files
+          run 'git add example.txt'
+          expect(repo).to have_modified_files
+          run 'git commit -m "Add example.txt"'
+          expect(repo).not_to have_modified_files
+        end
       end
     end
   end
 
   context '#heads' do
     it 'produces all the branches and tags' do
-      in_a_temporary_directory do
-        repo = Gitsh::GitRepository.new(env)
-        run 'git init'
-        run 'git commit --allow-empty -m "Something swell"'
-        expect(repo.heads).to eq %w( master )
-        run 'git checkout -b awesome-sauce'
-        run 'git tag v2.0'
-        expect(repo.heads).to eq %w( awesome-sauce master v2.0 )
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          run 'git init'
+          run 'git commit --allow-empty -m "Something swell"'
+          expect(repo.heads).to eq %w( master )
+          run 'git checkout -b awesome-sauce'
+          run 'git tag v2.0'
+          expect(repo.heads).to eq %w( awesome-sauce master v2.0 )
+        end
       end
     end
   end
@@ -125,41 +139,50 @@ describe Gitsh::GitRepository do
 
   context '#aliases' do
     it 'produces the list of aliases' do
-      in_a_temporary_directory do
-        repo = Gitsh::GitRepository.new(env)
-        run 'git init'
-        run 'git config --local alias.zecho "!echo zzz"'
-        run 'git config --local alias.zecho-with-newline "!echo z\nzz"'
-        run 'git config --local aliasy.notanalias "not an alias"'
-        expect(repo.aliases).to include 'zecho'
-        expect(repo.aliases).to include 'zecho-with-newline'
-        expect(repo.aliases).not_to include 'aliasy.notanalias'
-        expect(repo.aliases).not_to include 'notanalias'
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          run 'git init'
+          run 'git config --local alias.zecho "!echo zzz"'
+          run 'git config --local alias.zecho-with-newline "!echo z\nzz"'
+          run 'git config --local aliasy.notanalias "not an alias"'
+          expect(repo.aliases).to include 'zecho'
+          expect(repo.aliases).to include 'zecho-with-newline'
+          expect(repo.aliases).not_to include 'aliasy.notanalias'
+          expect(repo.aliases).not_to include 'notanalias'
+        end
       end
     end
   end
 
   context '#config' do
     it 'returns a git configuration value' do
-      in_a_temporary_directory do
-        repo = Gitsh::GitRepository.new(env)
-        run 'git init'
-        run 'git config --local alias.zecho "!echo zzz"'
-        expect(repo.config('alias.zecho')).to eq '!echo zzz'
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          run 'git init'
+          run 'git config --local alias.zecho "!echo zzz"'
+          expect(repo.config('alias.zecho')).to eq '!echo zzz'
+        end
       end
     end
 
     it 'returns nil if the configuration variable is not set' do
-      in_a_temporary_directory do
-        repo = Gitsh::GitRepository.new(env)
-        expect(repo.config('not-a.real-variable')).to be_nil
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          expect(repo.config('not-a.real-variable')).to be_nil
+        end
       end
     end
 
     it 'returns the default value if the configuration variable is not set' do
-      in_a_temporary_directory do
-        repo = Gitsh::GitRepository.new(env)
-        expect(repo.config('not-a.real-variable', 'a-default')).to eq 'a-default'
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          expect(repo.config('not-a.real-variable', 'a-default')).
+            to eq 'a-default'
+        end
       end
     end
   end

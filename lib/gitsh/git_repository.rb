@@ -50,8 +50,11 @@ module Gitsh
       git_output('remote').lines
     end
 
-    def config(name, default=nil)
-      command = git_command("config --get #{Shellwords.escape(name)}")
+    def config(name, default = nil, force_default_git_command = false)
+      command = git_command(
+        "config --get #{Shellwords.escape(name)}",
+        force_default_git_command
+      )
       out, err, status = Open3.capture3(command)
       if status.success?
         out.chomp
@@ -97,8 +100,8 @@ module Gitsh
       Open3.capture3(git_command(command)).first.chomp
     end
 
-    def git_command(sub_command)
-      "#{env.git_command} #{sub_command}"
+    def git_command(sub_command, force_default = false)
+      "#{env.git_command(force_default)} #{sub_command}"
     end
 
     class StatusParser

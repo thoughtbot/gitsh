@@ -29,6 +29,9 @@ It supports these options:
 .It Fl -git Ar CMD
 use the git command specified in CMD, instead of the default (
 .Ic /usr/bin/env git
+or as specified by the
+.Ic gitsh.gitCommand
+configuration option
 ).
 .It Fl h , Fl -help
 display a help message and exit.
@@ -197,6 +200,9 @@ then no greeting message will be displayed when gitsh starts.
 The command that will be run when a user presses return without entering any
 command. By default this is
 .Ic status .
+.It Ic gitsh.gitCommand
+The command that gitsh will use to run git commands. The default is
+.Ic /usr/bin/env git .
 .El
 .
 .Sh ENVIRONMENT

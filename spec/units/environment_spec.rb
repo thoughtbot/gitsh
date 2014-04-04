@@ -58,7 +58,8 @@ describe Gitsh::Environment do
 
     it 'reads a git config variable when there is no environment variable' do
       repository = stub('GitRepository')
-      repository.stubs(:config).with('user.name', 'default').returns('John Smith')
+      repository.stubs(:config).with('user.name', 'default', false).
+        returns('John Smith')
       env = described_class.new(repository_factory: stub(new: repository))
 
       expect(env.fetch('user.name', 'default')).to eq 'John Smith'
@@ -96,9 +97,18 @@ describe Gitsh::Environment do
 
   describe '#git_command' do
     it 'defaults to "/usr/bin/env git"' do
-      env = described_class.new
+      with_a_temporary_home_directory do
+        env = described_class.new
 
-      expect(env.git_command).to eq '/usr/bin/env git'
+        expect(env.git_command).to eq '/usr/bin/env git'
+      end
+    end
+
+    it 'defaults to gitsh.gitCommand if present' do
+      env = described_class.new
+      env['gitsh.gitCommand'] = '/path/to/git'
+
+      expect(env.git_command).to eq '/path/to/git'
     end
 
     it 'can be overridden' do
