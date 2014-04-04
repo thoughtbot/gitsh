@@ -16,7 +16,11 @@ module Gitsh
     root(:program)
 
     rule(:program) do
-      multi_command
+      comment | multi_command
+    end
+
+    rule(:comment) do
+      (match('#') >> any.repeat(0)).as(:comment)
     end
 
     rule(:multi_command) do
