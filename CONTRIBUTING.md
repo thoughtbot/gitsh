@@ -13,13 +13,13 @@ We love pull requests. Here's a quick guide:
 
         cd gitsh
         ./autogen.sh
+        bundle
         ./configure
         make
 
 3. Run the tests. We only take pull requests with passing tests, and it's great
    to know that you have a clean slate:
 
-        bundle
         make check
 
 4. Add a test for your change. Only refactoring and documentation changes
