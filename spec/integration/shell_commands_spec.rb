@@ -19,6 +19,17 @@ describe 'Executing a shell command' do
     end
   end
 
+  it 'accepts a relative shell command with no arguments' do
+    GitshRunner.interactive do |gitsh|
+      IO.write('./script', "#!/bin/sh\necho Hello world", 0, perm: 0700)
+
+      gitsh.type '!./script'
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output 'Hello world'
+    end
+  end
+
   it 'handles errors gracefully' do
     GitshRunner.interactive do |gitsh|
       gitsh.type '!notarealcommand'

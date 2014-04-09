@@ -44,6 +44,14 @@ describe Gitsh::Parser do
       expect(parser).to parse('!pwd').as(shell_cmd: 'pwd')
     end
 
+    it 'parses an absolute shell command' do
+      expect(parser).to parse('!/tmp/great_script.sh').as(shell_cmd: '/tmp/great_script.sh')
+    end
+
+    it 'parses a relative shell command' do
+      expect(parser).to parse('!./bin/setup').as(shell_cmd: './bin/setup')
+    end
+
     it 'parses a command with a long option argument' do
       expect(parser).to parse('log --format="%ae - %s"').as(
         git_cmd: 'log',
@@ -81,11 +89,11 @@ describe Gitsh::Parser do
     end
 
     it 'parses a command with variable arguments' do
-      expect(parser).to parse('foo $bar $foo.bar').as(
+      expect(parser).to parse('foo $bar $f_o-o.bar').as(
         git_cmd: 'foo',
         args: [
           { arg: [{ var: 'bar' }] },
-          { arg: [{ var: 'foo.bar' }] }
+          { arg: [{ var: 'f_o-o.bar' }] }
         ]
       )
     end
