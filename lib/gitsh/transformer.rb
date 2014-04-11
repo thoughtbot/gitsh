@@ -19,6 +19,10 @@ module Gitsh
       literal
     end
 
+    rule(empty_string: simple(:empty_string)) do
+      ''
+    end
+
     rule(var: simple(:var)) do |context|
       key = context[:var]
       context[:env][key]
