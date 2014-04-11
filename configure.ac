@@ -24,10 +24,13 @@ AX_PROG_RUBY_VERSION(
   AC_MSG_ERROR(Ruby 1.9.3 or later is required to install gitsh)
 )
 
-newer=$(ls -t $srcdir/Gemfile.lock $srcdir/vendor/gems/setup.rb 2>/dev/null | (read n; echo $n))
+VENDOR_DIRECTORY="vendor/gems"
+
+test -d $VENDOR_DIRECTORY || mkdir -p $VENDOR_DIRECTORY
+newer=$(ls -t $srcdir/Gemfile.lock $VENDOR_DIRECTORY/setup.rb 2>/dev/null | (read n; echo $n))
 if test "$newer" == "$srcdir/Gemfile.lock"; then
-    rm -rf vendor/gems
-    $srcdir/vendor/vendorize vendor/gems || AC_MSG_ERROR([Vendorizing gems failed])
+    rm -rf $VENDOR_DIRECTORY
+    $srcdir/vendor/vendorize $VENDOR_DIRECTORY || AC_MSG_ERROR([Vendorizing gems failed])
 fi
 
 rubydir=$datadir/$PACKAGE/ruby
