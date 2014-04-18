@@ -6,7 +6,7 @@ module Gitsh
 
     def initialize(options={})
       @env = options.fetch(:env)
-      @options = options
+      @use_color = options.fetch(:color, true)
     end
 
     def prompt
@@ -75,7 +75,7 @@ module Gitsh
     end
 
     def use_color?
-      @options.fetch(:color, true)
+      @use_color
     end
   end
 end

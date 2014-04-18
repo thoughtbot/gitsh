@@ -3,6 +3,7 @@ require 'tempfile'
 require 'tmpdir'
 require 'gitsh/cli'
 require 'gitsh/environment'
+require 'gitsh/readline_blank_filter'
 require File.expand_path('../file_system', __FILE__)
 
 class GitshRunner
@@ -19,7 +20,7 @@ class GitshRunner
     @input_stream = stub('STDIN', tty?: true)
     @output_stream = Tempfile.new('stdout')
     @error_stream = Tempfile.new('stderr')
-    @readline = FakeReadline.new
+    @readline = ReadlineBlankFilter.new(FakeReadline.new)
     @position_before_command = 0
     @error_position_before_command = 0
     @options = options
