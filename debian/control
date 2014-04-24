@@ -3,7 +3,8 @@ Maintainer: Thoughtbot <support@thoughtbot.com>
 Section: misc
 Priority: optional
 Standards-Version: 3.9.5
-Build-Depends: debhelper (>= 9), dh-autoreconf, ruby2.0, ruby-rspec, ruby-bourne, pry
+Build-Depends: debhelper (>= 9), dh-autoreconf, pry, ruby2.0, ruby-bourne,
+ ruby-rspec, ruby-parslet
 Homepage: https://github.com/thoughtbot/gitsh
 Vcs-Browser: https://github.com/thoughtbot/gitsh
 Vcs-Git: https://github.com/thoughtbot/gitsh.git
