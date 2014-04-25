@@ -52,11 +52,15 @@ module Gitsh
     end
 
     rule(:argument) do
-      (soft_string | hard_string | unquoted_string).repeat(1).as(:arg)
+      (empty_string | soft_string | hard_string | unquoted_string).repeat(1).as(:arg)
     end
 
     rule(:unquoted_string) do
       (variable | match(%q([^\s'"&|;])).as(:literal)).repeat(1)
+    end
+
+    rule(:empty_string) do
+      (str('""') | str("''")).as(:empty_string)
     end
 
     rule(:soft_string) do

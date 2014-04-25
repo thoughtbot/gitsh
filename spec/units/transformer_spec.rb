@@ -61,6 +61,11 @@ describe Gitsh::Transformer do
       expect(output).to eq 'Jane Doe'
     end
 
+    it 'transforms empty string arguments' do
+      output = transformer.apply({ arg: [{ empty_string: "''" }] }, env: env)
+      expect(output).to eq ''
+    end
+
     it 'transforms multi commands' do
       output = transformer.apply(multi: { left: 1, right: 2 })
       expect(output).to be_a Gitsh::Tree::Multi
