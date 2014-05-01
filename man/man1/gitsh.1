@@ -23,6 +23,8 @@ branch names, and tag names can all be completed using tab completion.
 Running gitsh with no arguments will start an interactive session. Quit by
 either typing
 .Ic :exit
+or
+.Ic :q
 or sending an EOF character.
 .Pp
 Passing the path to a file containing a series of commands or sending a series
@@ -182,6 +184,9 @@ Or for a mix of variables and arbitrary strings:
 changes directory to the given path.
 .It Ic :exit
 ends the gitsh session.
+.It Ic :q
+alias for
+.Ic :exit .
 .El
 .
 .Sh VARIABLES

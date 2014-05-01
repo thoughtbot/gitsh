@@ -13,6 +13,11 @@ describe Gitsh::Commands::InternalCommand do
       expect(command).to be_a described_class::Exit
     end
 
+    it 'returns an Exit command when given the command "q"' do
+      command = described_class.new(stub('env'), 'q')
+      expect(command).to be_a described_class::Exit
+    end
+
     it 'returns a Chdir command when given the command "cd"' do
       command = described_class.new(stub('env'), 'cd', '/some/path')
       expect(command).to be_a described_class::Chdir
@@ -26,7 +31,7 @@ describe Gitsh::Commands::InternalCommand do
 
   describe '.commands' do
     it 'returns a list of recognised commands' do
-      expect(described_class.commands).to eq %w( :set :cd :exit :echo )
+      expect(described_class.commands).to eq %w( :set :cd :exit :q :echo )
     end
   end
 

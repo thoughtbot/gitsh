@@ -100,6 +100,7 @@ module Gitsh::Commands
       set: Set,
       cd: Chdir,
       exit: Exit,
+      q: Exit,
       echo: Echo,
     }.freeze
   end
