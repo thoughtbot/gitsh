@@ -12,7 +12,7 @@ module Gitsh
       end
 
       rule(type => simple(:cmd), args: sequence(:args)) do |context|
-        command_class.new(context[:env], context[:cmd], context[:args])
+        command_class.new(context[:env], context[:cmd], context[:args].compact)
       end
     end
 
@@ -29,8 +29,11 @@ module Gitsh
       context[:env][key]
     end
 
-    rule(arg: subtree(:parts)) do
-      Array(parts).join('')
+    rule(arg: subtree(:parts)) do |context|
+      parts = Array(context[:parts]).compact
+      if parts.any?
+        parts.join('')
+      end
     end
 
     rule(comment: simple(:comment)) do |context|

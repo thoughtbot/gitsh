@@ -163,6 +163,14 @@ command.
 .Bd -literal -offset indent
 @ commit -m "Commited by $user.name"
 .Ed
+.Pp
+Unset variables will be ignored, as then are in
+.Xr sh 1 .
+For example, the commit message produced by the following command will be
+.Ic "a commit" :
+.Bd -literal -offset indent
+@ commit -m $unset "a commit"
+.Ed
 .It Ic :echo string ...
 prints the given strings to standard output, followed by a newline. All
 whitespace is collapsed into one space. This can be useful for viewing

@@ -63,8 +63,14 @@ describe Gitsh::Transformer do
 
     it 'transforms variable arguments' do
       env = { 'author' => 'Jane Doe' }
-      output = transformer.apply({ var: 'author' }, env: env)
+      output = transformer.apply({ arg: [{ var: 'author' }] }, env: env)
       expect(output).to eq 'Jane Doe'
+    end
+
+    it 'transforms unknown variables arguments to nil' do
+      env = {}
+      output = transformer.apply({ arg: [{ var: 'author' }] }, env: env)
+      expect(output).to be_nil
     end
 
     it 'transforms empty string arguments' do
@@ -86,6 +92,5 @@ describe Gitsh::Transformer do
       output = transformer.apply(and: { left: 1, right: 2 })
       expect(output).to be_a Gitsh::Tree::And
     end
-
   end
 end
