@@ -1,4 +1,5 @@
 require 'parslet'
+require 'gitsh/comment'
 require 'gitsh/git_command'
 require 'gitsh/internal_command'
 require 'gitsh/shell_command'
@@ -30,6 +31,10 @@ module Gitsh
 
     rule(arg: subtree(:parts)) do
       Array(parts).join('')
+    end
+
+    rule(comment: simple(:comment)) do |context|
+      Comment.new
     end
 
     command_rule(:git_cmd, GitCommand)

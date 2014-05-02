@@ -20,6 +20,10 @@ describe Gitsh::Parser do
   describe '#parse' do
     let(:parser) { described_class.new }
 
+    it 'parses a comment command' do
+      expect(parser).to parse('#cd').as(comment: '#cd')
+    end
+
     it 'parses a git command with no arguments' do
       expect(parser).to parse('status').as(git_cmd: 'status')
     end

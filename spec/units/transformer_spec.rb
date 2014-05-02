@@ -6,6 +6,12 @@ describe Gitsh::Transformer do
     let(:env) { stub }
     let(:transformer) { described_class.new }
 
+    it 'transforms comments' do
+      output = transformer.apply({ comment: '#cd' }, env: env)
+
+      expect(output).to be_a Gitsh::Comment
+    end
+
     it 'transforms git commands' do
       output = transformer.apply({ git_cmd: 'status' }, env: env)
       expect(output).to be_a Gitsh::GitCommand
