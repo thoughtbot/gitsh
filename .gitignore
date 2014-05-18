@@ -12,14 +12,18 @@ configure
 configure.scan
 install-sh
 missing
+compile
 depcomp
 test-driver
+*/.deps
 
 # Make targets
 src/gitsh
+src/gitsh.rb
 lib/gitsh/version.rb
 gitsh-*.tar.gz
 vendor/gems
+*.o
 
 # Sub-repositories for release
 gh-pages
