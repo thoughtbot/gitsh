@@ -18,6 +18,7 @@ test-driver
 */.deps
 
 # Make targets
+INSTALL
 src/gitsh
 src/gitsh.rb
 lib/gitsh/version.rb

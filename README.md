@@ -68,14 +68,8 @@ sh$</code></pre>
 
 * On Arch Linux: https://github.com/thoughtbot/gitsh/blob/master/arch/PKGBUILD
 
-* On other operating systems:
-
-        curl -O http://thoughtbot.github.io/gitsh/gitsh-0.6.tar.gz
-        tar -zxf gitsh-0.6.tar.gz
-        cd gitsh-0.6
-        ./configure
-        make
-        sudo make install
+See the [installation guide][INSTALL] for install instructions for other
+operating systems.
 
 ## Contributing to gitsh
 
@@ -97,6 +91,7 @@ free software, and may be redistributed under the terms specified in the
 
 [hub]: http://hub.github.com/
 [gh]: https://github.com/jingweno/gh
+[INSTALL]: https://github.com/thoughtbot/gitsh/blob/master/INSTALL.in
 [CONTRIBUTING]: https://github.com/thoughtbot/gitsh/blob/master/CONTRIBUTING.md
 [LICENSE]: https://github.com/thoughtbot/gitsh/blob/master/LICENSE
 [git-sh]: https://github.com/rtomayko/git-sh
