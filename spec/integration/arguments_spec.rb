@@ -20,7 +20,7 @@ describe '--version' do
 end
 
 describe 'Unexpected arguments' do
-  %w(--badger -x foobar).each do |argument|
+  %w(--badger -x).each do |argument|
     context "with the argument #{argument.inspect}" do
       it 'outputs a usage message and exits' do
         output = StringIO.new
@@ -34,7 +34,7 @@ describe 'Unexpected arguments' do
         expect(runner).to raise_error SystemExit
         expect(output.string).to be_empty
         expect(error.string.chomp).to eq(
-          'usage: gitsh [--version] [-h | --help] [--git PATH]'
+          'usage: gitsh [--version] [-h | --help] [--git PATH] [script]'
         )
       end
     end

@@ -1,14 +1,13 @@
 require 'optparse'
 require 'gitsh/environment'
+require 'gitsh/exit_statuses'
 require 'gitsh/interactive_runner'
 require 'gitsh/program_name'
+require 'gitsh/script_runner'
 require 'gitsh/version'
 
 module Gitsh
   class CLI
-    EX_OK = 0
-    EX_USAGE = 64
-
     def initialize(opts={})
       $PROGRAM_NAME = PROGRAM_NAME
 
@@ -18,12 +17,15 @@ module Gitsh
         :interactive_runner,
         InteractiveRunner.new(env: @env)
       )
+      @script_runner = opts.fetch(:script_runner) { ScriptRunner.new(env: @env) }
     end
 
     def run
       parse_arguments
       if unparsed_args.any?
         exit_with_usage_message
+      elsif script_file
+        script_runner.run(script_file)
       else
         interactive_runner.run
       end
@@ -31,7 +33,8 @@ module Gitsh
 
     private
 
-    attr_reader :env, :unparsed_args, :interactive_runner
+    attr_reader :env, :unparsed_args, :script_file,
+      :interactive_runner, :script_runner
 
     def exit_with_usage_message
       env.puts_error option_parser.banner
@@ -40,13 +43,14 @@ module Gitsh
 
     def parse_arguments
       option_parser.parse!(unparsed_args)
+      @script_file = unparsed_args.pop
     rescue OptionParser::InvalidOption => err
       unparsed_args.concat(err.args)
     end
 
     def option_parser
       OptionParser.new do |opts|
-        opts.banner = 'usage: gitsh [--version] [-h | --help] [--git PATH]'
+        opts.banner = 'usage: gitsh [--version] [-h | --help] [--git PATH] [script]'
 
         opts.on('--git [COMMAND]', 'Use the specified git command') do |git_command|
           env.git_command = git_command

@@ -16,7 +16,7 @@ module Gitsh
     root(:program)
 
     rule(:program) do
-      comment | multi_command
+      comment | multi_command | blank_line
     end
 
     rule(:comment) do
@@ -29,6 +29,10 @@ module Gitsh
         semicolon_operator >>
         multi_command.as(:right)
       ).as(:multi) | or_operation
+    end
+
+    rule(:blank_line) do
+      (match('^') >> match('\s').repeat(0) >> match('$')).as(:blank)
     end
 
     rule(:or_operation) do

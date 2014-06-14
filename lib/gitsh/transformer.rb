@@ -1,7 +1,7 @@
 require 'parslet'
-require 'gitsh/comment'
 require 'gitsh/git_command'
 require 'gitsh/internal_command'
+require 'gitsh/noop'
 require 'gitsh/shell_command'
 
 module Gitsh
@@ -36,8 +36,12 @@ module Gitsh
       end
     end
 
+    rule(blank: simple(:blank)) do |context|
+      Noop.new
+    end
+
     rule(comment: simple(:comment)) do |context|
-      Comment.new
+      Noop.new
     end
 
     command_rule(:git_cmd, GitCommand)

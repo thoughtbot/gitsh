@@ -6,6 +6,13 @@ module FileSystemHelper
     File.open(name, 'w') { |f| f << "#{contents}\n" }
   end
 
+  def temp_file(name, contents)
+    Tempfile.new(name).tap do |f|
+      f.write("#{contents}\n")
+      f.flush
+    end
+  end
+
   def in_a_temporary_directory(&block)
     Dir.mktmpdir do |path|
       chdir_and_allow_nesting(path, &block)

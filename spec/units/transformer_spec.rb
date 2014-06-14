@@ -6,10 +6,16 @@ describe Gitsh::Transformer do
     let(:env) { stub }
     let(:transformer) { described_class.new }
 
+    it 'transforms blank lines' do
+      output = transformer.apply({ blank: '' }, env: env)
+
+      expect(output).to be_a Gitsh::Noop
+    end
+
     it 'transforms comments' do
       output = transformer.apply({ comment: '#cd' }, env: env)
 
-      expect(output).to be_a Gitsh::Comment
+      expect(output).to be_a Gitsh::Noop
     end
 
     it 'transforms git commands' do

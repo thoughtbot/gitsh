@@ -1,5 +1,5 @@
 module Gitsh
-  class Comment
+  class Noop
     def execute
     end
   end

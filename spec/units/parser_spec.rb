@@ -20,6 +20,14 @@ describe Gitsh::Parser do
   describe '#parse' do
     let(:parser) { described_class.new }
 
+    it 'parses a blank line' do
+      expect(parser).to parse('').as(blank: '')
+    end
+
+    it 'parses a line containing only whitespace' do
+      expect(parser).to parse('   ').as(blank: '   ')
+    end
+
     it 'parses a comment command' do
       expect(parser).to parse('#cd').as(comment: '#cd')
     end

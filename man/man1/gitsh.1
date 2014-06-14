@@ -10,6 +10,7 @@
 .Op Fl -version
 .Op Fl h
 .Op Fl -git Ar CMD
+.Op file
 .
 .Sh DESCRIPTION
 .Nm gitsh
@@ -19,9 +20,13 @@ repository. It supports all git subcommands, custom aliases, and custom
 commands for interacting with the shell itself. Commands, path names,
 branch names, and tag names can all be completed using tab completion.
 .Pp
-Quit by either typing
+Running gitsh with no arguments will start an interactive session. Quit by
+either typing
 .Ic :exit
 or sending an EOF character.
+.Pp
+Passing the path to a file containing a series of commands will run each of
+those commands in sequence.
 .Pp
 It supports these options:
 .
