@@ -46,6 +46,14 @@ sh$</code></pre>
         gitsh% :set user.email support+george+mike@thoughtbot.com
         gitsh% commit -m 'We are pair programming'
 
+* Access information about your repository with magic variables like
+  `$_rebase_base`, `$_merge_base` and `$_prior`.
+
+        gitsh% rebase master
+        CONFLICT (content): Merge conflict in db/schema.rb
+        gitsh% checkout $_rebase_base -- db/schema
+        gitsh% !rake db:schema:load db:migrate
+
 * Tab completion for git commands, aliases, and branches without modifying your
   shell settings, and without any extra setup for aliases and third party
   git commands.

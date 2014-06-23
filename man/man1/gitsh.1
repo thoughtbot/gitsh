@@ -143,9 +143,7 @@ character.
 The following commands are supported:
 .Bl -tag -width Ds
 .It Ic :set variable value
-sets a variable in the gitsh environment to the given value. The value
-of the variable can be used in subsequent commands using the variable
-name with a dollar prefix.
+sets a variable in the gitsh environment to the given value.
 .Bd -literal -offset indent
 @ :set george "George <george@thoughtbot.com>"
 @ commit --author $george
@@ -160,22 +158,9 @@ variables for the duration of a gitsh session.
 @ commit
 .Ed
 .Pp
-The dollar prefix can also be used to read
-.Xr git-config 1
-variables, whether or not they were set using the
-.Ic :set
-command.
-.Bd -literal -offset indent
-@ commit -m "Commited by $user.name"
-.Ed
-.Pp
-Unset variables will be ignored, as then are in
-.Xr sh 1 .
-For example, the commit message produced by the following command will be
-.Ic "a commit" :
-.Bd -literal -offset indent
-@ commit -m $unset "a commit"
-.Ed
+See the section on
+.Sx VARIABLES
+for more information.
 .It Ic :echo string ...
 prints the given strings to standard output, followed by a newline. All
 whitespace is collapsed into one space. This can be useful for viewing
@@ -194,6 +179,59 @@ changes directory to the given path.
 ends the gitsh session.
 .El
 .
+.Sh VARIABLES
+Variables can be read using the
+.Ic $
+prefix. There are three kinds of variables supported by gitsh:
+.Pp
+.Bl -enum
+.It
+Variables set using the
+.Ic :set
+command.
+.Bd -literal -offset indent
+@ :set greeting "Hello, world"
+@ :echo $greeting
+.Ed
+.It
+All
+.Xr git-config 1
+settings can be treated as variables in gitsh. For example, the following
+commands will produce the same output.
+.Bd -literal -offset indent
+@ config user.name
+@ :echo $user.name
+.Ed
+.It
+There are a number of "magic variables" which expose information about the
+current state of the repository.
+.Bl -tag -width Ds
+.It Ic $_prior
+The name of the previous branch that was checked out. This is usually
+equivalent to
+.Ic @{-1} ,
+but will also work in situations where the branch name is required.
+.It Ic $_merge_base
+When there is a merge in progress, this will be the hash of the merge's base
+commit. It is equivalent to the output of
+.Ic merge-base HEAD MERGE_HEAD .
+.It Ic $_rebase_base
+When there is a rebase in progress, this will be the hash of the commit onto
+which we are rebasing, for example after running
+.Ic rebase master
+this variable would evaluate to the hash of the commit at the head of the
+.Ic master
+branch.
+.El
+.El
+.Pp
+Unset variables will be ignored, as then are in
+.Xr sh 1 .
+For example, the commit message produced by the following command will be
+.Ic "a commit" :
+.Bd -literal -offset indent
+@ commit -m $unset "a commit"
+.Ed
 .Sh CONFIGURATION
 The following
 .Xr git-config 1

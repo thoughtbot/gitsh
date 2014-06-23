@@ -97,11 +97,12 @@ describe Gitsh::Parser do
     end
 
     it 'parses a command with variable arguments' do
-      expect(parser).to parse('foo $bar $f_o-o.bar').as(
+      expect(parser).to parse('foo $bar $f_o-o.bar $_bar').as(
         git_cmd: 'foo',
         args: [
           { arg: [{ var: 'bar' }] },
-          { arg: [{ var: 'f_o-o.bar' }] }
+          { arg: [{ var: 'f_o-o.bar' }] },
+          { arg: [{ var: '_bar' }] }
         ]
       )
     end

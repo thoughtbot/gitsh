@@ -1,4 +1,5 @@
 require 'gitsh/git_repository'
+require 'gitsh/magic_variables'
 
 module Gitsh
   class Environment
@@ -9,8 +10,9 @@ module Gitsh
     def initialize(options={})
       @output_stream = options.fetch(:output_stream, $stdout)
       @error_stream = options.fetch(:error_stream, $stderr)
+      @repo = options.fetch(:repository_factory, GitRepository).new(self)
       @variables = Hash.new
-      @repo = options.fetch(:repository_factory, Gitsh::GitRepository).new(self)
+      @magic_variables = options.fetch(:magic_variables) { MagicVariables.new(@repo) }
     end
 
     def git_command(force_default = false)
@@ -26,7 +28,7 @@ module Gitsh
     end
 
     def [](key)
-      variables[key.to_sym] || repo.config(key.to_s)
+      magic_variables[key.to_sym] || variables[key.to_sym] || repo.config(key.to_s)
     end
 
     def []=(key, value)
@@ -97,7 +99,7 @@ module Gitsh
 
     private
 
-    attr_reader :variables, :repo
+    attr_reader :variables, :magic_variables, :repo
 
     def local_aliases
       variables.keys.

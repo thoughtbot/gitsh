@@ -45,6 +45,14 @@ describe Gitsh::Environment do
       expect(env['user.name']).to eq 'Jane Doe'
       expect(env[:'user.name']).to eq 'Jane Doe'
     end
+
+    it 'understands magic variables' do
+      magic_variables = stub(:magic_variables)
+      magic_variables.stubs(:[]).with(:_prior).returns('a-branch-name')
+      env = described_class.new(magic_variables: magic_variables)
+
+      expect(env[:'_prior']).to eq 'a-branch-name'
+    end
   end
 
   describe '#fetch' do

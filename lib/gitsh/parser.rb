@@ -96,7 +96,7 @@ module Gitsh
     end
 
     rule(:variable_name) do
-      match('[A-Za-z]') >> match('[A-Za-z0-9._\-]').repeat(0)
+      match('[A-Za-z_]') >> match('[A-Za-z0-9._\-]').repeat(0)
     end
 
     rule(:identifier) do
