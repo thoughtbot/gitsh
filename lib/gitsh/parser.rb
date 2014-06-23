@@ -1,6 +1,5 @@
 require 'parslet'
 require 'gitsh/transformer'
-require 'gitsh/tree'
 
 module Gitsh
   class Parser < Parslet::Parser

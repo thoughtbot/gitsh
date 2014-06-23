@@ -1,4 +1,4 @@
-module Gitsh
+module Gitsh::Commands
   module InternalCommand
     def self.new(env, command, args=[])
       klass = COMMAND_CLASSES.fetch(command.to_sym, Unknown)

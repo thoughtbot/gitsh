@@ -1,4 +1,4 @@
-module Gitsh
+module Gitsh::Commands
   class Noop
     def execute
     end

@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'gitsh/shell_command'
+require 'gitsh/commands/shell_command'
 
-describe Gitsh::ShellCommand do
+describe Gitsh::Commands::ShellCommand do
   describe '#execute' do
     before do
       Process.stubs(spawn: 1, wait: nil, kill: nil)

@@ -1,8 +1,8 @@
-require 'gitsh/internal_command'
+require 'gitsh/commands/internal_command'
 
 module Gitsh
   class Completer
-    def initialize(readline, env, internal_command=InternalCommand)
+    def initialize(readline, env, internal_command=Commands::InternalCommand)
       @readline = readline
       @env = env
       @internal_command = internal_command
