@@ -7,6 +7,7 @@ require File.expand_path('../file_system', __FILE__)
 
 class GitshRunner
   include FileSystemHelper
+  include Mocha::API
 
   UP_ARROW = "\033[A"
 
@@ -15,6 +16,7 @@ class GitshRunner
   end
 
   def initialize(options)
+    @input_stream = stub('STDIN', tty?: true)
     @output_stream = Tempfile.new('stdout')
     @error_stream = Tempfile.new('stderr')
     @readline = FakeReadline.new
@@ -70,7 +72,7 @@ class GitshRunner
 
   private
 
-  attr_reader :output_stream, :error_stream, :readline, :options
+  attr_reader :input_stream, :output_stream, :error_stream, :readline, :options
 
   def start_runner_thread
     Thread.abort_on_exception = true
@@ -99,6 +101,7 @@ class GitshRunner
 
   def env
     @env ||= Gitsh::Environment.new(
+      input_stream: input_stream,
       output_stream: output_stream,
       error_stream: error_stream
     ).tap do |env|

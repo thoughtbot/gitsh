@@ -5,9 +5,10 @@ module Gitsh
   class Environment
     DEFAULT_GIT_COMMAND = '/usr/bin/env git'.freeze
 
-    attr_reader :output_stream, :error_stream
+    attr_reader :input_stream, :output_stream, :error_stream
 
     def initialize(options={})
+      @input_stream = options.fetch(:input_stream, $stdin)
       @output_stream = options.fetch(:output_stream, $stdout)
       @error_stream = options.fetch(:error_stream, $stderr)
       @repo = options.fetch(:repository_factory, GitRepository).new(self)
@@ -56,6 +57,10 @@ module Gitsh
 
     def puts_error(*args)
       error_stream.puts(*args)
+    end
+
+    def tty?
+      input_stream.tty?
     end
 
     def repo_remotes

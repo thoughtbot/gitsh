@@ -1,7 +1,7 @@
 RSpec::Matchers.define :execute do
   chain :successfully do
     @exit_status_matcher = eq(0)
-    @error_matcher = be_empty
+    @error_matcher = eq('')
   end
 
   chain :with_exit_status do |exit_status|

@@ -21,6 +21,18 @@ describe 'Executing gitsh scripts' do
     end
   end
 
+  context 'when the script is piped to standard input' do
+    it 'runs the script and exits' do
+      in_a_temporary_directory do
+        write_file('myscript.gitsh', "init\n\ncommit")
+
+        expect("cat myscript.gitsh | #{gitsh} --git #{fake_git}").to execute.
+          successfully.
+          with_output_matching(/^Fake git: init\nFake git: commit\n$/)
+      end
+    end
+  end
+
   def gitsh
     File.expand_path('../../../bin/gitsh', __FILE__)
   end

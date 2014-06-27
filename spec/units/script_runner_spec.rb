@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'stringio'
 require 'gitsh/script_runner'
 
 describe Gitsh::ScriptRunner do
@@ -13,6 +14,21 @@ describe Gitsh::ScriptRunner do
       expect(interpreter).to have_received(:execute).twice
       expect(interpreter).to have_received(:execute).with("commit -m 'Changes'\n")
       expect(interpreter).to have_received(:execute).with("push -f\n")
+    end
+
+    context 'with -' do
+      it 'reads commands from STDIN' do
+        input_stream = StringIO.new("push\npull\n")
+        env = stub('Environment', input_stream: input_stream)
+        interpreter = stub('Interpreter', execute: nil)
+        runner = described_class.new(env: env, interpreter: interpreter)
+
+        runner.run '-'
+
+        expect(interpreter).to have_received(:execute).twice
+        expect(interpreter).to have_received(:execute).with("push\n")
+        expect(interpreter).to have_received(:execute).with("pull\n")
+      end
     end
 
     context 'with a file that does not exist' do

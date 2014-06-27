@@ -33,8 +33,16 @@ module Gitsh
 
     private
 
-    attr_reader :env, :unparsed_args, :script_file,
+    attr_reader :env, :unparsed_args, :script_file_argument,
       :interactive_runner, :script_runner
+
+    def script_file
+      if script_file_argument
+        script_file_argument
+      elsif !env.tty?
+        ScriptRunner::STDIN_PLACEHOLDER
+      end
+    end
 
     def exit_with_usage_message
       env.puts_error option_parser.banner
@@ -43,7 +51,7 @@ module Gitsh
 
     def parse_arguments
       option_parser.parse!(unparsed_args)
-      @script_file = unparsed_args.pop
+      @script_file_argument = unparsed_args.pop
     rescue OptionParser::InvalidOption => err
       unparsed_args.concat(err.args)
     end

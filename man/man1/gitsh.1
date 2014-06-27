@@ -25,10 +25,11 @@ either typing
 .Ic :exit
 or sending an EOF character.
 .Pp
-Passing the path to a file containing a series of commands will run each of
-those commands in sequence.
+Passing the path to a file containing a series of commands or sending a series
+of commands to gitsh's standard input will run each of those commands in
+sequence.
 .Pp
-It supports these options:
+It supports these options and arguments:
 .
 .Bl -tag
 .It Fl -git Ar CMD
@@ -42,6 +43,10 @@ configuration option
 display a help message and exit.
 .It Fl -version
 display the version number and exit.
+.It Ic file
+the path to a file of commands to be executed. If the path is
+.Ic -
+then the commands will be read from the standard input.
 .El
 .Pp
 Within the shell you can use the following types of commands:
