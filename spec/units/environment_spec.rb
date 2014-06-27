@@ -45,6 +45,14 @@ describe Gitsh::Environment do
       expect(env['user.name']).to eq 'Jane Doe'
       expect(env[:'user.name']).to eq 'Jane Doe'
     end
+
+    it 'understands magic variables' do
+      magic_variables = stub(:magic_variables)
+      magic_variables.stubs(:[]).with(:_prior).returns('a-branch-name')
+      env = described_class.new(magic_variables: magic_variables)
+
+      expect(env[:'_prior']).to eq 'a-branch-name'
+    end
   end
 
   describe '#fetch' do
@@ -80,6 +88,21 @@ describe Gitsh::Environment do
     end
   end
 
+  describe '#input_stream' do
+    it 'returns $stdin by default' do
+      env = described_class.new
+
+      expect(env.input_stream).to eq $stdin
+    end
+
+    it 'returns the input stream passed to the constructor' do
+      stream = stub
+      env = described_class.new(input_stream: stream)
+
+      expect(env.input_stream).to eq stream
+    end
+  end
+
   describe '#output_stream' do
     it 'returns $stdout by default' do
       env = described_class.new
@@ -87,7 +110,7 @@ describe Gitsh::Environment do
       expect(env.output_stream).to eq $stdout
     end
 
-    it 'can be overridden in the constructor' do
+    it 'returns the output stream passed to the constructor' do
       stream = stub
       env = described_class.new(output_stream: stream)
 
@@ -149,6 +172,22 @@ describe Gitsh::Environment do
       env.puts_error 'Oh no!'
 
       expect(error.string).to eq "Oh no!\n"
+    end
+  end
+
+  describe '#tty?' do
+    it 'returns true when the input stream is a TTY' do
+      input = stub('STDIN', tty?: true)
+      env = described_class.new(input_stream: input)
+
+      expect(env).to be_tty
+    end
+
+    it 'returns false when the input stream is not a TTY' do
+      input = stub('STDIN', tty?: false)
+      env = described_class.new(input_stream: input)
+
+      expect(env).not_to be_tty
     end
   end
 

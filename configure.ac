@@ -2,13 +2,14 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT(gitsh, 0.6, hello@thoughtbot.com)
+AC_INIT(gitsh, 0.7, hello@thoughtbot.com)
 AM_INIT_AUTOMAKE
 
 AC_ARG_VAR([RUBY],[The path of the Ruby binary to use])
 
 AC_CONFIG_MACRO_DIR([m4])
 
+AC_PROG_CC
 AC_PATH_PROGS([RUBY], [ruby ruby20], [], $(getconf PATH))
 AC_PATH_PROGS([RUBY], [ruby ruby20])
 

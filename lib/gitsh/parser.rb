@@ -1,6 +1,5 @@
 require 'parslet'
 require 'gitsh/transformer'
-require 'gitsh/tree'
 
 module Gitsh
   class Parser < Parslet::Parser
@@ -16,7 +15,11 @@ module Gitsh
     root(:program)
 
     rule(:program) do
-      multi_command
+      comment | multi_command | blank_line
+    end
+
+    rule(:comment) do
+      (match('#') >> any.repeat(0)).as(:comment)
     end
 
     rule(:multi_command) do
@@ -25,6 +28,10 @@ module Gitsh
         semicolon_operator >>
         multi_command.as(:right)
       ).as(:multi) | or_operation
+    end
+
+    rule(:blank_line) do
+      (match('^') >> match('\s').repeat(0) >> match('$')).as(:blank)
     end
 
     rule(:or_operation) do
@@ -83,13 +90,17 @@ module Gitsh
 
     rule(:variable) do
       str('$') >> (
-        str('{') >> identifier.as(:var) >> str('}') |
-        identifier.as(:var)
+        str('{') >> variable_name.as(:var) >> str('}') |
+        variable_name.as(:var)
       )
     end
 
+    rule(:variable_name) do
+      match('[A-Za-z_]') >> match('[A-Za-z0-9._\-]').repeat(0)
+    end
+
     rule(:identifier) do
-      match('[A-z]') >> match('[A-z0-9.-]').repeat(0)
+      match('[A-Za-z./]') >> match('[A-Za-z0-9.\-/_]').repeat(0)
     end
 
     rule(:space) do

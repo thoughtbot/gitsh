@@ -1,4 +1,4 @@
-module Gitsh
+module Gitsh::Commands
   module Tree
     class Branch
       def initialize(left, right)

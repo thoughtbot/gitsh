@@ -7,6 +7,8 @@ require 'gitsh/readline_blank_filter'
 
 module Gitsh
   class InteractiveRunner
+    BLANK_LINE_REGEX = /^\s*$/
+
     def initialize(opts)
       @readline = ReadlineBlankFilter.new(opts.fetch(:readline, Readline))
       @env = opts[:env]
@@ -50,7 +52,7 @@ module Gitsh
 
     def read_command
       command = readline.readline(prompt, true)
-      if command && command.empty?
+      if command && command.match(BLANK_LINE_REGEX)
         env.fetch('gitsh.defaultCommand', 'status')
       else
         command

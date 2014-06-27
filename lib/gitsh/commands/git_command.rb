@@ -1,7 +1,7 @@
 require 'shellwords'
-require 'gitsh/shell_command'
+require 'gitsh/commands/shell_command'
 
-module Gitsh
+module Gitsh::Commands
   class GitCommand < ShellCommand
     private
 

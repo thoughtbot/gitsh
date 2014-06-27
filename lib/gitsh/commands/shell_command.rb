@@ -1,4 +1,4 @@
-module Gitsh
+module Gitsh::Commands
   class ShellCommand
     def initialize(env, command, args = [])
       @env = env

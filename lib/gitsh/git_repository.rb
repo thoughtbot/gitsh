@@ -11,6 +11,10 @@ module Gitsh
       git_dir && File.exist?(git_dir)
     end
 
+    def git_dir
+      git_output('rev-parse --git-dir')
+    end
+
     def current_head
       current_branch_name || current_tag_name || abbreviated_sha
     end
@@ -63,6 +67,22 @@ module Gitsh
       end
     end
 
+    def revision_name(revision)
+      name = git_output(
+        "rev-parse --abbrev-ref --verify #{Shellwords.escape(revision)}"
+      )
+      unless name.empty?
+        name
+      end
+    end
+
+    def merge_base(commit1, commit2)
+      escaped_commits = [commit1, commit2].map do |commit|
+        Shellwords.escape(commit)
+      end
+      git_output('merge-base %s %s' % escaped_commits)
+    end
+
     private
 
     attr_reader :env
@@ -90,10 +110,6 @@ module Gitsh
 
     def status
       StatusParser.new(git_output('status --porcelain'))
-    end
-
-    def git_dir
-      git_output('rev-parse --git-dir')
     end
 
     def git_output(command)

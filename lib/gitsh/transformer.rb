@@ -1,7 +1,9 @@
 require 'parslet'
-require 'gitsh/git_command'
-require 'gitsh/internal_command'
-require 'gitsh/shell_command'
+require 'gitsh/commands/git_command'
+require 'gitsh/commands/internal_command'
+require 'gitsh/commands/noop'
+require 'gitsh/commands/shell_command'
+require 'gitsh/commands/tree'
 
 module Gitsh
   class Transformer < Parslet::Transform
@@ -11,7 +13,7 @@ module Gitsh
       end
 
       rule(type => simple(:cmd), args: sequence(:args)) do |context|
-        command_class.new(context[:env], context[:cmd], context[:args])
+        command_class.new(context[:env], context[:cmd], context[:args].compact)
       end
     end
 
@@ -28,24 +30,35 @@ module Gitsh
       context[:env][key]
     end
 
-    rule(arg: subtree(:parts)) do
-      Array(parts).join('')
+    rule(arg: subtree(:parts)) do |context|
+      parts = Array(context[:parts]).compact
+      if parts.any?
+        parts.join('')
+      end
     end
 
-    command_rule(:git_cmd, GitCommand)
-    command_rule(:internal_cmd, InternalCommand)
-    command_rule(:shell_cmd, ShellCommand)
+    rule(blank: simple(:blank)) do |context|
+      Commands::Noop.new
+    end
+
+    rule(comment: simple(:comment)) do |context|
+      Commands::Noop.new
+    end
+
+    command_rule(:git_cmd, Commands::GitCommand)
+    command_rule(:internal_cmd, Commands::InternalCommand)
+    command_rule(:shell_cmd, Commands::ShellCommand)
 
     rule(multi: { left: subtree(:left), right: subtree(:right) }) do
-      Tree::Multi.new(left, right)
+      Commands::Tree::Multi.new(left, right)
     end
 
     rule(or: { left: subtree(:left), right: subtree(:right) }) do
-      Tree::Or.new(left, right)
+      Commands::Tree::Or.new(left, right)
     end
 
     rule(and: { left: subtree(:left), right: subtree(:right) }) do
-      Tree::And.new(left, right)
+      Commands::Tree::And.new(left, right)
     end
   end
 end

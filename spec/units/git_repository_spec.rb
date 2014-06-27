@@ -17,6 +17,19 @@ describe Gitsh::GitRepository do
     end
   end
 
+  describe '#git_dir' do
+    it 'returns the path to the .git directory' do
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          run 'git init'
+
+          expect(repo.git_dir).to eq '.git'
+        end
+      end
+    end
+  end
+
   describe '#current_head' do
     it 'returns the name of the current git branch' do
       with_a_temporary_home_directory do
@@ -182,6 +195,53 @@ describe Gitsh::GitRepository do
           repo = Gitsh::GitRepository.new(env)
           expect(repo.config('not-a.real-variable', 'a-default')).
             to eq 'a-default'
+        end
+      end
+    end
+  end
+
+  describe '#revision_name' do
+    it 'returns a human-readable name for a revision' do
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          run 'git init'
+          run 'git commit --allow-empty -m "A commit"'
+
+          expect(repo.revision_name('HEAD')).to eq 'master'
+        end
+      end
+    end
+
+    it 'returns nil for an unknown revision' do
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          run 'git init'
+          run 'git commit --allow-empty -m "A commit"'
+
+          expect(repo.revision_name('foobar')).to be_nil
+        end
+      end
+    end
+  end
+
+  describe '#merge_base' do
+    it 'returns the merge-base of two revisions' do
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          run 'git init'
+          run 'git commit --allow-empty -m "Base commit"'
+          run 'git checkout -b branch-a master'
+          run 'git commit --allow-empty -m "On branch A"'
+          run 'git checkout -b branch-b master'
+          run 'git commit --allow-empty -m "On branch B"'
+
+          merge_base = repo.merge_base('branch-a', 'branch-b')
+
+          master_sha, _, _ = run('git rev-parse master')
+          expect(merge_base).to eq master_sha.chomp
         end
       end
     end

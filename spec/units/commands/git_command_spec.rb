@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'gitsh/git_command'
+require 'gitsh/commands/git_command'
 
-describe Gitsh::GitCommand do
+describe Gitsh::Commands::GitCommand do
   let(:env) do
     stub('Environment', {
       git_command: '/usr/bin/env git',

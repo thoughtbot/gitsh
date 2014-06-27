@@ -46,6 +46,14 @@ sh$</code></pre>
         gitsh% :set user.email support+george+mike@thoughtbot.com
         gitsh% commit -m 'We are pair programming'
 
+* Access information about your repository with magic variables like
+  `$_rebase_base`, `$_merge_base` and `$_prior`.
+
+        gitsh% rebase master
+        CONFLICT (content): Merge conflict in db/schema.rb
+        gitsh% checkout $_rebase_base -- db/schema
+        gitsh% !rake db:schema:load db:migrate
+
 * Tab completion for git commands, aliases, and branches without modifying your
   shell settings, and without any extra setup for aliases and third party
   git commands.
@@ -68,14 +76,8 @@ sh$</code></pre>
 
 * On Arch Linux: https://github.com/thoughtbot/gitsh/blob/master/arch/PKGBUILD
 
-* On other operating systems:
-
-        curl -O http://thoughtbot.github.io/gitsh/gitsh-0.6.tar.gz
-        tar -zxf gitsh-0.6.tar.gz
-        cd gitsh-0.6
-        ./configure
-        make
-        sudo make install
+See the [installation guide][INSTALL] for install instructions for other
+operating systems.
 
 ## Contributing to gitsh
 
@@ -97,6 +99,7 @@ free software, and may be redistributed under the terms specified in the
 
 [hub]: http://hub.github.com/
 [gh]: https://github.com/jingweno/gh
+[INSTALL]: https://github.com/thoughtbot/gitsh/blob/master/INSTALL.in
 [CONTRIBUTING]: https://github.com/thoughtbot/gitsh/blob/master/CONTRIBUTING.md
 [LICENSE]: https://github.com/thoughtbot/gitsh/blob/master/LICENSE
 [git-sh]: https://github.com/rtomayko/git-sh

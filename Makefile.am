@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = src man lib/gitsh vendor spec
-EXTRA_DIST = LICENSE README.md
+EXTRA_DIST = LICENSE README.md INSTALL.in
 
 .PHONY: release \
 	release_build release_push release_clean \
@@ -13,6 +13,9 @@ edit_package = sed \
 	-e 's|@PACKAGE_VERSION[@]|$(PACKAGE_VERSION)|g' \
 	-e 's|@DIST_ARCHIVES[@]|$(DIST_ARCHIVES)|g' \
 	-e 's|@DIST_SHA[@]|$(DIST_SHA)|g'
+
+INSTALL: INSTALL.in
+	$(edit_package) $@.in > $@
 
 release: release_build release_push release_clean
 
