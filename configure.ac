@@ -34,6 +34,15 @@ if test "$newer" == "$srcdir/Gemfile.lock"; then
     $srcdir/vendor/vendorize $VENDOR_DIRECTORY || AC_MSG_ERROR([Vendorizing gems failed])
 fi
 
+current_dir="$PWD"
+cd "$srcdir/ext/gitsh"
+AS_IF(
+    [$RUBY extconf.rb --with-ldflags="$LDFLAGS" --with-cppflags="$CPPFLAGS"],
+    [],
+    AC_MSG_ERROR(Failed to configure Ruby extension)
+)
+cd "$current_dir"
+
 rubydir=$datadir/$PACKAGE/ruby
 pkgrubydir=$rubydir/$PACKAGE
 libfiles="$(cd "$(dirname "$0")/lib/gitsh"; echo $(find . -name \*.rb | cut -c 3-))"
