@@ -1,7 +1,7 @@
 require 'thread'
 require 'gitsh/module_delegator'
 
-class FakeReadline < ModuleDelegator
+class FakeLineEditor < ModuleDelegator
   def initialize
     @prompt_queue = Queue.new
     @input_read, @input_write = IO.pipe
@@ -36,7 +36,7 @@ class FakeReadline < ModuleDelegator
     if ENV['DEBUG']
       $stdout
     else
-      File.open(Tempfile.new('readline_out').path, 'w')
+      File.open(Tempfile.new('line_editor_out').path, 'w')
     end
   end
 end
