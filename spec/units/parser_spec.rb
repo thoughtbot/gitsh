@@ -96,6 +96,24 @@ describe Gitsh::Parser do
       )
     end
 
+    it 'parses a command with unquoted arguments containing escaped characters' do
+      expect(parser).to parse(%q(add some\ file.txt hello\"world \\)).as(
+        git_cmd: 'add',
+        args: [
+          { arg: parser_literals('some file.txt') },
+          { arg: parser_literals('hello"world') },
+          { arg: parser_literals('\\') }
+        ]
+      )
+    end
+
+    it 'parses a command with unquoted arguments containing escaped variables' do
+      expect(parser).to parse(%q(add \$not_a_variable)).as(
+        git_cmd: 'add',
+        args: [{ arg: parser_literals('$not_a_variable') }]
+      )
+    end
+
     it 'parses a command with variable arguments' do
       expect(parser).to parse('foo $bar $f_o-o.bar $_bar').as(
         git_cmd: 'foo',
@@ -129,8 +147,8 @@ describe Gitsh::Parser do
       )
     end
 
-    it 'parses a command with string arguments containing escaped quotes and slashes' do
-      expect(parser).to parse(%q(commit "It's \"great\"" "C:\\foo\bar")).as(
+    it 'parses a command with string arguments containing escaped characters' do
+      expect(parser).to parse(%q(commit "It's\ \"great\"" "C:\\foo\bar")).as(
         git_cmd: 'commit',
         args: [
           { arg: parser_literals('It\'s "great"') },
