@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe 'The gitsh prompt' do
-  include Color
-
   it 'is customised by a git config variable' do
     GitshRunner.interactive do |gitsh|
       gitsh.type('init')

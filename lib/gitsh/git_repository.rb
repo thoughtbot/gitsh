@@ -67,6 +67,16 @@ module Gitsh
       end
     end
 
+    def config_color(name, default)
+      git_output(
+        "config --get-color #{Shellwords.escape(name)} #{Shellwords.escape(default)}"
+      )
+    end
+
+    def color(description)
+      git_output("config --get-color '' #{Shellwords.escape(description)}")
+    end
+
     def revision_name(revision)
       name = git_output(
         "rev-parse --abbrev-ref --verify #{Shellwords.escape(revision)}"

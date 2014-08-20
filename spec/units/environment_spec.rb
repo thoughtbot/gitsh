@@ -260,5 +260,35 @@ describe Gitsh::Environment do
         expect(env).to delegate(:git_commands).to(repo, :commands)
       end
     end
+
+    describe '#repo_config_color' do
+      context 'when there is no environment variable set' do
+        it 'gets the color setting from the repo' do
+          expected_color = stub('color')
+          repo = stub('GitRepository', config_color: expected_color, config: nil)
+          env = described_class.new(repository_factory: stub(new: repo))
+
+          color = env.repo_config_color('test.color.foo', 'red')
+
+          expect(color).to eq expected_color
+          expect(repo).to have_received(:config_color).
+            with('test.color.foo', 'red')
+        end
+      end
+
+      context 'when there is an environment variable set' do
+        it 'gets the repo to convert the color to an ANSI escape sequence' do
+          expected_color = stub('color')
+          repo = stub('GitRepository', color: expected_color, config: nil)
+          env = described_class.new(repository_factory: stub(new: repo))
+
+          env['test.color.foo'] = 'blue'
+          color = env.repo_config_color('test.color.foo', 'red')
+
+          expect(color).to eq expected_color
+          expect(repo).to have_received(:color).with('blue')
+        end
+      end
+    end
   end
 end

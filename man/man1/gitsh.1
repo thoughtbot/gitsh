@@ -107,12 +107,12 @@ when the present working directory is not a git repository.
 .Pp
 The state of the repository is reflected by the terminating sigil and the color
 of both the current HEAD and the sigil:
-.Bl -column "Current directory is not a git repo" ".Sy Sigil" "Orange foreground" -offset indent
-.It Sy Status                               Ta Sy Sigil     Ta Sy Color
-.It Current directory is not a git repo     Ta !!           Ta Red background
-.It Repo has untracked files                Ta !            Ta Red foreground
-.It Repo has modified files                 Ta &            Ta Orange foreground
-.It All other states                        Ta @            Ta Blue foreground
+.Bl -column "Untracked files" ".Sy Sigil" ".Ic gitsh.color.uninitialized" ".Sy Default" -offset indent
+.It Sy Status           Ta Sy Sigil     Ta Sy Color setting                Ta Sy Default
+.It Not a git repo      Ta !!           Ta Ic gitsh.color.uninitialized    Ta normal red
+.It Untracked files     Ta !            Ta Ic gitsh.color.untracked        Ta red
+.It Modified files      Ta &            Ta Ic gitsh.color.modified         Ta orange
+.It Default             Ta @            Ta Ic gitsh.color.default          Ta blue
 .El
 .Pp
 .Ss Prompt customisation
@@ -272,6 +272,14 @@ command. By default this is
 .It Ic gitsh.gitCommand
 The command that gitsh will use to run git commands. The default is
 .Ic /usr/bin/env git .
+.It Ic gitsh.color.*
+Various settings are available to customize the colors used in the prompt.
+See the
+.Sx PROMPT
+section above for a list of settings,
+and
+.Xr git-config 1
+for the values that color settings can take.
 .El
 .Pp
 In addition, some standard

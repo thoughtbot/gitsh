@@ -87,6 +87,14 @@ module Gitsh
       repo.has_untracked_files?
     end
 
+    def repo_config_color(name, default)
+      if color_override = self[name]
+        repo.color(color_override)
+      else
+        repo.config_color(name, default)
+      end
+    end
+
     def git_commands
       repo.commands
     end

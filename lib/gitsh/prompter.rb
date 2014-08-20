@@ -1,4 +1,5 @@
 require 'gitsh/colors'
+require 'gitsh/prompt_color'
 
 module Gitsh
   class Prompter
@@ -7,6 +8,8 @@ module Gitsh
     def initialize(options={})
       @env = options.fetch(:env)
       @use_color = options.fetch(:color, true)
+      @prompt_color = options.fetch(:prompt_color) { PromptColor.new(@env) }
+      @options = options
     end
 
     def prompt
@@ -22,7 +25,7 @@ module Gitsh
 
     private
 
-    attr_reader :env
+    attr_reader :env, :prompt_color
 
     def padded_prompt_format
       "#{prompt_format.chomp} "
@@ -53,16 +56,10 @@ module Gitsh
     end
 
     def status_color
-      if !use_color?
-        ''
-      elsif !env.repo_initialized?
-        Colors::RED_BG
-      elsif env.repo_has_untracked_files?
-        Colors::RED_FG
-      elsif env.repo_has_modified_files?
-        Colors::ORANGE_FG
+      if use_color?
+        prompt_color.status_color
       else
-        Colors::BLUE_FG
+        Colors::NONE
       end
     end
 
@@ -70,7 +67,7 @@ module Gitsh
       if use_color?
         Colors::CLEAR
       else
-        ''
+        Colors::NONE
       end
     end
 

@@ -3,6 +3,8 @@ require 'open3'
 require 'gitsh/git_repository'
 
 describe Gitsh::GitRepository do
+  include Color
+
   describe '#initialized?' do
     it 'returns true when the current directory is a git repository' do
       Dir.chdir(repository_root) do
@@ -195,6 +197,52 @@ describe Gitsh::GitRepository do
           repo = Gitsh::GitRepository.new(env)
           expect(repo.config('not-a.real-variable', 'a-default')).
             to eq 'a-default'
+        end
+      end
+    end
+  end
+
+  context '#config_color' do
+    context 'when the config variable is set' do
+      it 'returns a color code for the color described by the setting' do
+        with_a_temporary_home_directory do
+          in_a_temporary_directory do
+            repo = Gitsh::GitRepository.new(env)
+            run 'git init'
+            run 'git config --local example.color red'
+
+            color = repo.config_color('example.color', 'blue')
+
+            expect(color).to eq red
+          end
+        end
+      end
+    end
+
+    context 'when the config variable is not set' do
+      it 'returns a color code for the color described by the default' do
+        with_a_temporary_home_directory do
+          in_a_temporary_directory do
+            repo = Gitsh::GitRepository.new(env)
+
+            color = repo.config_color('example.color', 'blue')
+
+            expect(color).to eq blue
+          end
+        end
+      end
+    end
+  end
+
+  context '#color' do
+    it 'returns a color code for the color described by the argument' do
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+
+          color = repo.color('blue')
+
+          expect(color).to eq blue
         end
       end
     end

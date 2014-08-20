@@ -85,6 +85,7 @@ describe Gitsh::InteractiveRunner do
       print: nil,
       puts: nil,
       repo_initialized?: false,
+      repo_config_color: '',
       fetch: '',
       :[] => nil
     })

@@ -11,7 +11,7 @@ describe Gitsh::Prompter do
         prompter = Gitsh::Prompter.new(env: env)
 
         expect(prompter.prompt).to eq(
-          "#{cwd_basename} #{red_background}uninitialized!!#{clear} "
+          "#{cwd_basename} #{red}uninitialized!!#{clear} "
         )
       end
     end
@@ -22,7 +22,7 @@ describe Gitsh::Prompter do
         prompter = Gitsh::Prompter.new(env: env)
 
         expect(prompter.prompt).to eq(
-          "#{cwd_basename} #{blue}my-feature@#{clear} "
+          "#{cwd_basename} #{red}my-feature@#{clear} "
         )
       end
     end
@@ -44,7 +44,7 @@ describe Gitsh::Prompter do
         prompter = Gitsh::Prompter.new(env: env)
 
         expect(prompter.prompt).to eq(
-          "#{cwd_basename} #{orange}master&#{clear} "
+          "#{cwd_basename} #{red}master&#{clear} "
         )
       end
     end
@@ -67,10 +67,11 @@ describe Gitsh::Prompter do
       end
 
       it 'replaces %c with a color code based on the status' do
+        prompt_color = stub('PromptColor', status_color: blue)
         env = env_double(repo_has_modified_files?: true, format: '%c')
-        prompter = Gitsh::Prompter.new(env: env)
+        prompter = Gitsh::Prompter.new(env: env, prompt_color: prompt_color)
 
-        expect(prompter.prompt).to eq "#{orange} "
+        expect(prompter.prompt).to eq "#{blue} "
       end
 
       it 'replaces %w with the code to restore the default color' do
@@ -108,7 +109,8 @@ describe Gitsh::Prompter do
         repo_initialized?: true,
         repo_has_modified_files?: false,
         repo_has_untracked_files?: false,
-        repo_current_head: 'master'
+        repo_current_head: 'master',
+        repo_config_color: red,
       }
       stub('Environment', default_attrs.merge(attrs)) do |env|
         env.stubs(:[]).with('gitsh.prompt').returns(format)
