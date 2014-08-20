@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'Default git command' do
+describe 'Default git path' do
   it 'can be overridden using a git-config variable' do
     GitshRunner.interactive(
       settings: { 'gitsh.gitCommand' => fake_git_path },

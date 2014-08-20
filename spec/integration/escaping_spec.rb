@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'Escaping commands' do
-  it 'does not pass aribtrary strings to a shell' do
+  it 'does not pass arbitrary strings to a shell' do
     GitshRunner.interactive do |gitsh|
       gitsh.type('init ; echo Injection')
 

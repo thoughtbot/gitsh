@@ -10,6 +10,15 @@ describe 'Entering no command' do
     end
   end
 
+  it 'runs `git status` ignoring white space' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type('init')
+      gitsh.type('    ')
+
+      expect(gitsh).to output /nothing to commit/
+    end
+  end
+
   it 'can be overriden using a git-config variable' do
     GitshRunner.interactive do |gitsh|
       gitsh.type('init')
