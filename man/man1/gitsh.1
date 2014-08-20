@@ -182,6 +182,10 @@ Or for a mix of variables and arbitrary strings:
 .Ed
 .It Ic :cd path
 changes directory to the given path.
+.It Ic :help [command]
+displays help about the given built-in command. Without an argument it outputs
+a list of all built-in commands. When given the name of a command, it outputs a
+usage message and brief description of that command.
 .It Ic :exit
 ends the gitsh session.
 .It Ic :q

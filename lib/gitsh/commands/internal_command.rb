@@ -1,12 +1,15 @@
 module Gitsh::Commands
   module InternalCommand
     def self.new(env, command, args=[])
-      klass = COMMAND_CLASSES.fetch(command.to_sym, Unknown)
-      klass.new(env, command, args)
+      command_class(command).new(env, command, args)
     end
 
     def self.commands
       COMMAND_CLASSES.keys.map { |key| ":#{key}" }
+    end
+
+    def self.command_class(command)
+      COMMAND_CLASSES.fetch(command.to_sym, Unknown)
     end
 
     class Base
@@ -21,12 +24,26 @@ module Gitsh::Commands
           'InternalCommand::Base subclasses must provide an #execute method'
       end
 
+      def self.help_message
+        raise NotImplementedError,
+          'InternalCommand::Base subclasses must provide a .help_message method'
+      end
+
       private
 
       attr_reader :env, :command, :args
     end
 
     class Set < Base
+      def self.help_message
+        <<-TXT
+usage: :set variable value
+Sets a variable in the gitsh environment to the given value. The value of the
+variable can be used in subsequent commands using the variable name with a
+dollar prefix.
+TXT
+      end
+
       def execute
         if valid_arguments?
           key, value = args
@@ -46,6 +63,15 @@ module Gitsh::Commands
     end
 
     class Echo < Base
+      def self.help_message
+        <<-TXT
+usage: :echo string ...
+Prints the given strings to standard output, followed by a newline. All
+whitespace is collapsed into one space. This can be useful for viewing the value
+of a variable.
+TXT
+      end
+
       def execute
         env.puts args.join(' ')
         true
@@ -53,6 +79,13 @@ module Gitsh::Commands
     end
 
     class Chdir < Base
+      def self.help_message
+        <<-TXT
+usage: :cd path
+Changes directory to the given path.
+TXT
+      end
+
       def execute
         if valid_arguments?
           change_directory
@@ -84,8 +117,37 @@ module Gitsh::Commands
     end
 
     class Exit < Base
+      def self.help_message
+        <<-TXT
+usage: :exit
+Ends the gitsh session. You can also do this with an EOF character, usually by
+pressing ctrl+d.
+TXT
+      end
+
       def execute
         exit
+      end
+    end
+
+    class Help < Base
+      def self.help_message
+        <<-TXT
+usage: :help [command]
+Displays help about the given command. Run with no arguments for a list of all
+commands.
+TXT
+      end
+
+      def execute
+        env.puts InternalCommand.command_class(subject).help_message
+        true
+      end
+
+      private
+
+      def subject
+        args.first.to_s.sub(/^:/, '')
       end
     end
 
@@ -93,6 +155,15 @@ module Gitsh::Commands
       def execute
         env.puts_error("gitsh: #{command}: command not found")
         false
+      end
+
+      def self.help_message
+        <<-TXT
+You may use the following built-in commands:
+#{InternalCommand.commands.sort.map { |c| "\t#{c}" }.join("\n")}
+
+Type :help [command] for more specific info
+TXT
       end
     end
 
@@ -102,6 +173,7 @@ module Gitsh::Commands
       exit: Exit,
       q: Exit,
       echo: Echo,
+      help: Help,
     }.freeze
   end
 end
