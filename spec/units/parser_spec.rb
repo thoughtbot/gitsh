@@ -40,6 +40,10 @@ describe Gitsh::Parser do
       expect(parser).to parse('status  ').as(git_cmd: 'status')
     end
 
+    it 'parses a git command with a trailing comment' do
+      expect(parser).to parse('status #comment').as(git_cmd: 'status')
+    end
+
     it 'parses an internal command with no arguments' do
       expect(parser).to parse(':set').as(internal_cmd: 'set')
     end
@@ -135,6 +139,15 @@ describe Gitsh::Parser do
         args: [
           { arg: parser_literals('It\'s "great"') },
           { arg: parser_literals('C:\foo\bar') }
+        ]
+      )
+    end
+
+    it 'parses a command with string arguments containing the comment prefix' do
+      expect(parser).to parse(%q(commit "Not a #comment")).as(
+        git_cmd: 'commit',
+        args: [
+          { arg: parser_literals('Not a #comment') },
         ]
       )
     end

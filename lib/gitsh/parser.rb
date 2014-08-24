@@ -15,11 +15,11 @@ module Gitsh
     root(:program)
 
     rule(:program) do
-      comment | multi_command | blank_line
+      comment.as(:comment) | multi_command | blank_line
     end
 
     rule(:comment) do
-      (match('#') >> any.repeat(0)).as(:comment)
+      match('#') >> any.repeat(0)
     end
 
     rule(:multi_command) do
@@ -51,7 +51,8 @@ module Gitsh
     end
 
     rule(:command) do
-      space.maybe >> command_identifier >> argument_list.maybe >> space.maybe
+      space.maybe >> command_identifier >> argument_list.maybe >> space.maybe >>
+        comment.maybe
     end
 
     rule(:argument_list) do
@@ -63,7 +64,7 @@ module Gitsh
     end
 
     rule(:unquoted_string) do
-      (variable | match(%q([^\s'"&|;])).as(:literal)).repeat(1)
+      (variable | match(%q([^\s'"&|;#])).as(:literal)).repeat(1)
     end
 
     rule(:empty_string) do
