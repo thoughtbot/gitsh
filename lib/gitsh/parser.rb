@@ -5,10 +5,11 @@ module Gitsh
   class Parser < Parslet::Parser
     def initialize(options={})
       super()
+      @env = options.fetch(:env)
       @transformer_factory = options.fetch(:transformer_factory, Transformer)
     end
 
-    def parse_and_transform(command, env)
+    def parse_and_transform(command)
       transformer.apply(parse(command), env: env)
     end
 
@@ -122,7 +123,7 @@ module Gitsh
 
     private
 
-    attr_reader :transformer_factory
+    attr_reader :transformer_factory, :env
 
     def transformer
       @transformer ||= transformer_factory.new

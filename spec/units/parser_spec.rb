@@ -8,9 +8,9 @@ describe Gitsh::Parser do
       transformed = stub
       transformer = stub('Transformer', apply: transformed)
       transformer_factory = stub(new: transformer)
-      parser = described_class.new(transformer_factory: transformer_factory)
+      parser = described_class.new(env: env, transformer_factory: transformer_factory)
 
-      result = parser.parse_and_transform('status', env)
+      result = parser.parse_and_transform('status')
 
       expect(transformer).to have_received(:apply).with({ git_cmd: 'status' }, env: env)
       expect(result).to eq transformed
@@ -18,7 +18,7 @@ describe Gitsh::Parser do
   end
 
   describe '#parse' do
-    let(:parser) { described_class.new }
+    let(:parser) { described_class.new(env: {}) }
 
     it 'parses a blank line' do
       expect(parser).to parse('').as(blank: '')

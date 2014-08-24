@@ -18,11 +18,11 @@ module Gitsh
     attr_reader :env, :parser_factory
 
     def build_command(input)
-      parser.parse_and_transform(input, env)
+      parser.parse_and_transform(input)
     end
 
     def parser
-      @parser ||= parser_factory.new
+      @parser ||= parser_factory.new(env: env)
     end
   end
 end
