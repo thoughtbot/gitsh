@@ -273,6 +273,19 @@ command. By default this is
 The command that gitsh will use to run git commands. The default is
 .Ic /usr/bin/env git .
 .El
+.Pp
+In addition, some standard
+.Xr git-config 1
+variables modify the behaviour of gitsh:
+.Bl -tag -width Ds
+.It Ic help.autocorrect
+When this is set to anything other than 0, an extraneous
+.Ic git
+prefix to a command will be automatically removed. This will help users who
+are used to using
+.Xr git 1
+through a general purpose shell.
+.El
 .
 .Sh ENVIRONMENT
 .Bl -tag -width Ds

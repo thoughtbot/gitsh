@@ -4,7 +4,7 @@ require 'gitsh/parser'
 describe Gitsh::Parser do
   describe '#parse_and_transform' do
     it 'returns an object built from the parsed command' do
-      env = stub
+      env = stub('Environment', fetch: nil)
       transformed = stub
       transformer = stub('Transformer', apply: transformed)
       transformer_factory = stub(new: transformer)
@@ -281,6 +281,25 @@ describe Gitsh::Parser do
           }
         }
       )
+    end
+
+    context 'with autocorrect enabled' do
+      it 'drops the git prefix from commands' do
+        parser = described_class.new(env: { 'help.autocorrect' => '1' })
+
+        expect(parser).to parse('git init').as(git_cmd: 'init')
+      end
+    end
+
+    context 'with autocomplete disabled' do
+      it 'treats a command with a git prefix as a normal git command' do
+        parser = described_class.new(env: { 'help.autocorrect' => '0' })
+
+        expect(parser).to parse('git init').as(
+          git_cmd: 'git',
+          args: [ { arg: parser_literals('init') } ],
+        )
+      end
     end
   end
 end

@@ -87,7 +87,15 @@ module Gitsh
     rule(:command_identifier) do
       (str(':') >> identifier.as(:internal_cmd)) |
       (str('!') >> identifier.as(:shell_cmd)) |
-      identifier.as(:git_cmd)
+      git_command_identifier
+    end
+
+    rule(:git_command_identifier) do
+      if autocorrect_enabled?
+        (str('git') >> space).maybe >> identifier.as(:git_cmd)
+      else
+        identifier.as(:git_cmd)
+      end
     end
 
     rule(:variable) do
@@ -127,6 +135,10 @@ module Gitsh
 
     def transformer
       @transformer ||= transformer_factory.new
+    end
+
+    def autocorrect_enabled?
+      env.fetch('help.autocorrect', '0') != '0'
     end
   end
 end
