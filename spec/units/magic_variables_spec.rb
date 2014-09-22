@@ -34,15 +34,31 @@ describe Gitsh::MagicVariables do
     end
 
     context 'with _rebase_base' do
-      it 'returns the value stored in the .git/rebase-apply/onto file' do
-        Dir.mktmpdir do |tmpdir_path|
-          rebase_path = Pathname.new(tmpdir_path).join('rebase-apply')
-          rebase_path.mkpath
-          write_file(rebase_path.join('onto'), 'abc123')
-          repo = stub('GitRepository', git_dir: tmpdir_path)
-          magic_variables = described_class.new(repo)
+      context 'when there is a .git/rebase-apply/onto file' do
+        it 'returns the value stored in that file' do
+          Dir.mktmpdir do |tmpdir_path|
+            rebase_path = Pathname.new(tmpdir_path).join('rebase-apply')
+            rebase_path.mkpath
+            write_file(rebase_path.join('onto'), 'abc123')
+            repo = stub('GitRepository', git_dir: tmpdir_path)
+            magic_variables = described_class.new(repo)
 
-          expect(magic_variables[:_rebase_base]).to eq 'abc123'
+            expect(magic_variables[:_rebase_base]).to eq 'abc123'
+          end
+        end
+      end
+
+      context 'when there is a .git/rebase-merge/onto file' do
+        it 'returns the value stored in that file' do
+          Dir.mktmpdir do |tmpdir_path|
+            rebase_path = Pathname.new(tmpdir_path).join('rebase-merge')
+            rebase_path.mkpath
+            write_file(rebase_path.join('onto'), 'def456')
+            repo = stub('GitRepository', git_dir: tmpdir_path)
+            magic_variables = described_class.new(repo)
+
+            expect(magic_variables[:_rebase_base]).to eq 'def456'
+          end
         end
       end
 

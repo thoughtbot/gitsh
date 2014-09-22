@@ -27,7 +27,11 @@ module Gitsh
     end
 
     def _rebase_base
-      File.read(File.join(repo.git_dir, 'rebase-apply', 'onto')).chomp
+      read_file(['rebase-apply', 'onto']) || read_file(['rebase-merge', 'onto'])
+    end
+
+    def read_file(path_components)
+      File.read(File.join(repo.git_dir, *path_components)).chomp
     rescue Errno::ENOENT
       nil
     end
