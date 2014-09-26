@@ -1,4 +1,4 @@
-#!@RUBY@
+#!@RUBY@ --disable-gems
 
 $LOAD_PATH.unshift('@rubydir@')
 
