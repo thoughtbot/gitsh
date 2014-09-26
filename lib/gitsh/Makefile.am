@@ -1,5 +1,5 @@
 pkgruby_DATA = version.rb
-dist_pkgruby_DATA = $(libfiles)
+nobase_dist_pkgruby_DATA = $(libfiles)
 CLEANFILES = version.rb
 EXTRA_DIST = version.rb.in
 

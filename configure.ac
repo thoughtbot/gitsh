@@ -36,7 +36,7 @@ fi
 
 rubydir=$datadir/$PACKAGE/ruby
 pkgrubydir=$rubydir/$PACKAGE
-libfiles="$(cd "$(dirname "$0")/lib/gitsh"; echo *.rb)"
+libfiles="$(cd "$(dirname "$0")/lib/gitsh"; echo $(find . -name \*.rb | cut -c 3-))"
 vendorfiles="$(cd "$(dirname "$0")/vendor"; echo $(find gems -type f))"
 testfiles="$(cd "$(dirname "$0")/spec"; echo $(find integration units -type f -name \*rb))"
 gemsetuppath=$datadir/$PACKAGE/gems/setup.rb
