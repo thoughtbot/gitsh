@@ -122,6 +122,14 @@ describe Gitsh::Transformer do
       expect(output).to be argument_builder.argument
     end
 
+    it 'transforms subshell arguments' do
+      argument_builder = stub_argument_builder
+      output = transformer.apply({ arg: [{ subshell: 'status' }] }, env: env)
+
+      expect(argument_builder).to have_received(:add_subshell).with('status')
+      expect(output).to be argument_builder.argument
+    end
+
     it 'transforms empty string arguments' do
       output = transformer.apply({ arg: [{ empty_string: "''" }] }, env: env)
       expect(output.value(env)).to eq ''
@@ -149,6 +157,7 @@ describe Gitsh::Transformer do
       'ArgumentBuilder',
       add_literal: nil,
       add_variable: nil,
+      add_subshell: nil,
       argument: argument,
     )
     Gitsh::ArgumentBuilder.stubs(:build).yields(builder).returns(argument)

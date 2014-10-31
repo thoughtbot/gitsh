@@ -34,6 +34,21 @@ describe Gitsh::ArgumentBuilder do
     end
   end
 
+  describe 'building a Subshell with #add_subshell' do
+    it 'creates a subshell' do
+      subshell = stub('Subshell')
+      Gitsh::Arguments::Subshell.stubs(:new).returns(subshell)
+
+      built_argument = described_class.build do |builder|
+        builder.add_subshell('!pwd')
+      end
+
+      expect(built_argument).to be subshell
+      expect(Gitsh::Arguments::Subshell).to have_received(:new).once.
+        with('!pwd', interpreter_factory: Gitsh::Interpreter)
+    end
+  end
+
   describe 'building a CompositeArgument with multiple calls to #add_variable' do
     it 'creates a composite argument of several VariableArguments' do
       composite_argument = stub('CompositeArgument')

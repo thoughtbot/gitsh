@@ -1,6 +1,8 @@
 require 'gitsh/arguments/composite_argument'
 require 'gitsh/arguments/string_argument'
+require 'gitsh/arguments/subshell'
 require 'gitsh/arguments/variable_argument'
+require 'gitsh/interpreter'
 
 module Gitsh
   class ArgumentBuilder
@@ -22,6 +24,14 @@ module Gitsh
     def add_variable(variable_name)
       collect_literals
       arguments << Arguments::VariableArgument.new(variable_name)
+    end
+
+    def add_subshell(command)
+      collect_literals
+      arguments << Arguments::Subshell.new(
+        command,
+        interpreter_factory: Interpreter,
+      )
     end
 
     def argument

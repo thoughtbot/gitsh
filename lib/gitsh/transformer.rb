@@ -6,6 +6,7 @@ require 'gitsh/commands/internal_command'
 require 'gitsh/commands/noop'
 require 'gitsh/commands/shell_command'
 require 'gitsh/commands/tree'
+require 'gitsh/interpreter'
 
 module Gitsh
   class Transformer < Parslet::Transform
@@ -29,6 +30,10 @@ module Gitsh
 
     rule(var: simple(:var)) do
       lambda { |arg_builder| arg_builder.add_variable(var) }
+    end
+
+    rule(subshell: simple(:subshell)) do
+      lambda { |arg_builder| arg_builder.add_subshell(subshell.to_s) }
     end
 
     rule(arg: subtree(:parts)) do

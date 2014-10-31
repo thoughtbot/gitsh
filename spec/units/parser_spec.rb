@@ -133,6 +133,24 @@ describe Gitsh::Parser do
       )
     end
 
+    it 'parses a command with a subshell argument' do
+      expect(parser).to parse(':echo $(status)').as(
+        internal_cmd: 'echo',
+        args: [
+          { arg: [{ subshell: 'status' }] }
+        ]
+      )
+    end
+
+    it 'parses a command with a double-quoted argument containing a subshell' do
+      expect(parser).to parse(':echo "In $(!pwd)"').as(
+        internal_cmd: 'echo',
+        args: [
+          { arg: parser_literals('In ') + [{ subshell: '!pwd' }] }
+        ]
+      )
+    end
+
     it 'parses a command with string arguments containing escaped quotes and slashes' do
       expect(parser).to parse(%q(commit "It's \"great\"" "C:\\foo\bar")).as(
         git_cmd: 'commit',

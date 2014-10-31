@@ -17,6 +17,12 @@ module Gitsh
       @magic_variables = options.fetch(:magic_variables) { MagicVariables.new(@repo) }
     end
 
+    def initialize_copy(original)
+      super
+      @variables = variables.clone
+      self
+    end
+
     def git_command(force_default = false)
       if force_default
         DEFAULT_GIT_COMMAND

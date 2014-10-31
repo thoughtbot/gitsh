@@ -65,7 +65,11 @@ module Gitsh
     end
 
     rule(:unquoted_string) do
-      (variable | match(%q([^\s'"&|;#])).as(:literal)).repeat(1)
+      (
+        variable |
+        subshell |
+        match(%q([^\s'"&|;#])).as(:literal)
+      ).repeat(1)
     end
 
     rule(:empty_string) do
@@ -76,6 +80,7 @@ module Gitsh
       str('"') >> (
         (str('\\') >> match('[$"\\\]').as(:literal)) |
         variable |
+        subshell |
         (str('"').absent? >> any).as(:literal)
       ).repeat(0) >> str('"')
     end
@@ -107,6 +112,10 @@ module Gitsh
 
     rule(:variable_name) do
       match('[A-Za-z_]') >> match('[A-Za-z0-9._\-]').repeat(0)
+    end
+
+    rule(:subshell) do
+      str('$(') >> (str(')').absent? >> any).repeat(0).as(:subshell) >> str(')')
     end
 
     rule(:identifier) do

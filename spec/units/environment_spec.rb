@@ -65,6 +65,21 @@ describe Gitsh::Environment do
     end
   end
 
+  describe '#clone' do
+    it 'creates a copy with an isolated set of variables' do
+      original = described_class.new
+      original['a'] = 'A is set'
+
+      copy = original.clone
+      copy['b'] = 'B is set'
+
+      expect(original.fetch('a')).to eq 'A is set'
+      expect(copy.fetch('a')).to eq 'A is set'
+      expect { original.fetch('b') }.to raise_exception(Gitsh::Error)
+      expect(copy.fetch('b')).to eq 'B is set'
+    end
+  end
+
   describe '#config_variables' do
     it 'returns variables that have a dot in the name' do
       env = described_class.new
