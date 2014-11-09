@@ -69,12 +69,16 @@ sh$</code></pre>
 
 ## Installing gitsh
 
-* On Mac OS X, via homebrew:
+* Mac OS X, via homebrew:
 
         brew tap thoughtbot/formulae
         brew install gitsh
 
-* On Arch Linux: https://github.com/thoughtbot/gitsh/blob/master/arch/PKGBUILD
+* Arch Linux: https://github.com/thoughtbot/gitsh/blob/master/arch/PKGBUILD
+
+* OpenBSD -current:
+
+        sudo pkg_add gitsh
 
 See the [installation guide][INSTALL] for install instructions for other
 operating systems.
