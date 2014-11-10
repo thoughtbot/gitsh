@@ -12,7 +12,7 @@ module Gitsh
       elsif env.repo_has_untracked_files?
         env.repo_config_color('gitsh.color.untracked', 'red')
       elsif env.repo_has_modified_files?
-        env.repo_config_color('gitsh.color.modified', 'orange')
+        env.repo_config_color('gitsh.color.modified', 'yellow')
       else
         env.repo_config_color('gitsh.color.default', 'blue')
       end

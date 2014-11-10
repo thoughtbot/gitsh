@@ -5,7 +5,7 @@ module Gitsh
     BLACK_FG = "\033[30m"
     RED_FG = "\033[31m"
     GREEN_FG = "\033[32m"
-    ORANGE_FG = "\033[33m"
+    YELLOW_FG = "\033[33m"
     BLUE_FG = "\033[34m"
     MAGENTA_FG = "\033[35m"
     CYAN_FG = "\033[36m"

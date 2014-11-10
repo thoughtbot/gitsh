@@ -37,7 +37,7 @@ describe Gitsh::PromptColor do
 
         expect(prompt_color.status_color).to eq color
         expect(env).to have_received(:repo_config_color).
-          with('gitsh.color.modified', 'orange')
+          with('gitsh.color.modified', 'yellow')
       end
     end
 
