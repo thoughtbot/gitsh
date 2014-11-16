@@ -6,6 +6,7 @@ Currently gitsh packages are available for:
 
 * OS X (via homebrew)
 * Arch Linux
+* OpenBSD (-current)
 
 On other operating systems you should install using the tarball, following the
 instructions in this guide.
