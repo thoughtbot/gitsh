@@ -103,7 +103,7 @@ free software, and may be redistributed under the terms specified in the
 
 [hub]: http://hub.github.com/
 [gh]: https://github.com/jingweno/gh
-[INSTALL]: https://github.com/thoughtbot/gitsh/blob/master/INSTALL.in
+[INSTALL]: https://github.com/thoughtbot/gitsh/blob/master/INSTALL
 [CONTRIBUTING]: https://github.com/thoughtbot/gitsh/blob/master/CONTRIBUTING.md
 [LICENSE]: https://github.com/thoughtbot/gitsh/blob/master/LICENSE
 [git-sh]: https://github.com/rtomayko/git-sh

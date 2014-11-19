@@ -14,7 +14,7 @@ edit_package = sed \
 	-e 's|@DIST_ARCHIVES[@]|$(DIST_ARCHIVES)|g' \
 	-e 's|@DIST_SHA[@]|$(DIST_SHA)|g'
 
-INSTALL: INSTALL.in
+INSTALL: Makefile INSTALL.in
 	$(edit_package) $@.in > $@
 
 release: release_build release_push release_clean

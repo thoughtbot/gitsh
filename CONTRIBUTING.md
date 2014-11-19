@@ -76,7 +76,12 @@ gitsh is packaged and installed using GNU autotools.
         ./autogen.sh
         ./configure
 
-3. Build and publish the release:
+3. Regenerate the installation instructions:
+
+        make INSTALL
+        git commit -m "Update INSTALL"-- INSTALL
+
+4. Build and publish the release:
 
         make release_build
         make release_push
