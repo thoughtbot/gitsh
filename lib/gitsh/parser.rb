@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'parslet'
 require 'gitsh/transformer'
 
