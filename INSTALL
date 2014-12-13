@@ -72,6 +72,9 @@ Installation
    should be used, which has important implications; see the notes on "gitsh and
    Ruby version managers" and "libedit vs. GNU Readline" above.
 
+        gem install bundler
+        bundle install
+        alocal; automake --add-missing; autoconf
         ./configure
 
 3. Build and install gitsh:
