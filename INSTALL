@@ -16,7 +16,9 @@ Prerequisites
 -------------
 
 * Ruby version 1.9.3 or later
+* bundler gem
 * gcc or a similar C compiler
+* alocal, automake and autoconf
 
 
 gitsh and Ruby version managers
