@@ -64,7 +64,7 @@ Installation
 
 1. Download and extract the latest release:
 
-        curl -O https://github.com/thoughtbot/gitsh/releases/download/v0.8/gitsh-0.8.tar.gz
+        curl -OL https://github.com/thoughtbot/gitsh/releases/download/v0.8/gitsh-0.8.tar.gz
         tar -zxvf gitsh-0.8.tar.gz
         cd gitsh-0.8
 
