@@ -73,12 +73,6 @@ describe Gitsh::Transformer do
       expect(output).to eq 'Jane Doe'
     end
 
-    it 'transforms unknown variables arguments to nil' do
-      env = {}
-      output = transformer.apply({ arg: [{ var: 'author' }] }, env: env)
-      expect(output).to be_nil
-    end
-
     it 'transforms empty string arguments' do
       output = transformer.apply({ arg: [{ empty_string: "''" }] }, env: env)
       expect(output).to eq ''

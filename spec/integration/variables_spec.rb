@@ -69,17 +69,12 @@ describe 'Gitsh variables' do
     end
   end
 
-  it 'does not pass unset variables on to commands' do
+  it 'errors when told to read an unset variable' do
     GitshRunner.interactive do |gitsh|
       gitsh.type(':echo "hello $unset world"')
 
-      expect(gitsh).to output_no_errors
-      expect(gitsh).to output /hello  world/
-
-      gitsh.type(':echo hello $unset world')
-
-      expect(gitsh).to output_no_errors
-      expect(gitsh).to output /hello world/
+      expect(gitsh).to output_nothing
+      expect(gitsh).to output_error /unset/
     end
   end
 end

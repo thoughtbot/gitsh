@@ -1,3 +1,4 @@
+require 'gitsh/error'
 require 'gitsh/git_repository'
 require 'gitsh/magic_variables'
 
@@ -39,7 +40,7 @@ module Gitsh
         end
       end
     rescue KeyError
-      raise KeyError, "Variable '#{key}' is not set"
+      raise Gitsh::UnsetVariableError, "Variable '#{key}' is not set"
     end
 
     def config_variables

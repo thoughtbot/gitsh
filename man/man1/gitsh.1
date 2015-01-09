@@ -239,13 +239,10 @@ branch.
 .El
 .El
 .Pp
-Unset variables will be ignored, as then are in
-.Xr sh 1 .
-For example, the commit message produced by the following command will be
-.Ic "a commit" :
-.Bd -literal -offset indent
-@ commit -m $unset "a commit"
-.Ed
+Attempting to use an unset variable will cause a command to fail. This is
+different to
+.Xr sh 1 ,
+which will ignore unset variable arguments.
 .Sh CONFIGURATION
 The following
 .Xr git-config 1

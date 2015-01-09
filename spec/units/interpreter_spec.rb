@@ -29,5 +29,17 @@ describe Gitsh::Interpreter do
 
       expect(env).to have_received(:puts_error).with('gitsh: parse error')
     end
+
+    it 'handles gitsh errors' do
+      env = stub('env', puts_error: nil)
+      parser = stub('Parser')
+      parser.stubs(:parse_and_transform).raises(Gitsh::Error, 'An error message')
+      parser_factory = stub('ParserFactory', new: parser)
+
+      interpreter = Gitsh::Interpreter.new(env, parser_factory: parser_factory)
+      interpreter.execute('add -p')
+
+      expect(env).to have_received(:puts_error).with('gitsh: An error message')
+    end
   end
 end

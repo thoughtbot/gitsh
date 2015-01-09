@@ -56,10 +56,11 @@ describe Gitsh::Environment do
     end
 
     context 'for an unknown variable with no default block given' do
-      it 'raises a KeyError' do
+      it 'raises an error' do
         env = described_class.new
 
-        expect { env.fetch(:unknown) }.to raise_exception(KeyError, /unknown/)
+        expect { env.fetch(:unknown) }.
+          to raise_exception(Gitsh::UnsetVariableError, /unknown/)
       end
     end
   end

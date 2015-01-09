@@ -1,3 +1,4 @@
+require 'gitsh/error'
 require 'gitsh/parser'
 
 module Gitsh
@@ -11,6 +12,8 @@ module Gitsh
       build_command(input).execute
     rescue Parslet::ParseFailed
       env.puts_error('gitsh: parse error')
+    rescue Gitsh::Error => err
+      env.puts_error("gitsh: #{err.message}")
     end
 
     private
