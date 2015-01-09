@@ -27,7 +27,7 @@ module Gitsh
 
     rule(var: simple(:var)) do |context|
       key = context[:var]
-      context[:env][key]
+      context[:env].fetch(key) { nil }
     end
 
     rule(arg: subtree(:parts)) do |context|

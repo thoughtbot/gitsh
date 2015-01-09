@@ -114,7 +114,7 @@ describe Gitsh::Prompter do
       }
       stub('Environment', default_attrs.merge(attrs)) do |env|
         env.stubs(:[]).with('gitsh.prompt').returns(format)
-        env.stubs(:fetch).with('gitsh.prompt', Gitsh::Prompter::DEFAULT_FORMAT).returns(
+        env.stubs(:fetch).with('gitsh.prompt').returns(
           format || Gitsh::Prompter::DEFAULT_FORMAT
         )
       end

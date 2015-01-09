@@ -171,32 +171,44 @@ describe Gitsh::GitRepository do
   end
 
   context '#config' do
-    it 'returns a git configuration value' do
-      with_a_temporary_home_directory do
-        in_a_temporary_directory do
-          repo = Gitsh::GitRepository.new(env)
-          run 'git init'
-          run 'git config --local alias.zecho "!echo zzz"'
-          expect(repo.config('alias.zecho')).to eq '!echo zzz'
+    context 'for a variable that is set' do
+      it 'returns a git configuration value' do
+        with_a_temporary_home_directory do
+          in_a_temporary_directory do
+            repo = Gitsh::GitRepository.new(env)
+            git_alias = '!echo zzz'
+            run 'git init'
+            run "git config --local alias.zecho '#{git_alias}'"
+
+            expect(repo.config('alias.zecho')).to eq git_alias
+          end
         end
       end
     end
 
-    it 'returns nil if the configuration variable is not set' do
-      with_a_temporary_home_directory do
-        in_a_temporary_directory do
-          repo = Gitsh::GitRepository.new(env)
-          expect(repo.config('not-a.real-variable')).to be_nil
+    context 'for a variable that is not set with no block given' do
+      it 'raises a KeyError' do
+        with_a_temporary_home_directory do
+          in_a_temporary_directory do
+            repo = Gitsh::GitRepository.new(env)
+
+            expect {
+              repo.config('not-a.real-variable')
+            }.to raise_exception(KeyError)
+          end
         end
       end
     end
 
-    it 'returns the default value if the configuration variable is not set' do
-      with_a_temporary_home_directory do
-        in_a_temporary_directory do
-          repo = Gitsh::GitRepository.new(env)
-          expect(repo.config('not-a.real-variable', 'a-default')).
-            to eq 'a-default'
+    context 'for a variable that is not set with a block' do
+      it 'yields to the block' do
+        with_a_temporary_home_directory do
+          in_a_temporary_directory do
+            repo = Gitsh::GitRepository.new(env)
+
+            expect(repo.config('not-a.real-variable') { 'a-default' }).
+              to eq 'a-default'
+          end
         end
       end
     end

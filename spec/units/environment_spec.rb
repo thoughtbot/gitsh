@@ -8,69 +8,59 @@ describe Gitsh::Environment do
       factory = stub(new: repository)
       env = described_class.new(repository_factory: factory)
 
-      expect(env[:foo]).to be_nil
-      expect(env['foo']).to be_nil
       env['foo'] = 'bar'
-      expect(env[:foo]).to eq 'bar'
-      expect(env['foo']).to eq 'bar'
-    end
-  end
-
-  describe '#[]' do
-    it 'reads a gitsh environment variable' do
-      env = described_class.new
-      env[:foo] = 'bar'
-
-      expect(env[:foo]).to eq 'bar'
-      expect(env['foo']).to eq 'bar'
-    end
-
-    it 'reads a git config variables' do
-      repository = stub('GitRepository')
-      repository.stubs(:config).with('user.name').returns('Joe Bloggs')
-      factory = stub(new: repository)
-      env = described_class.new(repository_factory: factory)
-
-      expect(env['user.name']).to eq 'Joe Bloggs'
-      expect(env[:'user.name']).to eq 'Joe Bloggs'
-    end
-
-    it 'prefers gitsh environment variables to git config variables' do
-      repository = stub
-      repository.stubs(:config).with('user.name').returns('Joe Bloggs')
-      factory = stub(new: repository)
-      env = described_class.new(repository_factory: factory)
-      env[:'user.name'] = 'Jane Doe'
-
-      expect(env['user.name']).to eq 'Jane Doe'
-      expect(env[:'user.name']).to eq 'Jane Doe'
-    end
-
-    it 'understands magic variables' do
-      magic_variables = stub(:magic_variables)
-      magic_variables.stubs(:[]).with(:_prior).returns('a-branch-name')
-      env = described_class.new(magic_variables: magic_variables)
-
-      expect(env[:'_prior']).to eq 'a-branch-name'
+      expect(env.fetch('foo')).to eq 'bar'
     end
   end
 
   describe '#fetch' do
-    it 'reads a gitsh environment variable' do
-      env = described_class.new
-      env[:foo] = 'bar'
+    context 'for a magic variable' do
+      it 'returns the value of the magic variable' do
+        magic_variables = stub(:magic_variables)
+        magic_variables.stubs(:fetch).with(:_prior).returns('a-branch-name')
+        env = described_class.new(magic_variables: magic_variables)
 
-      expect(env.fetch(:foo, 'default')).to eq 'bar'
-      expect(env.fetch('foo', 'default')).to eq 'bar'
+        expect(env.fetch(:_prior)).to eq 'a-branch-name'
+        expect(env.fetch('_prior')).to eq 'a-branch-name'
+      end
     end
 
-    it 'reads a git config variable when there is no environment variable' do
-      repository = stub('GitRepository')
-      repository.stubs(:config).with('user.name', 'default', false).
-        returns('John Smith')
-      env = described_class.new(repository_factory: stub(new: repository))
+    context 'for a gitsh environment variable' do
+      it 'returns the value of the environment variable' do
+        env = described_class.new
+        env[:foo] = 'bar'
 
-      expect(env.fetch('user.name', 'default')).to eq 'John Smith'
+        expect(env.fetch(:foo)).to eq 'bar'
+        expect(env.fetch('foo')).to eq 'bar'
+      end
+    end
+
+    context 'for a Git configuration variable' do
+      it 'returns the value of the Git configuration variable' do
+        repository = stub('GitRepository')
+        repository.stubs(:config).with('user.name', false).
+          returns('John Smith')
+        env = described_class.new(repository_factory: stub(new: repository))
+
+        expect(env.fetch(:'user.name')).to eq 'John Smith'
+        expect(env.fetch('user.name')).to eq 'John Smith'
+      end
+    end
+
+    context 'for an unknown variable with a default block given' do
+      it 'yields to the block' do
+        env = described_class.new
+
+        expect(env.fetch(:unknown) { 'default' }).to eq 'default'
+      end
+    end
+
+    context 'for an unknown variable with no default block given' do
+      it 'raises a KeyError' do
+        env = described_class.new
+
+        expect { env.fetch(:unknown) }.to raise_exception(KeyError, /unknown/)
+      end
     end
   end
 

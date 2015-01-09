@@ -138,7 +138,7 @@ module Gitsh
     end
 
     def autocorrect_enabled?
-      env.fetch('help.autocorrect', '0') != '0'
+      env.fetch('help.autocorrect') { '0' } != '0'
     end
   end
 end

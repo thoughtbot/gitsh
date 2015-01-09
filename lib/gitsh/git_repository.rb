@@ -54,7 +54,7 @@ module Gitsh
       git_output('remote').lines
     end
 
-    def config(name, default = nil, force_default_git_command = false)
+    def config(name, force_default_git_command = false)
       command = git_command(
         "config --get #{Shellwords.escape(name)}",
         force_default_git_command
@@ -62,8 +62,10 @@ module Gitsh
       out, err, status = Open3.capture3(command)
       if status.success?
         out.chomp
+      elsif block_given?
+        yield
       else
-        default
+        raise KeyError, "Git configuration variable #{name} is not set"
       end
     end
 

@@ -4,9 +4,11 @@ module Gitsh
       @repo = repo
     end
 
-    def [](key)
+    def fetch(key)
       if available_variables.include?(key)
         send(key)
+      else
+        yield
       end
     end
 

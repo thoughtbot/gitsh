@@ -20,7 +20,7 @@ module Gitsh
       if force_default
         DEFAULT_GIT_COMMAND
       else
-        fetch('gitsh.gitCommand', DEFAULT_GIT_COMMAND, true)
+        fetch('gitsh.gitCommand', true) { DEFAULT_GIT_COMMAND }
       end
     end
 
@@ -28,19 +28,18 @@ module Gitsh
       self['gitsh.gitCommand'] = git_command
     end
 
-    def [](key)
-      magic_variables[key.to_sym] || variables[key.to_sym] || repo.config(key.to_s)
-    end
-
     def []=(key, value)
       variables[key.to_sym] = value
     end
 
-    def fetch(key, default, force_default_git_command = false)
-      variables.fetch(
-        key.to_sym,
-        repo.config(key.to_s, default, force_default_git_command)
-      )
+    def fetch(key, force_default_git_command = false, &block)
+      magic_variables.fetch(key.to_sym) do
+        variables.fetch(key.to_sym) do
+          repo.config(key.to_s, force_default_git_command, &block)
+        end
+      end
+    rescue KeyError
+      raise KeyError, "Variable '#{key}' is not set"
     end
 
     def config_variables
@@ -88,7 +87,7 @@ module Gitsh
     end
 
     def repo_config_color(name, default)
-      if color_override = self[name]
+      if color_override = fetch(name) { false }
         repo.color(color_override)
       else
         repo.config_color(name, default)

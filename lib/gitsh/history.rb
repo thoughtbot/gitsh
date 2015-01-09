@@ -32,11 +32,11 @@ module Gitsh
     end
 
     def history_file_path
-      env['gitsh.historyFile'] || DEFAULT_HISTORY_FILE
+      env.fetch('gitsh.historyFile') { DEFAULT_HISTORY_FILE }
     end
 
     def history_size
-      (env['gitsh.historySize'] || DEFAULT_HISTORY_SIZE).to_i
+      env.fetch('gitsh.historySize') { DEFAULT_HISTORY_SIZE }.to_i
     end
   end
 end

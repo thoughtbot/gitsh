@@ -44,9 +44,13 @@ module Gitsh
     end
 
     def greet_user
-      unless env['gitsh.noGreeting'] == 'true'
+      if greeting_enabled?
         env.puts "gitsh #{Gitsh::VERSION}\nType :exit to exit"
       end
+    end
+
+    def greeting_enabled?
+      env.fetch('gitsh.noGreeting') { 'false' } != 'true'
     end
 
     def interactive_loop
@@ -62,7 +66,7 @@ module Gitsh
     def read_command
       command = readline.readline(prompt, true)
       if command && command.match(BLANK_LINE_REGEX)
-        env.fetch('gitsh.defaultCommand', 'status')
+        env.fetch('gitsh.defaultCommand') { 'status' }
       else
         command
       end

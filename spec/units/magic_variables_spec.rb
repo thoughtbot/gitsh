@@ -2,14 +2,15 @@ require 'spec_helper'
 require 'gitsh/magic_variables'
 
 describe Gitsh::MagicVariables do
-  describe '#[]' do
-    context 'with an unknown variable name' do
-      it 'returns nil' do
+  describe '#fetch' do
+    context 'with an unknown variable name and a block' do
+      it 'yields to the block' do
         repo = stub('GitRepository')
         magic_variables = described_class.new(repo)
 
-        expect(magic_variables[:_not_a_real_variable]).to be_nil
-        expect(magic_variables[:repo]).to be_nil
+        result = magic_variables.fetch(:_not_a_real_variable) { 'default' }
+
+        expect(result).to eq 'default'
       end
     end
 
@@ -18,7 +19,7 @@ describe Gitsh::MagicVariables do
         repo = stub('GitRepository', revision_name: 'a-branch-name')
         magic_variables = described_class.new(repo)
 
-        expect(magic_variables[:_prior]).to eq 'a-branch-name'
+        expect(magic_variables.fetch(:_prior)).to eq 'a-branch-name'
         expect(repo).to have_received(:revision_name).with('@{-1}')
       end
     end
@@ -28,7 +29,7 @@ describe Gitsh::MagicVariables do
         repo = stub('GitRepository', merge_base: 'abc124567890')
         magic_variables = described_class.new(repo)
 
-        expect(magic_variables[:_merge_base]).to eq 'abc124567890'
+        expect(magic_variables.fetch(:_merge_base)).to eq 'abc124567890'
         expect(repo).to have_received(:merge_base).with('HEAD', 'MERGE_HEAD')
       end
     end
@@ -43,7 +44,7 @@ describe Gitsh::MagicVariables do
             repo = stub('GitRepository', git_dir: tmpdir_path)
             magic_variables = described_class.new(repo)
 
-            expect(magic_variables[:_rebase_base]).to eq 'abc123'
+            expect(magic_variables.fetch(:_rebase_base)).to eq 'abc123'
           end
         end
       end
@@ -57,7 +58,7 @@ describe Gitsh::MagicVariables do
             repo = stub('GitRepository', git_dir: tmpdir_path)
             magic_variables = described_class.new(repo)
 
-            expect(magic_variables[:_rebase_base]).to eq 'def456'
+            expect(magic_variables.fetch(:_rebase_base)).to eq 'def456'
           end
         end
       end
@@ -68,7 +69,7 @@ describe Gitsh::MagicVariables do
             repo = stub('GitRepository', git_dir: tmpdir_path)
             magic_variables = described_class.new(repo)
 
-            expect(magic_variables[:_rebase_base]).to be_nil
+            expect(magic_variables.fetch(:_rebase_base)).to be_nil
           end
         end
       end
