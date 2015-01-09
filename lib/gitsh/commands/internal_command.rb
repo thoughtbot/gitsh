@@ -1,6 +1,6 @@
 module Gitsh::Commands
   module InternalCommand
-    def self.new(env, command, args=[])
+    def self.new(env, command, args)
       command_class(command).new(env, command, args)
     end
 
@@ -13,7 +13,7 @@ module Gitsh::Commands
     end
 
     class Base
-      def initialize(env, command, args=[])
+      def initialize(env, command, args)
         @env = env
         @command = command
         @args = args
@@ -32,6 +32,10 @@ module Gitsh::Commands
       private
 
       attr_reader :env, :command, :args
+
+      def arg_values
+        @arg_values ||= args.values(env)
+      end
     end
 
     class Set < Base
@@ -46,7 +50,7 @@ TXT
 
       def execute
         if valid_arguments?
-          key, value = args
+          key, value = arg_values
           env[key] = value
           true
         else
@@ -73,7 +77,7 @@ TXT
       end
 
       def execute
-        env.puts args.join(' ')
+        env.puts arg_values.join(' ')
         true
       end
     end
@@ -112,7 +116,7 @@ TXT
       end
 
       def path
-        File.expand_path(args.first)
+        File.expand_path(arg_values.first)
       end
     end
 
@@ -147,7 +151,7 @@ TXT
       private
 
       def subject
-        args.first.to_s.sub(/^:/, '')
+        arg_values.first.to_s.sub(/^:/, '')
       end
     end
 

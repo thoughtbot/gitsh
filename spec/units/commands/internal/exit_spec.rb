@@ -6,7 +6,7 @@ describe Gitsh::Commands::InternalCommand::Exit do
 
   describe '#execute' do
     it 'exits the program' do
-      command = described_class.new(stub('env'), 'exit')
+      command = described_class.new(stub('env'), 'exit', arguments())
       expect { command.execute }.to raise_exception(SystemExit)
     end
   end

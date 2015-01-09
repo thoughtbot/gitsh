@@ -31,11 +31,6 @@ describe Gitsh::Transformer do
       expect(output).to be_a Gitsh::Commands::GitCommand
     end
 
-    it 'transforms args with empty strings passed to them' do
-      output = transformer.apply({ arg: '' }, env: env)
-      expect(output).to eq ''
-    end
-
     it 'transforms internal commands' do
       output = transformer.apply({ internal_cmd: 'set' }, env: env)
       expect(output).to be_a Gitsh::Commands::InternalCommand::Set
@@ -63,19 +58,25 @@ describe Gitsh::Transformer do
     end
 
     it 'transforms literal arguments' do
+      argument_builder = stub_argument_builder
       output = transformer.apply({ arg: parser_literals('hi') }, env: env)
-      expect(output).to eq 'hi'
+
+      expect(argument_builder).to have_received(:add_literal).with('h')
+      expect(argument_builder).to have_received(:add_literal).with('i')
+      expect(output).to be argument_builder.argument
     end
 
     it 'transforms variable arguments' do
-      env = { 'author' => 'Jane Doe' }
+      argument_builder = stub_argument_builder
       output = transformer.apply({ arg: [{ var: 'author' }] }, env: env)
-      expect(output).to eq 'Jane Doe'
+
+      expect(argument_builder).to have_received(:add_variable).with('author')
+      expect(output).to be argument_builder.argument
     end
 
     it 'transforms empty string arguments' do
       output = transformer.apply({ arg: [{ empty_string: "''" }] }, env: env)
-      expect(output).to eq ''
+      expect(output.value(env)).to eq ''
     end
 
     it 'transforms multi commands' do
@@ -92,5 +93,17 @@ describe Gitsh::Transformer do
       output = transformer.apply(and: { left: 1, right: 2 })
       expect(output).to be_a Gitsh::Commands::Tree::And
     end
+  end
+
+  def stub_argument_builder
+    argument = stub('Argument')
+    builder = stub(
+      'ArgumentBuilder',
+      add_literal: nil,
+      add_variable: nil,
+      argument: argument,
+    )
+    Gitsh::ArgumentBuilder.stubs(:build).yields(builder).returns(argument)
+    builder
   end
 end

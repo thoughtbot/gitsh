@@ -15,7 +15,11 @@ describe Gitsh::Commands::GitCommand do
   describe '#execute' do
     it 'spawns a process with the sub command and arguments' do
       env.stubs(config_variables: {})
-      command = described_class.new(env, 'commit', ['-m', 'A test commit'])
+      command = described_class.new(
+        env,
+        'commit',
+        arguments('-m', 'A test commit'),
+      )
 
       command.execute
 
@@ -33,7 +37,11 @@ describe Gitsh::Commands::GitCommand do
         :'test.example' => 'This is an example',
         :'foo.bar' => '1'
       })
-      command = described_class.new(env, 'commit', ['-m', 'A test commit'])
+      command = described_class.new(
+        env,
+        'commit',
+        arguments('-m', 'A test commit'),
+      )
 
       command.execute
 

@@ -9,7 +9,7 @@ describe Gitsh::Commands::ShellCommand do
     end
 
     it 'spawns a process with the command and arguments' do
-      command = described_class.new(env, 'echo', ['Hello world'])
+      command = described_class.new(env, 'echo', arguments('Hello world'))
 
       command.execute
 
@@ -22,21 +22,21 @@ describe Gitsh::Commands::ShellCommand do
 
     it 'returns true when the shell command succeeds' do
       $?.stubs(success?: true)
-      command = described_class.new(env, 'echo', ['Hello world'])
+      command = described_class.new(env, 'echo', arguments('Hello world'))
 
       expect(command.execute).to eq true
     end
 
     it 'returns false when the shell command fails' do
       $?.stubs(success?: false)
-      command = described_class.new(env, 'badcommand', ['Hello world'])
+      command = described_class.new(env, 'badcommand', arguments('Hello world'))
 
       expect(command.execute).to eq false
     end
 
     it 'returns false when Process.spawn raises' do
       Process.stubs(:spawn).raises(Errno::ENOENT, 'No such file')
-      command = described_class.new(env, 'badcommand', ['Hello world'])
+      command = described_class.new(env, 'badcommand', arguments('Hello world'))
 
       expect(command.execute).to eq false
     end
@@ -45,7 +45,7 @@ describe Gitsh::Commands::ShellCommand do
       pid = 12
       Process.stubs(:spawn).returns(pid)
       Process.stubs(:wait).with(pid).raises(Interrupt).then.returns(nil)
-      command = described_class.new(env, 'vim', [])
+      command = described_class.new(env, 'vim', arguments())
 
       command.execute
 

@@ -9,12 +9,12 @@ describe Gitsh::Commands::InternalCommand do
     end
 
     it 'returns an Exit command when given the command "exit"' do
-      command = described_class.new(stub('env'), 'exit')
+      command = described_class.new(stub('env'), 'exit', arguments())
       expect(command).to be_a described_class::Exit
     end
 
     it 'returns an Exit command when given the command "q"' do
-      command = described_class.new(stub('env'), 'q')
+      command = described_class.new(stub('env'), 'q', arguments())
       expect(command).to be_a described_class::Exit
     end
 
@@ -24,7 +24,7 @@ describe Gitsh::Commands::InternalCommand do
     end
 
     it 'returns a Help command when given the command "help"' do
-      command = described_class.new(stub('env'), 'help')
+      command = described_class.new(stub('env'), 'help', arguments())
       expect(command).to be_a described_class::Help
     end
 

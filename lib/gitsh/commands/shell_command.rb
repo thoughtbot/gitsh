@@ -1,6 +1,6 @@
 module Gitsh::Commands
   class ShellCommand
-    def initialize(env, command, args = [])
+    def initialize(env, command, args)
       @env = env
       @command = command
       @args = args
@@ -24,7 +24,11 @@ module Gitsh::Commands
     attr_reader :env, :command, :args
 
     def command_with_arguments
-      [command, args].flatten
+      [command, arg_values].flatten
+    end
+
+    def arg_values
+      args.values(env)
     end
 
     def wait_for_process(pid)

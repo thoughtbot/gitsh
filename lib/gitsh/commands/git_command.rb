@@ -6,7 +6,7 @@ module Gitsh::Commands
     private
 
     def command_with_arguments
-      [git_command, config_arguments, command, args].flatten
+      [git_command, config_arguments, command, arg_values].flatten
     end
 
     def git_command

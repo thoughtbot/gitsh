@@ -1,4 +1,6 @@
 require 'parslet'
+require 'gitsh/argument_builder'
+require 'gitsh/argument_list'
 require 'gitsh/commands/git_command'
 require 'gitsh/commands/internal_command'
 require 'gitsh/commands/noop'
@@ -9,30 +11,31 @@ module Gitsh
   class Transformer < Parslet::Transform
     def self.command_rule(type, command_class)
       rule(type => simple(:cmd)) do |context|
-        command_class.new(context[:env], context[:cmd])
+        command_class.new(context[:env], context[:cmd], ArgumentList.new([]))
       end
 
       rule(type => simple(:cmd), args: sequence(:args)) do |context|
-        command_class.new(context[:env], context[:cmd], context[:args].compact)
+        command_class.new(context[:env], context[:cmd], ArgumentList.new(context[:args].compact))
       end
     end
 
     rule(literal: simple(:literal)) do
-      literal
+      lambda { |arg_builder| arg_builder.add_literal(literal) }
     end
 
     rule(empty_string: simple(:empty_string)) do
-      ''
+      lambda { |arg_builder| arg_builder.add_literal('') }
     end
 
-    rule(var: simple(:var)) do |context|
-      context[:env].fetch(context[:var])
+    rule(var: simple(:var)) do
+      lambda { |arg_builder| arg_builder.add_variable(var) }
     end
 
-    rule(arg: subtree(:parts)) do |context|
-      parts = Array(context[:parts]).compact
-      if parts.any?
-        parts.join('')
+    rule(arg: subtree(:parts)) do
+      Gitsh::ArgumentBuilder.build do |arg_builder|
+        Array(parts).each do |part|
+          part.call(arg_builder)
+        end
       end
     end
 

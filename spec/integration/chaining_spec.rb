@@ -17,9 +17,16 @@ describe 'Chaining methods' do
       end
     end
 
-    it 'sets a variable and reads it back out' do
+    it 'sets a git config variable and reads it back out' do
       GitshRunner.interactive do |gitsh|
         gitsh.type(':set test.setting hello && config test.setting')
+        expect(gitsh).to output 'hello'
+      end
+    end
+
+    it 'sets a variable and reads it back out' do
+      GitshRunner.interactive do |gitsh|
+        gitsh.type(':set test hello && :echo $test')
         expect(gitsh).to output 'hello'
       end
     end
