@@ -5,56 +5,58 @@ describe Gitsh::Prompter do
   include Color
 
   describe '#prompt' do
-    context 'an un-initialized git repository' do
-      it 'displays an uninitialized prompt' do
-        env = env_double(repo_initialized?: false)
-        prompter = Gitsh::Prompter.new(env: env)
+    context 'with the default prompt format' do
+      context 'an un-initialized git repository' do
+        it 'displays an uninitialized prompt' do
+          env = env_double(repo_initialized?: false)
+          prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq(
-          "#{cwd_basename} #{red}uninitialized!!#{clear} "
-        )
+          expect(prompter.prompt).to eq(
+            "#{cwd_basename} #{red}uninitialized!!#{clear} "
+          )
+        end
       end
-    end
 
-    context 'a clean repository' do
-      it 'displays the branch name and a clean symbol' do
-        env = env_double(repo_current_head: 'my-feature')
-        prompter = Gitsh::Prompter.new(env: env)
+      context 'a clean repository' do
+        it 'displays the branch name and a clean symbol' do
+          env = env_double(repo_current_head: 'my-feature')
+          prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq(
-          "#{cwd_basename} #{red}my-feature@#{clear} "
-        )
+          expect(prompter.prompt).to eq(
+            "#{cwd_basename} #{red}my-feature@#{clear} "
+          )
+        end
       end
-    end
 
-    context 'a repository with untracked files' do
-      it 'displays the branch name and an untracked symbol' do
-        env = env_double(repo_has_untracked_files?: true)
-        prompter = Gitsh::Prompter.new(env: env)
+      context 'a repository with untracked files' do
+        it 'displays the branch name and an untracked symbol' do
+          env = env_double(repo_has_untracked_files?: true)
+          prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq(
-          "#{cwd_basename} #{red}master!#{clear} "
-        )
+          expect(prompter.prompt).to eq(
+            "#{cwd_basename} #{red}master!#{clear} "
+          )
+        end
       end
-    end
 
-    context 'a repository with uncommitted changes' do
-      it 'displays the branch name an a modified symbol' do
-        env = env_double(repo_has_modified_files?: true)
-        prompter = Gitsh::Prompter.new(env: env)
+      context 'a repository with uncommitted changes' do
+        it 'displays the branch name an a modified symbol' do
+          env = env_double(repo_has_modified_files?: true)
+          prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq(
-          "#{cwd_basename} #{red}master&#{clear} "
-        )
+          expect(prompter.prompt).to eq(
+            "#{cwd_basename} #{red}master&#{clear} "
+          )
+        end
       end
-    end
 
-    context 'with color disabled' do
-      it 'displays the prompt without colors' do
-        env = env_double(repo_has_modified_files?: true)
-        prompter = Gitsh::Prompter.new(color: false, env: env)
+      context 'with color disabled' do
+        it 'displays the prompt without colors' do
+          env = env_double(repo_has_modified_files?: true)
+          prompter = Gitsh::Prompter.new(color: false, env: env)
 
-        expect(prompter.prompt).to eq "#{cwd_basename} master& "
+          expect(prompter.prompt).to eq "#{cwd_basename} master& "
+        end
       end
     end
 
