@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'spec_helper'
 require 'gitsh/prompter'
 
@@ -58,6 +60,15 @@ describe Gitsh::Prompter do
           expect(prompter.prompt).to eq "#{cwd_basename} master& "
         end
       end
+
+      context 'with a long branch name' do
+        it 'displays the shortened branch name' do
+          env = env_double(repo_current_head: "best-branch-name-ever-forever")
+          prompter = Gitsh::Prompter.new(env: env)
+
+          expect(prompter.prompt).to eq "#{cwd_basename} #{red}best-branch-nam…@#{clear} "
+        end
+      end
     end
 
     context 'with a custom prompt format' do
@@ -83,11 +94,24 @@ describe Gitsh::Prompter do
         expect(prompter.prompt).to eq "#{clear} "
       end
 
-      it 'replaces %b with the current HEAD name' do
-        env = env_double(repo_current_head: 'a-branch', format: '%b')
+      it 'replaces %b with the full current HEAD name' do
+        env = env_double(
+          repo_current_head: 'a-really-long-branch-name',
+          format: '%b',
+        )
         prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq "a-branch "
+        expect(prompter.prompt).to eq 'a-really-long-branch-name '
+      end
+
+      it 'replaces %B with the abbreviated current HEAD name' do
+        env = env_double(
+          repo_current_head: 'a-really-long-branch-name',
+          format: '%B',
+        )
+        prompter = Gitsh::Prompter.new(env: env)
+
+        expect(prompter.prompt).to eq 'a-really-long-b… '
       end
 
       it 'replaces %d with the absolute path of the current directory' do

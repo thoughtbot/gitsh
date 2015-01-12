@@ -103,7 +103,8 @@ and the terminator sigil.
 .Pp
 The current HEAD is a branch name, tag name, abbreviated SHA, or the text
 .Li uninitialized
-when the present working directory is not a git repository.
+when the present working directory is not a git repository. It is limited to 15
+characters.
 .Pp
 The state of the repository is reflected by the terminating sigil and the color
 of both the current HEAD and the sigil:
@@ -125,7 +126,8 @@ command. The following placeholders can be used in the custom prompt:
 .Bl -column ".Sy Placeholder" ".Sy Meaning" -offset indent
 .It Sy Placeholder  Ta Sy Meaning
 .It %#              Ta terminating sigil (see previous table)
-.It %b              Ta current HEAD (branch name, tag name, etc.)
+.It %b              Ta current HEAD (full branch name, tag name, etc.)
+.It \&%B            Ta current HEAD, limited to 15 characters
 .It %d              Ta absolute path to current working directory
 .It \&%D            Ta basename of the current working directory
 .It %c              Ta start coloring based on status (see previous table)

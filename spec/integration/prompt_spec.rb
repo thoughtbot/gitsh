@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'spec_helper'
 
 describe 'The gitsh prompt' do
@@ -6,6 +8,15 @@ describe 'The gitsh prompt' do
       gitsh.type('init')
 
       expect(gitsh).to prompt_with "#{cwd_basename} master@ "
+    end
+  end
+
+  it 'defaults to abbreviated branch names' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type('init')
+      gitsh.type("checkout -b best-branch-name-ever-forever")
+
+      expect(gitsh).to prompt_with "#{cwd_basename} best-branch-nam…@ "
     end
   end
 

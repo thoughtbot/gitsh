@@ -1,9 +1,12 @@
+# encoding: utf-8
+
 require 'gitsh/colors'
 require 'gitsh/prompt_color'
 
 module Gitsh
   class Prompter
-    DEFAULT_FORMAT = "%D %c%b%#%w".freeze
+    DEFAULT_FORMAT = "%D %c%B%#%w".freeze
+    BRANCH_CHAR_LIMIT = 15
 
     def initialize(options={})
       @env = options.fetch(:env)
@@ -13,8 +16,9 @@ module Gitsh
     end
 
     def prompt
-      padded_prompt_format.gsub(/%[bcdDw#]/, {
+      padded_prompt_format.gsub(/%[bBcdDw#]/, {
         '%b' => branch_name,
+        "%B" => shortened_branch_name,
         '%c' => status_color,
         '%d' => Dir.getwd,
         '%D' => File.basename(Dir.getwd),
@@ -33,6 +37,18 @@ module Gitsh
 
     def prompt_format
       env.fetch('gitsh.prompt') { DEFAULT_FORMAT }
+    end
+
+    def shortened_branch_name
+      branch_name[0...BRANCH_CHAR_LIMIT] + ellipsis
+    end
+
+    def ellipsis
+      if branch_name.length > BRANCH_CHAR_LIMIT
+        '…'
+      else
+        ''
+      end
     end
 
     def branch_name
