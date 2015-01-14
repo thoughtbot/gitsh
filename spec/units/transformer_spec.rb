@@ -26,7 +26,7 @@ describe Gitsh::Transformer do
       expect(Gitsh::Commands::Factory).to have_received(:new).once.with(
         Gitsh::Commands::GitCommand,
         env: env,
-        cmd: 'status',
+        command: 'status',
       )
     end
 
@@ -42,7 +42,7 @@ describe Gitsh::Transformer do
       expect(Gitsh::Commands::Factory).to have_received(:new).once.with(
         Gitsh::Commands::GitCommand,
         env: env,
-        cmd: 'add',
+        command: 'add',
         args: [argument_builder.argument],
       )
     end
@@ -55,7 +55,7 @@ describe Gitsh::Transformer do
       expect(Gitsh::Commands::Factory).to have_received(:new).once.with(
         Gitsh::Commands::InternalCommand,
         env: env,
-        cmd: 'set',
+        command: 'set',
       )
     end
 
@@ -71,7 +71,7 @@ describe Gitsh::Transformer do
       expect(Gitsh::Commands::Factory).to have_received(:new).once.with(
         Gitsh::Commands::InternalCommand,
         env: env,
-        cmd: 'set',
+        command: 'set',
         args: [argument_builder.argument],
       )
     end
@@ -84,7 +84,7 @@ describe Gitsh::Transformer do
       expect(Gitsh::Commands::Factory).to have_received(:new).once.with(
         Gitsh::Commands::ShellCommand,
         env: env,
-        cmd: '!pwd',
+        command: '!pwd',
       )
     end
 
@@ -100,7 +100,7 @@ describe Gitsh::Transformer do
       expect(Gitsh::Commands::Factory).to have_received(:new).once.with(
         Gitsh::Commands::ShellCommand,
         env: env,
-        cmd: '!echo',
+        command: '!echo',
         args: [argument_builder.argument],
       )
     end

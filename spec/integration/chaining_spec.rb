@@ -47,6 +47,16 @@ describe 'Chaining methods' do
         expect(gitsh).to output /nothing to commit/
       end
     end
+
+    it 'executes the second command if the first encounters an error' do
+      GitshRunner.interactive do |gitsh|
+        gitsh.type(':set name George')
+        gitsh.type(':echo $user_name || :echo $name')
+
+        expect(gitsh).to output_error /user_name/
+        expect(gitsh).to output /George/
+      end
+    end
   end
 
   describe 'Multi' do
