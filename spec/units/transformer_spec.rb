@@ -19,42 +19,90 @@ describe Gitsh::Transformer do
     end
 
     it 'transforms git commands' do
+      command_factory = stub_command_factory
       output = transformer.apply({ git_cmd: 'status' }, env: env)
-      expect(output).to be_a Gitsh::Commands::GitCommand
+
+      expect(output).to be command_factory.build
+      expect(Gitsh::Commands::Factory).to have_received(:new).once.with(
+        Gitsh::Commands::GitCommand,
+        env: env,
+        cmd: 'status',
+      )
     end
 
     it 'transforms git commands with arguments' do
+      command_factory = stub_command_factory
+      argument_builder = stub_argument_builder
       output = transformer.apply(
         { git_cmd: 'add', args: [{ arg: parser_literals('-p') }] },
         env: env
       )
-      expect(output).to be_a Gitsh::Commands::GitCommand
+
+      expect(output).to be command_factory.build
+      expect(Gitsh::Commands::Factory).to have_received(:new).once.with(
+        Gitsh::Commands::GitCommand,
+        env: env,
+        cmd: 'add',
+        args: [argument_builder.argument],
+      )
     end
 
     it 'transforms internal commands' do
+      command_factory = stub_command_factory
       output = transformer.apply({ internal_cmd: 'set' }, env: env)
-      expect(output).to be_a Gitsh::Commands::InternalCommand::Set
+
+      expect(output).to be command_factory.build
+      expect(Gitsh::Commands::Factory).to have_received(:new).once.with(
+        Gitsh::Commands::InternalCommand,
+        env: env,
+        cmd: 'set',
+      )
     end
 
     it 'transforms internal commands with arguments' do
+      command_factory = stub_command_factory
+      argument_builder = stub_argument_builder
       output = transformer.apply(
         { internal_cmd: 'set', args: [{ arg: parser_literals('hi') }] },
         env: env
       )
-      expect(output).to be_a Gitsh::Commands::InternalCommand::Set
+
+      expect(output).to be command_factory.build
+      expect(Gitsh::Commands::Factory).to have_received(:new).once.with(
+        Gitsh::Commands::InternalCommand,
+        env: env,
+        cmd: 'set',
+        args: [argument_builder.argument],
+      )
     end
 
     it 'transforms shell commands' do
+      command_factory = stub_command_factory
       output = transformer.apply({ shell_cmd: '!pwd' }, env: env)
-      expect(output).to be_a Gitsh::Commands::ShellCommand
+
+      expect(output).to be command_factory.build
+      expect(Gitsh::Commands::Factory).to have_received(:new).once.with(
+        Gitsh::Commands::ShellCommand,
+        env: env,
+        cmd: '!pwd',
+      )
     end
 
     it 'transforms shell commands with arguments' do
+      command_factory = stub_command_factory
+      argument_builder = stub_argument_builder
       output = transformer.apply(
         { shell_cmd: '!echo', args: [{ arg: parser_literals('Hello') }] },
         env: env
       )
-      expect(output).to be_a Gitsh::Commands::ShellCommand
+
+      expect(output).to be command_factory.build
+      expect(Gitsh::Commands::Factory).to have_received(:new).once.with(
+        Gitsh::Commands::ShellCommand,
+        env: env,
+        cmd: '!echo',
+        args: [argument_builder.argument],
+      )
     end
 
     it 'transforms literal arguments' do
@@ -105,5 +153,12 @@ describe Gitsh::Transformer do
     )
     Gitsh::ArgumentBuilder.stubs(:build).yields(builder).returns(argument)
     builder
+  end
+
+  def stub_command_factory
+    command_instance = stub('command_instance')
+    factory_instance = stub('factory_instance', build: command_instance)
+    Gitsh::Commands::Factory.stubs(:new).returns(factory_instance)
+    factory_instance
   end
 end

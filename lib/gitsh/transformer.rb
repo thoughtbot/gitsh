@@ -1,6 +1,7 @@
 require 'parslet'
 require 'gitsh/argument_builder'
 require 'gitsh/argument_list'
+require 'gitsh/commands/factory'
 require 'gitsh/commands/git_command'
 require 'gitsh/commands/internal_command'
 require 'gitsh/commands/noop'
@@ -11,11 +12,11 @@ module Gitsh
   class Transformer < Parslet::Transform
     def self.command_rule(type, command_class)
       rule(type => simple(:cmd)) do |context|
-        command_class.new(context[:env], context[:cmd], ArgumentList.new([]))
+        Commands::Factory.new(command_class, context).build
       end
 
       rule(type => simple(:cmd), args: sequence(:args)) do |context|
-        command_class.new(context[:env], context[:cmd], ArgumentList.new(context[:args].compact))
+        Commands::Factory.new(command_class, context).build
       end
     end
 
