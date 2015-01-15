@@ -49,5 +49,5 @@ AC_SUBST([vendorfiles])
 AC_SUBST([testfiles])
 AC_SUBST([gemsetuppath])
 
-AC_CONFIG_FILES([Makefile src/Makefile lib/gitsh/Makefile man/Makefile vendor/Makefile spec/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile lib/gitsh/Makefile man/Makefile vendor/Makefile spec/Makefile INSTALL])
 AC_OUTPUT

@@ -76,10 +76,8 @@ gitsh is packaged and installed using GNU autotools.
         ./autogen.sh
         ./configure
 
-3. Regenerate the installation instructions:
-
-        make INSTALL
-        git commit -m "Update INSTALL"-- INSTALL
+3. Commit your changes to `configure.ac`, `INSTALL`, and any other files that
+   were modified by the version bump.
 
 4. Build and publish the release:
 
