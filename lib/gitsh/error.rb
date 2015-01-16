@@ -4,4 +4,7 @@ module Gitsh
 
   class UnsetVariableError < Error
   end
+
+  class NoInputError < Error
+  end
 end

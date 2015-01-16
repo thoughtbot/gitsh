@@ -28,6 +28,11 @@ describe Gitsh::Commands::InternalCommand do
       expect(command).to be_a described_class::Help
     end
 
+    it 'returns a Source command when given the command "source"' do
+      command = described_class.new(stub('env'), 'source', arguments('/some/path'))
+      expect(command).to be_a described_class::Source
+    end
+
     it 'returns an Unknown command when given anything else' do
       command = described_class.new(stub('env'), 'notacommand', %w(foo bar))
       expect(command).to be_a described_class::Unknown

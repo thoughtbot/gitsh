@@ -188,6 +188,19 @@ changes directory to the given path.
 displays help about the given built-in command. Without an argument it outputs
 a list of all built-in commands. When given the name of a command, it outputs a
 usage message and brief description of that command.
+.It Ic :source path
+runs the commands in the given file. Variables
+.Ic :set
+in the sourced file will remain set after the
+.Ic :source
+command has finished, making it similar to the
+.Ic source
+built-in command in
+.Xr sh 1
+and other Unix shells.
+.Bd -literal -offset indent
+@ :source /home/george/.gitshrc
+.Ed
 .It Ic :exit
 ends the gitsh session.
 .It Ic :q

@@ -1,4 +1,4 @@
-require 'gitsh/exit_statuses'
+require 'gitsh/error'
 require 'gitsh/interpreter'
 
 module Gitsh
@@ -15,11 +15,9 @@ module Gitsh
         f.each_line { |line| interpreter.execute(line) }
       end
     rescue Errno::ENOENT
-      env.puts_error "gitsh: #{path}: No such file or directory"
-      exit EX_NOINPUT
+      raise NoInputError, "#{path}: No such file or directory"
     rescue Errno::EACCES
-      env.puts_error "gitsh: #{path}: Permission denied"
-      exit EX_NOINPUT
+      raise NoInputError, "#{path}: Permission denied"
     end
 
     private

@@ -25,7 +25,7 @@ module Gitsh
       if unparsed_args.any?
         exit_with_usage_message
       elsif script_file
-        script_runner.run(script_file)
+        run_script
       else
         interactive_runner.run
       end
@@ -35,6 +35,13 @@ module Gitsh
 
     attr_reader :env, :unparsed_args, :script_file_argument,
       :interactive_runner, :script_runner
+
+    def run_script
+      script_runner.run(script_file)
+    rescue NoInputError => error
+      env.puts_error("gitsh: #{error.message}")
+      exit EX_NOINPUT
+    end
 
     def script_file
       if script_file_argument

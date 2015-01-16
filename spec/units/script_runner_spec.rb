@@ -32,26 +32,30 @@ describe Gitsh::ScriptRunner do
     end
 
     context 'with a file that does not exist' do
-      it 'exits' do
-        env = stub('Environment', puts_error: nil)
+      it 'raises a NoInputError' do
+        env = stub('Environment')
         interpreter = stub('Interpreter', execute: nil)
         runner = described_class.new(env: env, interpreter: interpreter)
 
-        expect { runner.run 'no/such/script' }.to raise_exception(SystemExit)
-        expect(env).to have_received(:puts_error)
+        expect { runner.run 'no/such/script' }.to raise_exception(
+          Gitsh::NoInputError,
+          /No such file/,
+        )
       end
     end
 
     context 'with a file that the current user cannot read' do
-      it 'exits' do
+      it 'raises a NoInputError' do
         script = temp_file('script', "commit -m 'Changes'\npush -f")
         File.stubs(:open).raises(Errno::EACCES)
-        env = stub('Environment', puts_error: nil)
+        env = stub('Environment')
         interpreter = stub('Interpreter', execute: nil)
         runner = described_class.new(env: env, interpreter: interpreter)
 
-        expect { runner.run script.path }.to raise_exception(SystemExit)
-        expect(env).to have_received(:puts_error)
+        expect { runner.run script.path }.to raise_exception(
+          Gitsh::NoInputError,
+          /Permission denied/,
+        )
       end
     end
   end

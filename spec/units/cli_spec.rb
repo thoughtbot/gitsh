@@ -52,6 +52,24 @@ describe Gitsh::CLI do
       end
     end
 
+    context 'with an unreadable script file' do
+      it 'exits' do
+        env = stub('env', puts_error: nil)
+        script_runner = stub('ScriptRunner')
+        script_runner.stubs(:run).raises(Gitsh::NoInputError, 'Oh no!')
+        interactive_runner = stub('InteractiveRunner')
+        cli = Gitsh::CLI.new(
+          env: env,
+          args: ['path/to/a/script'],
+          script_runner: script_runner,
+          interactive_runner: interactive_runner,
+        )
+
+        expect { cli.run }.to raise_exception(SystemExit)
+        expect(env).to have_received(:puts_error).with('gitsh: Oh no!')
+      end
+    end
+
     context 'with invalid arguments' do
       it 'exits with a usage message' do
         env = stub('Environment', puts_error: nil)

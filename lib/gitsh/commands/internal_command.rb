@@ -155,6 +155,37 @@ TXT
       end
     end
 
+    class Source < Base
+      USAGE_MESSAGE = 'usage: :source path'.freeze
+
+      def self.help_message
+        <<-TXT
+#{USAGE_MESSAGE}
+Runs the commands in the given file.
+TXT
+      end
+
+      def execute
+        if valid_arguments?
+          Gitsh::ScriptRunner.new(env: env).run(path)
+          true
+        else
+          env.puts_error USAGE_MESSAGE
+          false
+        end
+      end
+
+      private
+
+      def valid_arguments?
+        arg_values.length == 1
+      end
+
+      def path
+        arg_values.first
+      end
+    end
+
     class Unknown < Base
       def execute
         env.puts_error("gitsh: #{command}: command not found")
@@ -178,6 +209,7 @@ TXT
       q: Exit,
       echo: Echo,
       help: Help,
+      source: Source,
     }.freeze
   end
 end
