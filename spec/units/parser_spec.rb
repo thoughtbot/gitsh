@@ -142,6 +142,15 @@ describe Gitsh::Parser do
       )
     end
 
+    it 'parses a command with a nested subshell argument' do
+      expect(parser).to parse(':echo $(:echo $(status))').as(
+        internal_cmd: 'echo',
+        args: [
+          { arg: [{ subshell: ':echo $(status)' }] }
+        ]
+      )
+    end
+
     it 'parses a command with a double-quoted argument containing a subshell' do
       expect(parser).to parse(':echo "In $(!pwd)"').as(
         internal_cmd: 'echo',

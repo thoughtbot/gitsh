@@ -115,7 +115,14 @@ module Gitsh
     end
 
     rule(:subshell) do
-      str('$(') >> (str(')').absent? >> any).repeat(0).as(:subshell) >> str(')')
+      str('$(') >> (subshell_content).as(:subshell) >> str(')')
+    end
+
+    rule(:subshell_content) do
+      (
+        (str('(') >> subshell_content >> str(')')) |
+        (str(')').absent? >> any)
+      ).repeat(0)
     end
 
     rule(:identifier) do

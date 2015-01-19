@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'Subshell' do
-  it 'supports empty strings' do
+  it 'supports subshells using $(...)' do
     GitshRunner.interactive do |gitsh|
       gitsh.type 'init'
       gitsh.type ':echo prefix $(status) suffix'
@@ -19,6 +19,16 @@ describe 'Subshell' do
 
       expect(gitsh).to output_no_errors
       expect(gitsh).to output /x in parent shell/
+    end
+  end
+
+  it 'supports nested subshells' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type 'init'
+      gitsh.type ':echo $(:echo $(status))'
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output /nothing to commit/
     end
   end
 end
