@@ -18,14 +18,14 @@ describe Gitsh::Commands::InternalCommand::Set do
       env = stub(:[]= => true, puts_error: true)
       command = described_class.new(env, 'set', arguments('foo', 'bar'))
 
-      expect(command.execute).to be_true
+      expect(command.execute).to be_truthy
     end
 
     it 'returns false with invalid arguments' do
       env = stub(:[]= => true, puts_error: true)
       command = described_class.new(env, 'set', arguments('foo'))
 
-      expect(command.execute).to be_false
+      expect(command.execute).to be_falsey
     end
   end
 end

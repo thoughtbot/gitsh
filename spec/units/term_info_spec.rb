@@ -9,7 +9,7 @@ describe Gitsh::TermInfo do
 
         result = Gitsh::TermInfo.instance.color_support?
 
-        expect(result).to be_true
+        expect(result).to be_truthy
       end
     end
 
@@ -19,7 +19,7 @@ describe Gitsh::TermInfo do
 
         result = Gitsh::TermInfo.instance.color_support?
 
-        expect(result).to be_false
+        expect(result).to be_falsey
       end
     end
 
@@ -29,7 +29,7 @@ describe Gitsh::TermInfo do
 
         result = Gitsh::TermInfo.instance.color_support?
 
-        expect(result).to be_false
+        expect(result).to be_falsey
       end
     end
   end

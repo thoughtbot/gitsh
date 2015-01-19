@@ -131,7 +131,7 @@ RSpec::Matchers.define :prompt_with do |expected|
     expect(@actual).to eq expected
   end
 
-  failure_message_for_should do |runner|
+  failure_message do |runner|
     "Expected #{expected.inspect}, got #{@actual.inspect}"
   end
 end
@@ -142,7 +142,7 @@ RSpec::Matchers.define :output_nothing do
     expect(@actual).to be_empty
   end
 
-  failure_message_for_should do |runner|
+  failure_message do |runner|
     "Expected no output, got #{@actual.inspect}"
   end
 end
@@ -153,7 +153,7 @@ RSpec::Matchers.define :output do |expected|
     expect(@actual).to match_regex expected
   end
 
-  failure_message_for_should do |runner|
+  failure_message do |runner|
     "Expected #{expected.inspect}, got #{@actual.inspect}"
   end
 end
@@ -164,7 +164,7 @@ RSpec::Matchers.define :output_no_errors do
     expect(@actual).to be_empty
   end
 
-  failure_message_for_should do |runner|
+  failure_message do |runner|
     "Expected no errors, got #{@actual.inspect}"
   end
 end
@@ -175,7 +175,7 @@ RSpec::Matchers.define :output_error do |expected|
     expect(@actual).to match_regex expected
   end
 
-  failure_message_for_should do |runner|
+  failure_message do |runner|
     "Expected error #{expected.inspect}, got #{@actual.inspect}"
   end
 end

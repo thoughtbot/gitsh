@@ -28,11 +28,11 @@ RSpec::Matchers.define :execute do
     ].all?
   end
 
-  failure_message_for_should do
+  failure_message do
     [
-      @exit_status_matcher.failure_message_for_should,
-      @output_matcher.failure_message_for_should,
-      @error_matcher.failure_message_for_should,
+      @exit_status_matcher.failure_message,
+      @output_matcher.failure_message,
+      @error_matcher.failure_message,
     ].join("\n")
   end
 end

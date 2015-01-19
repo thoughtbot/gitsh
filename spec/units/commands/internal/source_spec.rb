@@ -16,7 +16,7 @@ describe Gitsh::Commands::InternalCommand::Source do
 
         expect(Gitsh::ScriptRunner).to have_received(:new).with(env: env)
         expect(script_runner).to have_received(:run).with('/path')
-        expect(result).to be_true
+        expect(result).to eq true
       end
     end
 
@@ -28,7 +28,7 @@ describe Gitsh::Commands::InternalCommand::Source do
         result = command.execute
 
         expect(env).to have_received(:puts_error).with('usage: :source path')
-        expect(result).to be_false
+        expect(result).to eq false
       end
     end
   end

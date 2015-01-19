@@ -10,7 +10,7 @@ describe Gitsh::Commands::InternalCommand::Help do
         env = stub('env', puts: nil)
         command = described_class.new(env, 'help', arguments())
 
-        expect(command.execute).to be_true
+        expect(command.execute).to be_truthy
         expect(env).to have_received(:puts).at_least_once
       end
     end
@@ -24,7 +24,7 @@ describe Gitsh::Commands::InternalCommand::Help do
           with('set').
           returns(set_command)
 
-        expect(command.execute).to be_true
+        expect(command.execute).to be_truthy
         expect(env).to have_received(:puts).with('Sets variables')
       end
     end
@@ -38,7 +38,7 @@ describe Gitsh::Commands::InternalCommand::Help do
           with('set').
           returns(set_command)
 
-        expect(command.execute).to be_true
+        expect(command.execute).to be_truthy
         expect(env).to have_received(:puts).with('Sets variables')
       end
     end
@@ -52,7 +52,7 @@ describe Gitsh::Commands::InternalCommand::Help do
           arguments("we don't do this here"),
         )
 
-        expect(command.execute).to be_true
+        expect(command.execute).to be_truthy
         expect(env).to have_received(:puts).at_least_once
       end
     end

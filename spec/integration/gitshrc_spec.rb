@@ -18,7 +18,7 @@ describe 'A .gitshrc file in the home directory' do
   context 'when it does not exist' do
     it 'does not cause an error' do
       GitshRunner.interactive do |gitsh|
-        expect(File.exist?(gitshrc_path)).to be_false
+        expect(File.exist?(gitshrc_path)).to be_falsey
         expect(gitsh).to output_no_errors
       end
     end

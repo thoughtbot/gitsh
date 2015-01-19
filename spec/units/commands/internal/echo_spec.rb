@@ -9,7 +9,7 @@ describe Gitsh::Commands::InternalCommand::Echo do
       env = stub('env', puts: nil)
       command = described_class.new(env, 'echo', arguments('foo', 'bar'))
 
-      expect(command.execute).to be_true
+      expect(command.execute).to be_truthy
       expect(env).to have_received(:puts).with('foo bar')
     end
 
@@ -17,7 +17,7 @@ describe Gitsh::Commands::InternalCommand::Echo do
       env = stub('env', puts: nil)
       command = described_class.new(env, 'echo', arguments())
 
-      expect(command.execute).to be_true
+      expect(command.execute).to be_truthy
       expect(env).to have_received(:puts).with('')
     end
   end
