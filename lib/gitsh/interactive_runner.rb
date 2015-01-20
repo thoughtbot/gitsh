@@ -44,7 +44,10 @@ module Gitsh
 
     def handle_window_resize
       Signal.trap('WINCH') do
-        readline.set_screen_size(terminal.lines, terminal.cols)
+        begin
+          readline.set_screen_size(*terminal.size)
+        rescue Terminal::UnknownSizeError
+        end
       end
     end
 

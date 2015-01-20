@@ -1,11 +1,12 @@
 require 'spec_helper'
 require 'gitsh/terminal'
+require 'rspec/mocks/standalone'
 
 describe Gitsh::Terminal do
   describe '#color_support?' do
     context 'on a 256 color terminal' do
       it 'returns true' do
-        stub_tput_invocation output: "256\n"
+        stub_command 'tput colors', output: "256\n"
 
         result = Gitsh::Terminal.instance.color_support?
 
@@ -15,7 +16,7 @@ describe Gitsh::Terminal do
 
     context 'on a black and white terminal' do
       it 'returns false' do
-        stub_tput_invocation output: "-1\n"
+        stub_command 'tput colors', output: "-1\n"
 
         result = Gitsh::Terminal.instance.color_support?
 
@@ -25,7 +26,7 @@ describe Gitsh::Terminal do
 
     context 'when tput fails' do
       it 'returns false' do
-        stub_tput_invocation error: "unknonwn capability\n", success: false
+        stub_command 'tput colors', success: false
 
         result = Gitsh::Terminal.instance.color_support?
 
@@ -34,31 +35,84 @@ describe Gitsh::Terminal do
     end
   end
 
-  context '#lines' do
-    it 'returns the number of lines the terminal has' do
-      stub_tput_invocation output: "24\n"
+  describe '#size' do
+    it 'returns an array containing the number of lines and columns the terminal has' do
+      stub_command 'stty size', output: "24 80\n"
 
-      result = Gitsh::Terminal.instance.lines
+      result = Gitsh::Terminal.instance.size
 
-      expect(result).to eq 24
+      expect(result).to eq [24, 80]
+    end
+
+    context 'when stty fails' do
+      it 'falls back to tput without environment variables' do
+        stub_command 'stty size', success: false
+        stub_command 'env LINES="" tput lines', output: "24\n"
+        stub_command 'env COLUMNS="" tput cols', output: "80\n"
+
+        result = Gitsh::Terminal.instance.size
+
+        expect(result).to eq [24, 80]
+      end
+    end
+
+    context 'when stty and tput without environment variables fail' do
+      it 'falls back to tput with environment variables' do
+        stub_command 'stty size', success: false
+        stub_command 'env LINES="" tput lines', success: false
+        stub_command 'env COLUMNS="" tput cols', success: false
+        stub_command 'tput lines', output: "24\n"
+        stub_command 'tput cols', output: "80\n"
+
+        result = Gitsh::Terminal.instance.size
+
+        expect(result).to eq [24, 80]
+      end
+    end
+
+    context 'when everything fails' do
+      it 'raises' do
+        stub_command anything, success: false
+
+        expect { Gitsh::Terminal.instance.size }.
+          to raise_error(Gitsh::Terminal::UnknownSizeError)
+      end
     end
   end
 
-  context '#cols' do
-    it 'returns the number of columns the terminal has' do
-      stub_tput_invocation output: "80\n"
-
-      result = Gitsh::Terminal.instance.cols
-
-      expect(result).to eq 80
-    end
+  def stub_command(command, options = {})
+    CommandStubber.new(
+      command,
+      options.fetch(:success, true),
+      options.fetch(:output, '')
+    ).stub
   end
 
-  def stub_tput_invocation(options = {})
-    allow(Open3).to receive(:capture3).and_return [
-      options.fetch(:output, ''),
-      options.fetch(:error, ''),
-      double('exit_status', success?: options.fetch(:success, true))
-    ]
+  class CommandStubber
+    def initialize(command, success, output)
+      @command = command
+      @success = success
+      @output = output
+    end
+
+    def stub
+      allow(IO).to receive(:popen).with(command, err: '/dev/null') do
+        stub_exit_status
+        output
+      end
+    end
+
+    private
+
+    attr_reader :command, :success, :output
+
+    def stub_exit_status
+      ensure_exit_status_exists
+      allow($?).to receive(:success?).and_return(success)
+    end
+
+    def ensure_exit_status_exists
+      `pwd`
+    end
   end
 end

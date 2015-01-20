@@ -5,23 +5,47 @@ module Gitsh
   class Terminal
     include Singleton
 
+    class UnknownSizeError < StandardError; end
+
     def color_support?
-      tput('colors').to_i > 0
+      execute('tput colors').to_i > 0
     end
 
-    def lines
-      tput('lines').to_i
-    end
-
-    def cols
-      tput('cols').to_i
+    def size
+      size_from_stty || size_from_tput
     end
 
     private
 
-    def tput(property)
-      output, error, exit_status = Open3.capture3("tput #{property}")
-      if exit_status.success?
+    def size_from_stty
+      size = execute('stty size')
+      unless size.nil?
+        size.split(/\s+/, 2).map(&:to_i)
+      end
+    end
+
+    def size_from_tput
+      [
+        lines_from_tput.to_i,
+        cols_from_tput.to_i,
+      ]
+    end
+
+    def lines_from_tput
+      execute('env LINES="" tput lines') ||
+        execute('tput lines') ||
+        raise(UnknownSizeError, 'Cannot determine terminal size')
+    end
+
+    def cols_from_tput
+      execute('env COLUMNS="" tput cols') ||
+        execute('tput cols') ||
+        raise(UnknownSizeError, 'Cannot determine terminal size')
+    end
+
+    def execute(command)
+      output = IO.popen(command, err: '/dev/null') { |io| io.read }
+      if $?.success?
         output.chomp
       end
     end

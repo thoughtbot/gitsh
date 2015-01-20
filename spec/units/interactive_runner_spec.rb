@@ -61,6 +61,20 @@ describe Gitsh::InteractiveRunner do
       expect { runner.run }.not_to raise_exception
       expect(readline).to have_received(:set_screen_size).with(24, 80)
     end
+
+    it 'handles a SIGWINCH when the terminal size cannot be determined' do
+      readline = SignallingReadline.new('WINCH')
+      allow(readline).to receive(:set_screen_size)
+      terminal = double('Terminal', color_support?: true)
+      allow(terminal).to receive(:size).and_raise(
+        Gitsh::Terminal::UnknownSizeError,
+        'Unknown terminal size',
+      )
+      runner = build_interactive_runner(readline: readline, terminal: terminal)
+
+      expect { runner.run }.not_to raise_exception
+      expect(readline).not_to have_received(:set_screen_size)
+    end
   end
 
   def build_interactive_runner(options={})
@@ -69,7 +83,7 @@ describe Gitsh::InteractiveRunner do
       readline: options.fetch(:readline, readline),
       history: history,
       env: env,
-      terminal: terminal,
+      terminal: options.fetch(:terminal, terminal),
       script_runner: script_runner,
     )
   end
@@ -106,6 +120,6 @@ describe Gitsh::InteractiveRunner do
   end
 
   def terminal
-    double('terminal', color_support?: true, lines: 24, cols: 80)
+    double('terminal', color_support?: true, size: [24, 80])
   end
 end
