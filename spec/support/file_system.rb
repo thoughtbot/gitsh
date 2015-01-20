@@ -20,17 +20,11 @@ module FileSystemHelper
   end
 
   def with_a_temporary_home_directory(&block)
-    orginal_home = ENV['HOME']
-
-    Dir.mktmpdir do |path|
-      ENV['HOME'] = path
-      write_file("#{path}/.inputrc", DEFAULT_READLINE_CONFIG)
-      write_file("#{path}/.gitconfig", DEFAULT_GIT_CONFIG)
+    if ENV['TEMP_HOME']
       block.call
+    else
+      switch_home_directory(&block)
     end
-
-  ensure
-    ENV['HOME'] = orginal_home
   end
 
   def chdir_and_allow_nesting(path)
@@ -42,6 +36,23 @@ module FileSystemHelper
     ensure
       Dir.chdir(original_path)
     end
+  end
+
+  private
+
+  def switch_home_directory(&block)
+    ENV['TEMP_HOME'] = 'TRUE'
+    original_home = ENV['HOME']
+
+    Dir.mktmpdir do |path|
+      ENV['HOME'] = path
+      write_file("#{path}/.inputrc", DEFAULT_READLINE_CONFIG)
+      write_file("#{path}/.gitconfig", DEFAULT_GIT_CONFIG)
+      block.call
+    end
+  ensure
+    ENV['HOME'] = original_home
+    ENV.delete('TEMP_HOME')
   end
 end
 

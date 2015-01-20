@@ -25,6 +25,15 @@ describe Gitsh::InteractiveRunner do
       expect(readline).to have_received(:completion_proc=)
     end
 
+    it 'loads the ~/.gitshrc file' do
+      runner = build_interactive_runner
+
+      runner.run
+
+      expect(script_runner).to have_received(:run).
+        with("#{ENV['HOME']}/.gitshrc")
+    end
+
     it 'handles a SIGINT' do
       runner = build_interactive_runner
 
@@ -60,8 +69,13 @@ describe Gitsh::InteractiveRunner do
       readline: options.fetch(:readline, readline),
       history: history,
       env: env,
-      term_info: term_info
+      term_info: term_info,
+      script_runner: script_runner,
     )
+  end
+
+  def script_runner
+    @script_runner ||= stub('script_runner', run: nil)
   end
 
   def interpreter

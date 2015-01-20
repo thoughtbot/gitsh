@@ -1,9 +1,11 @@
 require 'readline'
 require 'gitsh/completer'
+require 'gitsh/error'
 require 'gitsh/history'
 require 'gitsh/interpreter'
 require 'gitsh/prompter'
 require 'gitsh/readline_blank_filter'
+require 'gitsh/script_runner'
 require 'gitsh/term_info'
 
 module Gitsh
@@ -16,6 +18,7 @@ module Gitsh
       @history = opts.fetch(:history, History.new(@env, @readline))
       @interpreter = opts.fetch(:interpreter, Interpreter.new(@env))
       @term_info = opts.fetch(:term_info) { TermInfo.instance }
+      @script_runner = opts.fetch(:script_runner) { ScriptRunner.new(env: @env) }
     end
 
     def run
@@ -23,6 +26,7 @@ module Gitsh
       setup_readline
       handle_window_resize
       greet_user
+      load_gitshrc
       interactive_loop
     ensure
       history.save
@@ -30,7 +34,8 @@ module Gitsh
 
     private
 
-    attr_reader :history, :readline, :env, :interpreter, :term_info
+    attr_reader :history, :readline, :env, :interpreter, :term_info,
+      :script_runner
 
     def setup_readline
       readline.completion_append_character = nil
@@ -51,6 +56,15 @@ module Gitsh
 
     def greeting_enabled?
       env.fetch('gitsh.noGreeting') { 'false' } != 'true'
+    end
+
+    def load_gitshrc
+      script_runner.run(gitshrc_path)
+    rescue NoInputError
+    end
+
+    def gitshrc_path
+      "#{ENV['HOME']}/.gitshrc"
     end
 
     def interactive_loop

@@ -317,6 +317,19 @@ are used to using
 through a general purpose shell.
 .El
 .
+.Sh FILES
+.Bl -tag -width Ds
+.It Pa $HOME/.gitshrc
+A user's personal configuration file. If this file exists, it will be loaded
+at the start of interactive sessions, as if it had been passed to the
+.Ic :source
+command.
+.Pp
+The
+.Pa .gitshrc
+file will not be loaded for non-interactive sessions, e.g. when gitsh is
+invoked with the path to a script file.
+.El
 .Sh ENVIRONMENT
 .Bl -tag -width Ds
 .It Ev TERM
