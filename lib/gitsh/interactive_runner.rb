@@ -15,8 +15,8 @@ module Gitsh
     def initialize(opts)
       @readline = opts.fetch(:readline) { ReadlineBlankFilter.new(Readline) }
       @env = opts[:env]
-      @history = opts.fetch(:history, History.new(@env, @readline))
-      @interpreter = opts.fetch(:interpreter, Interpreter.new(@env))
+      @history = opts.fetch(:history) { History.new(@env, @readline) }
+      @interpreter = opts.fetch(:interpreter) { Interpreter.new(@env) }
       @term_info = opts.fetch(:term_info) { TermInfo.instance }
       @script_runner = opts.fetch(:script_runner) { ScriptRunner.new(env: @env) }
     end
