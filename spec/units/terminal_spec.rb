@@ -1,13 +1,13 @@
 require 'spec_helper'
-require 'gitsh/term_info'
+require 'gitsh/terminal'
 
-describe Gitsh::TermInfo do
+describe Gitsh::Terminal do
   describe '#color_support?' do
     context 'on a 256 color terminal' do
       it 'returns true' do
         stub_tput_invocation output: "256\n"
 
-        result = Gitsh::TermInfo.instance.color_support?
+        result = Gitsh::Terminal.instance.color_support?
 
         expect(result).to be_truthy
       end
@@ -17,7 +17,7 @@ describe Gitsh::TermInfo do
       it 'returns false' do
         stub_tput_invocation output: "-1\n"
 
-        result = Gitsh::TermInfo.instance.color_support?
+        result = Gitsh::Terminal.instance.color_support?
 
         expect(result).to be_falsey
       end
@@ -27,7 +27,7 @@ describe Gitsh::TermInfo do
       it 'returns false' do
         stub_tput_invocation error: "unknonwn capability\n", success: false
 
-        result = Gitsh::TermInfo.instance.color_support?
+        result = Gitsh::Terminal.instance.color_support?
 
         expect(result).to be_falsey
       end
@@ -38,7 +38,7 @@ describe Gitsh::TermInfo do
     it 'returns the number of lines the terminal has' do
       stub_tput_invocation output: "24\n"
 
-      result = Gitsh::TermInfo.instance.lines
+      result = Gitsh::Terminal.instance.lines
 
       expect(result).to eq 24
     end
@@ -48,7 +48,7 @@ describe Gitsh::TermInfo do
     it 'returns the number of columns the terminal has' do
       stub_tput_invocation output: "80\n"
 
-      result = Gitsh::TermInfo.instance.cols
+      result = Gitsh::Terminal.instance.cols
 
       expect(result).to eq 80
     end

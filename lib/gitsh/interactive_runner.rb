@@ -6,7 +6,7 @@ require 'gitsh/interpreter'
 require 'gitsh/prompter'
 require 'gitsh/readline_blank_filter'
 require 'gitsh/script_runner'
-require 'gitsh/term_info'
+require 'gitsh/terminal'
 
 module Gitsh
   class InteractiveRunner
@@ -17,7 +17,7 @@ module Gitsh
       @env = opts[:env]
       @history = opts.fetch(:history) { History.new(@env, @readline) }
       @interpreter = opts.fetch(:interpreter) { Interpreter.new(@env) }
-      @term_info = opts.fetch(:term_info) { TermInfo.instance }
+      @terminal = opts.fetch(:terminal) { Terminal.instance }
       @script_runner = opts.fetch(:script_runner) { ScriptRunner.new(env: @env) }
     end
 
@@ -34,7 +34,7 @@ module Gitsh
 
     private
 
-    attr_reader :history, :readline, :env, :interpreter, :term_info,
+    attr_reader :history, :readline, :env, :interpreter, :terminal,
       :script_runner
 
     def setup_readline
@@ -44,7 +44,7 @@ module Gitsh
 
     def handle_window_resize
       Signal.trap('WINCH') do
-        readline.set_screen_size(term_info.lines, term_info.cols)
+        readline.set_screen_size(terminal.lines, terminal.cols)
       end
     end
 
@@ -91,7 +91,7 @@ module Gitsh
     end
 
     def prompter
-      @prompter ||= Prompter.new(env: env, color: term_info.color_support?)
+      @prompter ||= Prompter.new(env: env, color: terminal.color_support?)
     end
   end
 end

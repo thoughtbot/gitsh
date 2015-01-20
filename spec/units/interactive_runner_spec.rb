@@ -69,7 +69,7 @@ describe Gitsh::InteractiveRunner do
       readline: options.fetch(:readline, readline),
       history: history,
       env: env,
-      term_info: term_info,
+      terminal: terminal,
       script_runner: script_runner,
     )
   end
@@ -105,7 +105,7 @@ describe Gitsh::InteractiveRunner do
     })
   end
 
-  def term_info
-    double('term_info', color_support?: true, lines: 24, cols: 80)
+  def terminal
+    double('terminal', color_support?: true, lines: 24, cols: 80)
   end
 end
