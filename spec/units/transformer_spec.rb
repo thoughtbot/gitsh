@@ -3,7 +3,7 @@ require 'gitsh/transformer'
 
 describe Gitsh::Transformer do
   describe '#apply' do
-    let(:env) { stub }
+    let(:env) { double }
     let(:transformer) { described_class.new }
 
     it 'transforms blank lines' do
@@ -152,22 +152,24 @@ describe Gitsh::Transformer do
   end
 
   def stub_argument_builder
-    argument = stub('Argument')
-    builder = stub(
+    argument = double('Argument')
+    builder = double(
       'ArgumentBuilder',
       add_literal: nil,
       add_variable: nil,
       add_subshell: nil,
       argument: argument,
     )
-    Gitsh::ArgumentBuilder.stubs(:build).yields(builder).returns(argument)
+    allow(Gitsh::ArgumentBuilder).to receive(:build).and_yield(builder).
+      and_return(argument)
     builder
   end
 
   def stub_command_factory
-    command_instance = stub('command_instance')
-    factory_instance = stub('factory_instance', build: command_instance)
-    Gitsh::Commands::Factory.stubs(:new).returns(factory_instance)
+    command_instance = double('command_instance')
+    factory_instance = double('factory_instance', build: command_instance)
+    allow(Gitsh::Commands::Factory).to receive(:new).
+      and_return(factory_instance)
     factory_instance
   end
 end

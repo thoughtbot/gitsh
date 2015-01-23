@@ -5,7 +5,7 @@ describe Gitsh::CLI do
   describe '#run' do
     context 'with valid arguments and no script file' do
       it 'calls the interactive runner' do
-        interactive_runner = stub('InteractiveRunner', run: nil)
+        interactive_runner = double('InteractiveRunner', run: nil)
         cli = Gitsh::CLI.new(
           args: [],
           interactive_runner: interactive_runner
@@ -19,26 +19,26 @@ describe Gitsh::CLI do
 
     context 'when STDIN is not a TTY' do
       it 'calls the script runner with -' do
-        script_runner = stub('ScriptRunner', run: nil)
-        interactive_runner = stub('InteractiveRunner', run: nil)
+        script_runner = double('ScriptRunner', run: nil)
+        interactive_runner = double('InteractiveRunner', run: nil)
         cli = Gitsh::CLI.new(
           args: [],
           script_runner: script_runner,
           interactive_runner: interactive_runner,
-          env: stub('Environment', tty?: false),
+          env: double('Environment', tty?: false),
         )
 
         cli.run
 
         expect(script_runner).to have_received(:run).with('-')
-        expect(interactive_runner).to have_received(:run).never
+        expect(interactive_runner).not_to have_received(:run)
       end
     end
 
     context 'with a script file' do
       it 'calls the script runner with the script file' do
-        script_runner = stub('ScriptRunner', run: nil)
-        interactive_runner = stub('InteractiveRunner', run: nil)
+        script_runner = double('ScriptRunner', run: nil)
+        interactive_runner = double('InteractiveRunner', run: nil)
         cli = Gitsh::CLI.new(
           args: ['path/to/a/script'],
           script_runner: script_runner,
@@ -48,16 +48,17 @@ describe Gitsh::CLI do
         cli.run
 
         expect(script_runner).to have_received(:run).with('path/to/a/script')
-        expect(interactive_runner).to have_received(:run).never
+        expect(interactive_runner).not_to have_received(:run)
       end
     end
 
     context 'with an unreadable script file' do
       it 'exits' do
-        env = stub('env', puts_error: nil)
-        script_runner = stub('ScriptRunner')
-        script_runner.stubs(:run).raises(Gitsh::NoInputError, 'Oh no!')
-        interactive_runner = stub('InteractiveRunner')
+        env = double('env', puts_error: nil)
+        script_runner = double('ScriptRunner')
+        allow(script_runner).to receive(:run).
+          and_raise(Gitsh::NoInputError, 'Oh no!')
+        interactive_runner = double('InteractiveRunner')
         cli = Gitsh::CLI.new(
           env: env,
           args: ['path/to/a/script'],
@@ -72,7 +73,7 @@ describe Gitsh::CLI do
 
     context 'with invalid arguments' do
       it 'exits with a usage message' do
-        env = stub('Environment', puts_error: nil)
+        env = double('Environment', puts_error: nil)
         cli = Gitsh::CLI.new(args: %w( --bad-argument ), env: env)
 
         expect { cli.run }.to raise_exception(SystemExit)

@@ -4,8 +4,8 @@ require 'gitsh/environment'
 describe Gitsh::Environment do
   describe '#[]=' do
     it 'sets a gitsh environment variable' do
-      repository = stub('GitRepository', config: nil)
-      factory = stub(new: repository)
+      repository = double('GitRepository', config: nil)
+      factory = double('RepositoryFactory', new: repository)
       env = described_class.new(repository_factory: factory)
 
       env['foo'] = 'bar'
@@ -16,8 +16,9 @@ describe Gitsh::Environment do
   describe '#fetch' do
     context 'for a magic variable' do
       it 'returns the value of the magic variable' do
-        magic_variables = stub(:magic_variables)
-        magic_variables.stubs(:fetch).with(:_prior).returns('a-branch-name')
+        magic_variables = double(:magic_variables)
+        allow(magic_variables).to receive(:fetch).with(:_prior).
+          and_return('a-branch-name')
         env = described_class.new(magic_variables: magic_variables)
 
         expect(env.fetch(:_prior)).to eq 'a-branch-name'
@@ -37,10 +38,11 @@ describe Gitsh::Environment do
 
     context 'for a Git configuration variable' do
       it 'returns the value of the Git configuration variable' do
-        repository = stub('GitRepository')
-        repository.stubs(:config).with('user.name', false).
-          returns('John Smith')
-        env = described_class.new(repository_factory: stub(new: repository))
+        repository = double('GitRepository')
+        allow(repository).to receive(:config).with('user.name', false).
+          and_return('John Smith')
+        factory = double('RepositoryFactory', new: repository)
+        env = described_class.new(repository_factory: factory)
 
         expect(env.fetch(:'user.name')).to eq 'John Smith'
         expect(env.fetch('user.name')).to eq 'John Smith'
@@ -102,7 +104,7 @@ describe Gitsh::Environment do
     end
 
     it 'returns the input stream passed to the constructor' do
-      stream = stub
+      stream = double
       env = described_class.new(input_stream: stream)
 
       expect(env.input_stream).to eq stream
@@ -117,7 +119,7 @@ describe Gitsh::Environment do
     end
 
     it 'returns the output stream passed to the constructor' do
-      stream = stub
+      stream = double
       env = described_class.new(output_stream: stream)
 
       expect(env.output_stream).to eq stream
@@ -183,14 +185,14 @@ describe Gitsh::Environment do
 
   describe '#tty?' do
     it 'returns true when the input stream is a TTY' do
-      input = stub('STDIN', tty?: true)
+      input = double('STDIN', tty?: true)
       env = described_class.new(input_stream: input)
 
       expect(env).to be_tty
     end
 
     it 'returns false when the input stream is not a TTY' do
-      input = stub('STDIN', tty?: false)
+      input = double('STDIN', tty?: false)
       env = described_class.new(input_stream: input)
 
       expect(env).not_to be_tty
@@ -199,8 +201,8 @@ describe Gitsh::Environment do
 
   describe '#git_aliases' do
     it 'combines locally-set aliases with global aliases' do
-      repo = stub('GitRepository', aliases: %w( foo bar ))
-      env = described_class.new(repository_factory: stub(new: repo))
+      repo = double('GitRepository', aliases: %w( foo bar ))
+      env = described_class.new(repository_factory: double(new: repo))
       env['aliasish'] = 'not relevant'
       env['alias.baz'] = '!echo baz'
 
@@ -210,14 +212,14 @@ describe Gitsh::Environment do
 
   describe '#readline_version' do
     it 'returns libedit if Readline.emacs_editing_mode is not implemented' do
-      Readline.stubs(:emacs_editing_mode).raises(NotImplementedError)
+      allow(Readline).to receive(:emacs_editing_mode).and_raise(NotImplementedError)
       env = described_class.new
 
       expect(env.readline_version).to eq('libedit')
     end
 
     it 'returns GNU Readline if Readline.emacs_editing_mode is implemented' do
-      Readline.stubs(:emacs_editing_mode).returns(nil)
+      allow(Readline).to receive(:emacs_editing_mode).and_return(nil)
       env = described_class.new
 
       expect(env.readline_version).to eq('GNU Readline')
@@ -225,8 +227,8 @@ describe Gitsh::Environment do
   end
 
   context 'delegated methods' do
-    let(:repo) { stub }
-    let(:repo_factory) { stub(new: repo) }
+    let(:repo) { double }
+    let(:repo_factory) { double('RepositoryFactory', new: repo) }
     let(:env) { described_class.new(repository_factory: repo_factory) }
 
     describe '#repo_heads' do
@@ -270,9 +272,9 @@ describe Gitsh::Environment do
     describe '#repo_config_color' do
       context 'when there is no environment variable set' do
         it 'gets the color setting from the repo' do
-          expected_color = stub('color')
-          repo = stub('GitRepository', config_color: expected_color, config: nil)
-          env = described_class.new(repository_factory: stub(new: repo))
+          expected_color = double('color')
+          repo = double('GitRepository', config_color: expected_color, config: nil)
+          env = described_class.new(repository_factory: double(new: repo))
 
           color = env.repo_config_color('test.color.foo', 'red')
 
@@ -284,9 +286,9 @@ describe Gitsh::Environment do
 
       context 'when there is an environment variable set' do
         it 'gets the repo to convert the color to an ANSI escape sequence' do
-          expected_color = stub('color')
-          repo = stub('GitRepository', color: expected_color, config: nil)
-          env = described_class.new(repository_factory: stub(new: repo))
+          expected_color = double('color')
+          repo = double('GitRepository', color: expected_color, config: nil)
+          env = described_class.new(repository_factory: double(new: repo))
 
           env['test.color.foo'] = 'blue'
           color = env.repo_config_color('test.color.foo', 'red')

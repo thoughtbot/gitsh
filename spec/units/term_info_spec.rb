@@ -55,10 +55,10 @@ describe Gitsh::TermInfo do
   end
 
   def stub_tput_invocation(options = {})
-    Open3.stubs(:capture3).returns [
+    allow(Open3).to receive(:capture3).and_return [
       options.fetch(:output, ''),
       options.fetch(:error, ''),
-      stub('exit_status', success?: options.fetch(:success, true))
+      double('exit_status', success?: options.fetch(:success, true))
     ]
   end
 end

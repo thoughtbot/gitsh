@@ -1,6 +1,6 @@
 module Arguments
   def arguments(*values)
-    stub("ArgumentList", values: values, length: values.length)
+    double("ArgumentList", values: values, length: values.length)
   end
 end
 

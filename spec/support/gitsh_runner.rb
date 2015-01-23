@@ -4,11 +4,11 @@ require 'tmpdir'
 require 'gitsh/cli'
 require 'gitsh/environment'
 require 'gitsh/readline_blank_filter'
+require 'rspec/mocks/test_double'
 require File.expand_path('../file_system', __FILE__)
 
 class GitshRunner
   include FileSystemHelper
-  include Mocha::API
 
   UP_ARROW = "\033[A"
 
@@ -17,7 +17,7 @@ class GitshRunner
   end
 
   def initialize(options)
-    @input_stream = stub('STDIN', tty?: true)
+    @input_stream = RSpec::Mocks::Double.new('STDIN', tty?: true)
     @output_stream = Tempfile.new('stdout')
     @error_stream = Tempfile.new('stderr')
     @readline = ReadlineBlankFilter.new(FakeReadline.new)

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'gitsh/argument_list'
 
-describe Gitsh::ArgumentList do 
+describe Gitsh::ArgumentList do
   describe '#length' do
     it 'returns the number of arguments' do
       argument_list = Gitsh::ArgumentList.new(['hello', 'goodbye'])
@@ -12,9 +12,9 @@ describe Gitsh::ArgumentList do
 
   describe '#values' do
     it 'returns the values of the arguments' do
-      env = stub('env')
-      hello_arg = stub('hello_arg', value: 'hello')
-      goodbye_arg = stub('goodbye_arg', value: 'goodbye')
+      env = double('env')
+      hello_arg = spy('hello_arg', value: 'hello')
+      goodbye_arg = spy('goodbye_arg', value: 'goodbye')
       argument_list = Gitsh::ArgumentList.new([hello_arg, goodbye_arg])
 
       expect(argument_list.values(env)).to eq ['hello', 'goodbye']

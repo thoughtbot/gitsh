@@ -316,6 +316,6 @@ describe Gitsh::GitRepository do
   end
 
   def env
-    stub(git_command: '/usr/bin/env git')
+    double(git_command: '/usr/bin/env git')
   end
 end

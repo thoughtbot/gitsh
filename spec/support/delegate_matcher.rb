@@ -5,8 +5,9 @@ RSpec::Matchers.define :delegate do |original_method|
   end
 
   match do |original_object|
-    result = stub
-    @target_object.stubs(@target_method).returns(result)
+    result = double
+    allow(@target_object).to receive(@target_method).
+      and_return(result)
 
     expect(original_object.send(original_method)).to eq result
   end

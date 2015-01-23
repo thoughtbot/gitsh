@@ -2,8 +2,8 @@ require 'spec_helper'
 require 'gitsh/commands/tree'
 
 describe Gitsh::Commands::Tree do
-  let(:t) { stub(execute: true) }
-  let(:f) { stub(execute: false) }
+  let(:t) { double(execute: true) }
+  let(:f) { double(execute: false) }
 
   describe Gitsh::Commands::Tree::Or do
     it 'executes f, then t' do
@@ -17,7 +17,7 @@ describe Gitsh::Commands::Tree do
       Gitsh::Commands::Tree::Or.new(t, f).execute
 
       expect(t).to have_received(:execute).once
-      expect(f).to have_received(:execute).never
+      expect(f).not_to have_received(:execute)
     end
   end
 
@@ -25,7 +25,7 @@ describe Gitsh::Commands::Tree do
     it 'executes f, then stops' do
       Gitsh::Commands::Tree::And.new(f, t).execute
 
-      expect(t).to have_received(:execute).never
+      expect(t).not_to have_received(:execute)
       expect(f).to have_received(:execute).once
     end
 
@@ -57,7 +57,7 @@ describe Gitsh::Commands::Tree do
       ).execute
 
       expect(t).to have_received(:execute).twice
-      expect(f).to have_received(:execute).never
+      expect(f).not_to have_received(:execute)
     end
 
     it 'calls all t, f, t' do
@@ -76,7 +76,7 @@ describe Gitsh::Commands::Tree do
         f
       ).execute
 
-      expect(t).to have_received(:execute).never
+      expect(t).not_to have_received(:execute)
       expect(f).to have_received(:execute).twice
     end
 

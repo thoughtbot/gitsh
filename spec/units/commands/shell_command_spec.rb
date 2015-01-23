@@ -4,7 +4,9 @@ require 'gitsh/commands/shell_command'
 describe Gitsh::Commands::ShellCommand do
   describe '#execute' do
     before do
-      Process.stubs(spawn: 1, wait: nil, kill: nil)
+      allow(Process).to receive(:spawn).and_return(1)
+      allow(Process).to receive(:wait)
+      allow(Process).to receive(:kill)
       ensure_exit_status_exists
     end
 
@@ -21,21 +23,21 @@ describe Gitsh::Commands::ShellCommand do
     end
 
     it 'returns true when the shell command succeeds' do
-      $?.stubs(success?: true)
+      allow($?).to receive(:success?).and_return(true)
       command = described_class.new(env, 'echo', arguments('Hello world'))
 
       expect(command.execute).to eq true
     end
 
     it 'returns false when the shell command fails' do
-      $?.stubs(success?: false)
+      allow($?).to receive(:success?).and_return(false)
       command = described_class.new(env, 'badcommand', arguments('Hello world'))
 
       expect(command.execute).to eq false
     end
 
     it 'returns false when Process.spawn raises' do
-      Process.stubs(:spawn).raises(Errno::ENOENT, 'No such file')
+      allow(Process).to receive(:spawn).and_raise(Errno::ENOENT, 'No such file')
       command = described_class.new(env, 'badcommand', arguments('Hello world'))
 
       expect(command.execute).to eq false
@@ -43,8 +45,11 @@ describe Gitsh::Commands::ShellCommand do
 
     it 'forwards interrupts to the child process' do
       pid = 12
-      Process.stubs(:spawn).returns(pid)
-      Process.stubs(:wait).with(pid).raises(Interrupt).then.returns(nil)
+      wait_results = StubbedMethodResult.new.
+        raises(Interrupt).
+        returns(nil)
+      allow(Process).to receive(:spawn).and_return(pid)
+      allow(Process).to receive(:wait).with(pid) { wait_results.next_result }
       command = described_class.new(env, 'vim', arguments())
 
       command.execute
@@ -60,9 +65,9 @@ describe Gitsh::Commands::ShellCommand do
   end
 
   let(:env) do
-    stub('Environment',
-      output_stream: stub(to_i: 1),
-      error_stream: stub(to_i: 2),
+    double('Environment',
+      output_stream: double('OutputStream', to_i: 1),
+      error_stream: double('ErrorStream', to_i: 2),
       puts_error: nil
     )
   end

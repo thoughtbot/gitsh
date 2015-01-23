@@ -7,9 +7,9 @@ describe Gitsh::Commands::InternalCommand::Source do
   describe "#execute" do
     context "with a valid file" do
       it "executes the script_runner and returns true" do
-        env = stub('env')
-        script_runner = stub('ScriptRunner', run: nil)
-        Gitsh::ScriptRunner.stubs(:new).returns(script_runner)
+        env = double('env')
+        script_runner = spy('ScriptRunner', run: nil)
+        allow(Gitsh::ScriptRunner).to receive(:new).and_return(script_runner)
         command = described_class.new(env, 'source', arguments('/path'))
 
         result = command.execute
@@ -22,7 +22,7 @@ describe Gitsh::Commands::InternalCommand::Source do
 
     context "with no file argument" do
       it "prints a usage message and returns false" do
-        env = stub('env', puts_error: nil)
+        env = spy('env', puts_error: nil)
         command = described_class.new(env, 'source', arguments())
 
         result = command.execute

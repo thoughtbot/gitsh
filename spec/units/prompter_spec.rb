@@ -80,7 +80,7 @@ describe Gitsh::Prompter do
       end
 
       it 'replaces %c with a color code based on the status' do
-        prompt_color = stub('PromptColor', status_color: blue)
+        prompt_color = double('PromptColor', status_color: blue)
         env = env_double(repo_has_modified_files?: true, format: '%c')
         prompter = Gitsh::Prompter.new(env: env, prompt_color: prompt_color)
 
@@ -138,9 +138,9 @@ describe Gitsh::Prompter do
         repo_current_head: 'master',
         repo_config_color: red,
       }
-      stub('Environment', default_attrs.merge(attrs)) do |env|
-        env.stubs(:[]).with('gitsh.prompt').returns(format)
-        env.stubs(:fetch).with('gitsh.prompt').returns(
+      double('Environment', default_attrs.merge(attrs)).tap do |env|
+        allow(env).to receive(:[]).with('gitsh.prompt').and_return(format)
+        allow(env).to receive(:fetch).with('gitsh.prompt').and_return(
           format || Gitsh::Prompter::DEFAULT_FORMAT
         )
       end

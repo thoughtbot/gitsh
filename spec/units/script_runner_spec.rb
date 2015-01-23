@@ -6,7 +6,7 @@ describe Gitsh::ScriptRunner do
   describe '#run' do
     it 'passes each command to the interpreter' do
       script = temp_file('script', "commit -m 'Changes'\npush -f")
-      interpreter = stub('Interpreter', execute: nil)
+      interpreter = spy('Interpreter', execute: nil)
       runner = described_class.new(interpreter: interpreter)
 
       runner.run script.path
@@ -19,8 +19,8 @@ describe Gitsh::ScriptRunner do
     context 'with -' do
       it 'reads commands from STDIN' do
         input_stream = StringIO.new("push\npull\n")
-        env = stub('Environment', input_stream: input_stream)
-        interpreter = stub('Interpreter', execute: nil)
+        env = double('Environment', input_stream: input_stream)
+        interpreter = spy('Interpreter', execute: nil)
         runner = described_class.new(env: env, interpreter: interpreter)
 
         runner.run '-'
@@ -33,8 +33,8 @@ describe Gitsh::ScriptRunner do
 
     context 'with a file that does not exist' do
       it 'raises a NoInputError' do
-        env = stub('Environment')
-        interpreter = stub('Interpreter', execute: nil)
+        env = double('Environment')
+        interpreter = double('Interpreter', execute: nil)
         runner = described_class.new(env: env, interpreter: interpreter)
 
         expect { runner.run 'no/such/script' }.to raise_exception(
@@ -47,9 +47,9 @@ describe Gitsh::ScriptRunner do
     context 'with a file that the current user cannot read' do
       it 'raises a NoInputError' do
         script = temp_file('script', "commit -m 'Changes'\npush -f")
-        File.stubs(:open).raises(Errno::EACCES)
-        env = stub('Environment')
-        interpreter = stub('Interpreter', execute: nil)
+        allow(File).to receive(:open).and_raise(Errno::EACCES)
+        env = double('Environment')
+        interpreter = double('Interpreter', execute: nil)
         runner = described_class.new(env: env, interpreter: interpreter)
 
         expect { runner.run script.path }.to raise_exception(

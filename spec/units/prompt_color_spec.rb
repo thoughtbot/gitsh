@@ -7,7 +7,7 @@ describe Gitsh::PromptColor do
   describe '#status_color' do
     context 'with an uninitialized repo' do
       it 'uses the gitsh.color.uninitialized setting' do
-        color = stub('color')
+        color = double('color')
         env = stub_env(repo_initialized?: false, repo_config_color: color)
         prompt_color = described_class.new(env)
 
@@ -19,7 +19,7 @@ describe Gitsh::PromptColor do
 
     context 'with untracked files' do
       it 'uses the gitsh.color.untracked setting' do
-        color = stub('color')
+        color = double('color')
         env = stub_env(repo_has_untracked_files?: true, repo_config_color: color)
         prompt_color = described_class.new(env)
 
@@ -31,7 +31,7 @@ describe Gitsh::PromptColor do
 
     context 'with modified files' do
       it 'uses the gitsh.color.modified setting' do
-        color = stub('color')
+        color = double('color')
         env = stub_env(repo_has_modified_files?: true, repo_config_color: color)
         prompt_color = described_class.new(env)
 
@@ -43,7 +43,7 @@ describe Gitsh::PromptColor do
 
     context 'with a clean repo' do
       it 'uses the gitsh.color.default setting' do
-        color = stub('color')
+        color = double('color')
         env = stub_env(repo_config_color: color)
         prompt_color = described_class.new(env)
 
@@ -60,6 +60,6 @@ describe Gitsh::PromptColor do
       repo_has_untracked_files?: false,
       repo_has_modified_files?: false,
     }
-    env = stub('env', defaults.merge(overrides))
+    env = double('env', defaults.merge(overrides))
   end
 end

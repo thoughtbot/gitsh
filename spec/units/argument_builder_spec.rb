@@ -4,8 +4,9 @@ require 'gitsh/argument_builder'
 describe Gitsh::ArgumentBuilder do
   describe 'building a StringArgument with #add_literal' do
     it 'concatenates the values passed to subsequent add_literal calls' do
-      string_argument = stub('StringArgument')
-      Gitsh::Arguments::StringArgument.stubs(:new).returns(string_argument)
+      string_argument = double('StringArgument')
+      allow(Gitsh::Arguments::StringArgument).to receive(:new).
+        and_return(string_argument)
 
       built_argument = described_class.build do |builder|
         builder.add_literal('Hello')
@@ -21,8 +22,9 @@ describe Gitsh::ArgumentBuilder do
 
   describe 'building a VariableArgument with #add_variable' do
     it 'creates a variable argument to access the variable' do
-      variable_argument = stub('VariableArgument')
-      Gitsh::Arguments::VariableArgument.stubs(:new).returns(variable_argument)
+      variable_argument = double('VariableArgument')
+      allow(Gitsh::Arguments::VariableArgument).to receive(:new).
+        and_return(variable_argument)
 
       built_argument = described_class.build do |builder|
         builder.add_variable('author')
@@ -36,8 +38,8 @@ describe Gitsh::ArgumentBuilder do
 
   describe 'building a Subshell with #add_subshell' do
     it 'creates a subshell' do
-      subshell = stub('Subshell')
-      Gitsh::Arguments::Subshell.stubs(:new).returns(subshell)
+      subshell = double('Subshell')
+      allow(Gitsh::Arguments::Subshell).to receive(:new).and_return(subshell)
 
       built_argument = described_class.build do |builder|
         builder.add_subshell('!pwd')
@@ -51,10 +53,12 @@ describe Gitsh::ArgumentBuilder do
 
   describe 'building a CompositeArgument with multiple calls to #add_variable' do
     it 'creates a composite argument of several VariableArguments' do
-      composite_argument = stub('CompositeArgument')
-      variable_argument = stub('VariableArgument')
-      Gitsh::Arguments::VariableArgument.stubs(:new).returns(variable_argument)
-      Gitsh::Arguments::CompositeArgument.stubs(:new).returns(composite_argument)
+      composite_argument = double('CompositeArgument')
+      variable_argument = double('VariableArgument')
+      allow(Gitsh::Arguments::VariableArgument).to receive(:new).
+        and_return(variable_argument)
+      allow(Gitsh::Arguments::CompositeArgument).to receive(:new).
+        and_return(composite_argument)
 
       built_argument = described_class.build do |builder|
         builder.add_variable('foo')
@@ -73,12 +77,12 @@ describe Gitsh::ArgumentBuilder do
 
   describe 'building a CompositeArgument with mixed types' do
     it 'creates a composite argument' do
-      composite_argument = stub('CompositeArgument')
-      string_argument = stub('StringArgument')
-      variable_argument = stub('VariableArgument')
-      Gitsh::Arguments::CompositeArgument.stubs(:new).returns(composite_argument)
-      Gitsh::Arguments::StringArgument.stubs(:new).returns(string_argument)
-      Gitsh::Arguments::VariableArgument.stubs(:new).returns(variable_argument)
+      composite_argument = double('CompositeArgument')
+      string_argument = double('StringArgument')
+      variable_argument = double('VariableArgument')
+      allow(Gitsh::Arguments::CompositeArgument).to receive(:new).and_return(composite_argument)
+      allow(Gitsh::Arguments::StringArgument).to receive(:new).and_return(string_argument)
+      allow(Gitsh::Arguments::VariableArgument).to receive(:new).and_return(variable_argument)
 
       built_argument = described_class.build do |builder|
         builder.add_literal('pre')

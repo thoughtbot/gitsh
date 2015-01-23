@@ -36,12 +36,12 @@ describe Gitsh::InteractiveRunner do
 
     it 'handles a SIGINT' do
       runner = build_interactive_runner
-
-      readline.stubs(:readline).
+      readline_results = StubbedMethodResult.new.
         returns('a').
-        then.raises(Interrupt).
-        then.returns('b').
-        then.raises(SystemExit)
+        raises(Interrupt).
+        returns('b').
+        raises(SystemExit)
+      allow(readline).to receive(:readline) { readline_results.next_result }
 
       begin
         runner.run
@@ -55,7 +55,7 @@ describe Gitsh::InteractiveRunner do
 
     it 'handles a SIGWINCH' do
       readline = SignallingReadline.new('WINCH')
-      readline.stubs(:set_screen_size)
+      allow(readline).to receive(:set_screen_size)
       runner = build_interactive_runner(readline: readline)
 
       expect { runner.run }.not_to raise_exception
@@ -75,19 +75,19 @@ describe Gitsh::InteractiveRunner do
   end
 
   def script_runner
-    @script_runner ||= stub('script_runner', run: nil)
+    @script_runner ||= spy('script_runner', run: nil)
   end
 
   def interpreter
-    @interpreter ||= stub('interpreter', execute: nil)
+    @interpreter ||= spy('interpreter', execute: nil)
   end
 
   def history
-    @history ||= stub('history', load: nil, save: nil)
+    @history ||= spy('history', load: nil, save: nil)
   end
 
   def readline
-    @readline ||= stub('readline', {
+    @readline ||= spy('readline', {
       :'completion_append_character=' => nil,
       :'completion_proc=' => nil,
       readline: nil
@@ -95,7 +95,7 @@ describe Gitsh::InteractiveRunner do
   end
 
   def env
-    @env ||= stub('Environment', {
+    @env ||= double('Environment', {
       print: nil,
       puts: nil,
       repo_initialized?: false,
@@ -106,6 +106,6 @@ describe Gitsh::InteractiveRunner do
   end
 
   def term_info
-    stub('term_info', color_support?: true, lines: 24, cols: 80)
+    double('term_info', color_support?: true, lines: 24, cols: 80)
   end
 end

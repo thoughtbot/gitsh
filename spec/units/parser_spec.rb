@@ -4,10 +4,10 @@ require 'gitsh/parser'
 describe Gitsh::Parser do
   describe '#parse_and_transform' do
     it 'returns an object built from the parsed command' do
-      env = stub('Environment', fetch: nil)
-      transformed = stub
-      transformer = stub('Transformer', apply: transformed)
-      transformer_factory = stub(new: transformer)
+      env = double('Environment', fetch: nil)
+      transformed = double('Transformed')
+      transformer = double('Transformer', apply: transformed)
+      transformer_factory = double('TransformerFactory', new: transformer)
       parser = described_class.new(env: env, transformer_factory: transformer_factory)
 
       result = parser.parse_and_transform('status')

@@ -3,18 +3,21 @@ require 'gitsh/commands/git_command'
 
 describe Gitsh::Commands::GitCommand do
   let(:env) do
-    stub('Environment', {
+    double('Environment', {
       git_command: '/usr/bin/env git',
-      output_stream: stub(to_i: 1),
-      error_stream: stub(to_i: 2)
+      output_stream: double('OutputStream', to_i: 1),
+      error_stream: double('ErrorStream', to_i: 2)
     })
   end
 
-  before { Process.stubs(spawn: 1, wait: nil) }
+  before do
+    allow(Process).to receive(:spawn).and_return(1)
+    allow(Process).to receive(:wait)
+  end
 
   describe '#execute' do
     it 'spawns a process with the sub command and arguments' do
-      env.stubs(config_variables: {})
+      allow(env).to receive(:config_variables).and_return({})
       command = described_class.new(
         env,
         'commit',
@@ -33,10 +36,10 @@ describe Gitsh::Commands::GitCommand do
     end
 
     it 'passes on configuration variables from the environment' do
-      env.stubs(config_variables: {
+      allow(env).to receive(:config_variables).and_return(
         :'test.example' => 'This is an example',
         :'foo.bar' => '1'
-      })
+      )
       command = described_class.new(
         env,
         'commit',

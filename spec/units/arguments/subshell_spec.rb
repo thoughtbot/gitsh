@@ -15,7 +15,7 @@ describe Gitsh::Arguments::Subshell do
 
   describe '#value' do
     it 'creates a new interpreter and executes the subshell command inside of it' do
-      env = stub('env')
+      env = double('env')
       subshell_command = 'status'
 
       output = described_class.new(

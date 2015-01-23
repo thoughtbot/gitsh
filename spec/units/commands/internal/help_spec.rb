@@ -7,22 +7,22 @@ describe Gitsh::Commands::InternalCommand::Help do
   describe "#execute" do
     context "with no arguments" do
       it "prints out some stuff" do
-        env = stub('env', puts: nil)
+        env = spy('env', puts: nil)
         command = described_class.new(env, 'help', arguments())
 
         expect(command.execute).to be_truthy
-        expect(env).to have_received(:puts).at_least_once
+        expect(env).to have_received(:puts).at_least(1).times
       end
     end
 
     context "with an argument that matches an existing command" do
       it "prints out command-specific information" do
-        env = stub('env', puts: nil)
+        env = spy('env', puts: nil)
         command = described_class.new(env, 'help', arguments('set'))
-        set_command = stub('Set', help_message: 'Sets variables')
-        Gitsh::Commands::InternalCommand.stubs(:command_class).
+        set_command = double('Set', help_message: 'Sets variables')
+        allow(Gitsh::Commands::InternalCommand).to receive(:command_class).
           with('set').
-          returns(set_command)
+          and_return(set_command)
 
         expect(command.execute).to be_truthy
         expect(env).to have_received(:puts).with('Sets variables')
@@ -31,12 +31,12 @@ describe Gitsh::Commands::InternalCommand::Help do
 
     context 'with a colon-prefixed argument' do
       it 'strips the colon' do
-        env = stub('env', puts: nil)
+        env = spy('env', puts: nil)
         command = described_class.new(env, 'help', arguments(':set'))
-        set_command = stub('Set', help_message: 'Sets variables')
-        Gitsh::Commands::InternalCommand.stubs(:command_class).
+        set_command = double('Set', help_message: 'Sets variables')
+        allow(Gitsh::Commands::InternalCommand).to receive(:command_class).
           with('set').
-          returns(set_command)
+          and_return(set_command)
 
         expect(command.execute).to be_truthy
         expect(env).to have_received(:puts).with('Sets variables')
@@ -45,7 +45,7 @@ describe Gitsh::Commands::InternalCommand::Help do
 
     context "with arguments that don't match an existing command" do
       it "prints out some stuff" do
-        env = stub('env', puts: nil)
+        env = spy('env', puts: nil)
         command = described_class.new(
           env,
           'help',
@@ -53,7 +53,7 @@ describe Gitsh::Commands::InternalCommand::Help do
         )
 
         expect(command.execute).to be_truthy
-        expect(env).to have_received(:puts).at_least_once
+        expect(env).to have_received(:puts).at_least(1).times
       end
     end
   end

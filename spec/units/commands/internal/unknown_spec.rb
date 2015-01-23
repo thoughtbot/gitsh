@@ -6,14 +6,14 @@ describe Gitsh::Commands::InternalCommand::Unknown do
 
   describe '#execute' do
     it 'outputs an error message' do
-      env = stub('env', puts_error: nil)
+      env = spy('env', puts_error: nil)
       command = described_class.new(env, 'notacommand', arguments())
 
       command.execute
 
       expect(env).to have_received(:puts_error).with(
-                         'gitsh: notacommand: command not found'
-                     )
+        'gitsh: notacommand: command not found'
+      )
     end
   end
 end
