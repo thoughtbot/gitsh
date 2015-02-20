@@ -44,6 +44,7 @@ describe Gitsh::Commands::GitCommand do
         env,
         'commit',
         arguments('-m', 'A test commit'),
+        shell_command_runner: mock_runner,
       )
 
       command.execute
