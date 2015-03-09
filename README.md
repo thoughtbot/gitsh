@@ -88,12 +88,6 @@ operating systems.
 Pull requests are very welcome. See the [contributing guide][CONTRIBUTING] for
 more details.
 
-## License
-
-gitsh is Copyright © 2014 Mike Burns, George Brocklehurst, and thoughtbot. It is
-free software, and may be redistributed under the terms specified in the
-[LICENSE][LICENSE] file.
-
 ## Similar projects
 
 * [git-sh][] - A customised bash shell with a Git prompt, aliases, and
@@ -109,3 +103,23 @@ free software, and may be redistributed under the terms specified in the
 [git-sh]: https://github.com/rtomayko/git-sh
 [gitsh]: https://github.com/caglar/gitsh
 [repl]: https://github.com/defunkt/repl
+
+## License
+
+gitsh is Copyright © 2014 Mike Burns, George Brocklehurst, and thoughtbot. It is
+free software, and may be redistributed under the terms specified in the
+[LICENSE][LICENSE] file.
+
+## About thoughtbot
+
+![thoughtbot](https://thoughtbot.com/logo.png)
+
+gitsh is maintained and funded by thoughtbot, inc.
+The names and logos for thoughtbot are trademarks of thoughtbot, inc.
+
+We love open source software!
+See [our other projects][community].
+We are [available for hire][hire].
+
+[community]: https://thoughtbot.com/community?utm_source=github
+[hire]: https://thoughtbot.com/hire-us?utm_source=github
