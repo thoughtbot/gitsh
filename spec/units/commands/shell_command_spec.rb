@@ -10,17 +10,48 @@ describe Gitsh::Commands::ShellCommand do
 
       command = described_class.new(
         env,
-        "echo",
-        arguments("Hello", "world"),
+        'echo',
+        arguments('Hello', 'world'),
         shell_command_runner: mock_runner,
       )
       result = command.execute
 
       expect(mock_runner).to have_received(:run).with(
-        ["echo", "Hello", "world"],
+        ['/bin/sh', '-c', 'echo Hello world'],
         env,
       )
       expect(result).to eq expected_result
+    end
+
+    it 'escapes special characters in arguments' do
+      env = double(:env)
+      mock_runner = double(:shell_command_runner, run: double(:result))
+      args = ['with space', '^$']
+      escaped_args = ['with\\ space', '\\^\\$']
+
+      described_class.
+        new(env, 'echo', arguments(*args), shell_command_runner: mock_runner).
+        execute
+
+      expect(mock_runner).to have_received(:run).with(
+        ['/bin/sh', '-c', "echo #{escaped_args.join(' ')}"],
+        env,
+      )
+    end
+
+    it 'does not escape globbing patterns in arguments' do
+      env = double(:env)
+      mock_runner = double(:shell_command_runner, run: double(:result))
+      args = ['*', '[a-z]', '[!a-z]', '?', '\\*']
+
+      described_class.
+        new(env, 'echo', arguments(*args), shell_command_runner: mock_runner).
+        execute
+
+      expect(mock_runner).to have_received(:run).with(
+        ['/bin/sh', '-c', "echo #{args.join(' ')}"],
+        env,
+      )
     end
   end
 end

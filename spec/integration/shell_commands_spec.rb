@@ -30,11 +30,22 @@ describe 'Executing a shell command' do
     end
   end
 
+  it 'uses a shell to expand arguments' do
+    GitshRunner.interactive do |gitsh|
+      write_file('myfile.txt', 'Hello world')
+
+      gitsh.type '!ls *'
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output 'myfile.txt'
+    end
+  end
+
   it 'handles errors gracefully' do
     GitshRunner.interactive do |gitsh|
       gitsh.type '!notarealcommand'
 
-      expect(gitsh).to output_error(/No such file or directory - notarealcommand/)
+      expect(gitsh).to output_error(/not found/)
       expect(gitsh).to output_nothing
     end
   end
