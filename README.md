@@ -20,7 +20,9 @@ gitsh% <kbd>ctrl</kbd>-<kbd>d</kbd>
 sh$</code></pre>
 
 * Hit <kbd>return</kbd> with no command to run `git status`, saving even more
-  typing:
+* Hit <kbd>return</kbd> with no command to run `git status` (change this
+  command by setting `gitsh.defaultCommand` via `git config`; remember it will
+  be prefixed with `git `), saving even more typing:
 
         gitsh% ⏎
         # On branch master
