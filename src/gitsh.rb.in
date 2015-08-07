@@ -9,4 +9,5 @@ begin
   Gitsh::CLI.new.run
 rescue => e
   $stderr.puts "gitsh: Error: #{e.message}"
+  exit 1
 end
