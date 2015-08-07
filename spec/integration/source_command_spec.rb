@@ -13,6 +13,18 @@ describe 'The :source command' do
         expect(gitsh).to output /Yes it did!/
       end
     end
+
+    it 'expands ~ in paths' do
+      GitshRunner.interactive do |gitsh|
+        write_file("#{ENV['HOME']}/.gitshrc", ':set source_worked "True"')
+
+        gitsh.type ':source ~/.gitshrc'
+        gitsh.type ':echo $source_worked'
+
+        expect(gitsh).to output_no_errors
+        expect(gitsh).to output /True/
+      end
+    end
   end
 
   context 'no source file is given' do

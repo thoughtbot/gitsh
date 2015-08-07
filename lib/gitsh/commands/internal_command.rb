@@ -182,7 +182,7 @@ TXT
       end
 
       def path
-        arg_values.first
+        File.expand_path(arg_values.first)
       end
     end
 
