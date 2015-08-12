@@ -22,6 +22,15 @@ describe Gitsh::MagicVariables do
         expect(magic_variables.fetch(:_prior)).to eq 'a-branch-name'
         expect(repo).to have_received(:revision_name).with('@{-1}')
       end
+
+      it 'raises when there is no prior branch' do
+        repo = double('GitRepository', revision_name: nil)
+        magic_variables = described_class.new(repo)
+
+        expect { magic_variables.fetch(:_prior) }.to raise_exception(
+          Gitsh::UnsetVariableError,
+        )
+      end
     end
 
     context 'with _merge_base' do
@@ -31,6 +40,15 @@ describe Gitsh::MagicVariables do
 
         expect(magic_variables.fetch(:_merge_base)).to eq 'abc124567890'
         expect(repo).to have_received(:merge_base).with('HEAD', 'MERGE_HEAD')
+      end
+
+      it 'raises when there is no merge in progress' do
+        repo = double('GitRepository', merge_base: '')
+        magic_variables = described_class.new(repo)
+
+        expect { magic_variables.fetch(:_merge_base) }.to raise_exception(
+          Gitsh::UnsetVariableError,
+        )
       end
     end
 
@@ -64,12 +82,14 @@ describe Gitsh::MagicVariables do
       end
 
       context 'when there is no rebase in progress' do
-        it 'returns nil' do
+        it 'raises an exception' do
           Dir.mktmpdir do |tmpdir_path|
             repo = double('GitRepository', git_dir: tmpdir_path)
             magic_variables = described_class.new(repo)
 
-            expect(magic_variables.fetch(:_rebase_base)).to be_nil
+            expect { magic_variables.fetch(:_rebase_base) }.to raise_exception(
+              Gitsh::UnsetVariableError,
+            )
           end
         end
       end

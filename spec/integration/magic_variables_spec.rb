@@ -17,6 +17,16 @@ describe 'Magic variables' do
         expect(gitsh).to output 'my-feature-branch'
       end
     end
+
+    it 'outputs an error when there is no previous branch' do
+      GitshRunner.interactive do |gitsh|
+        gitsh.type('init')
+        gitsh.type('commit --allow-empty -m "Initial commit"')
+        gitsh.type('branch -d $_prior')
+
+        expect(gitsh).to output_error(/No prior branch/)
+      end
+    end
   end
 
   context '$_merge_base' do
@@ -32,6 +42,15 @@ describe 'Magic variables' do
         expect(gitsh).to output expected_merge_base
       end
     end
+
+    it 'outputs an error when there is no merge in progress' do
+      GitshRunner.interactive do |gitsh|
+        gitsh.type('init')
+        gitsh.type(':echo $_merge_base')
+
+        expect(gitsh).to output_error(/No merge in progress/)
+      end
+    end
   end
 
   context '$_rebase_base' do
@@ -45,6 +64,15 @@ describe 'Magic variables' do
         gitsh.type(':echo $_rebase_base')
 
         expect(gitsh).to output expected_rebase_base
+      end
+    end
+
+    it 'outputs an error when there is no rebase in progress' do
+      GitshRunner.interactive do |gitsh|
+        gitsh.type('init')
+        gitsh.type(':echo $_rebase_base')
+
+        expect(gitsh).to output_error(/No rebase in progress/)
       end
     end
   end
