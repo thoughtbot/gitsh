@@ -22,9 +22,11 @@ File.open(SETUP_PATH, 'w') do |setup_file|
         gem.name
       )
 
-      setup_file << "$LOAD_PATH.unshift(File.expand_path(%s, __FILE__))\n" % [
-        "../#{gem.name}-#{gem.version}/lib".inspect
-      ]
+      template = "$LOAD_PATH.unshift(File.expand_path(%s, __FILE__))"
+      gem.require_paths.each do |path|
+        full_path = "../#{gem.name}-#{gem.version}/#{path}"
+        setup_file.puts(template % full_path.inspect)
+      end
     end
   end
 end
