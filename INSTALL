@@ -56,7 +56,7 @@ Once gitsh is installed, it will indicate which line editor is in used when
 executed with the --version option:
 
         $ gitsh --version
-        0.9 (using GNU Readline)
+        0.10 (using GNU Readline)
 
 
 Installation
@@ -64,9 +64,9 @@ Installation
 
 1. Download and extract the latest release:
 
-        curl -OL https://github.com/thoughtbot/gitsh/releases/download/v0.9/gitsh-0.9.tar.gz
-        tar -zxvf gitsh-0.9.tar.gz
-        cd gitsh-0.9
+        curl -OL https://github.com/thoughtbot/gitsh/releases/download/v0.10/gitsh-0.10.tar.gz
+        tar -zxvf gitsh-0.10.tar.gz
+        cd gitsh-0.10
 
 2. Configure the distribution. This step will determine which version of Ruby
    should be used, which has important implications; see the notes on "gitsh and
