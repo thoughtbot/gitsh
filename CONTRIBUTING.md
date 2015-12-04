@@ -120,7 +120,7 @@ Next, create the orig tarball:
 
 Now you need to install the build-dependencies and then run the build process:
 
-    sudo aptitude install devscripts dh-autoreconf ruby-rspec ruby-bourne pry
+    sudo aptitude install devscripts dh-autoreconf ruby-rspec ruby-bourne pry ruby-parslet
     debuild -us -uc
 
 There are some common errors you might get when running `debuild`:
