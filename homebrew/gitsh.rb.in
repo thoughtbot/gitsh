@@ -4,7 +4,7 @@ class Gitsh < Formula
   SYSTEM_RUBY_PATH = '/usr/bin/ruby'
   HOMEBREW_RUBY_PATH = "#{HOMEBREW_PREFIX}/bin/ruby"
 
-  homepage 'http://thoughtbot.github.io/@PACKAGE@/'
+  homepage 'https://github.com/thoughtbot/@PACKAGE@/'
   url 'http://thoughtbot.github.io/@PACKAGE@/@DIST_ARCHIVES@'
   sha1 '@DIST_SHA@'
 
