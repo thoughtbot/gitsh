@@ -3,8 +3,12 @@
 The `gitsh` program is an interactive shell for git. From within `gitsh` you can
 issue any git command, even using your local aliases and configuration.
 
+For a quick introduction to `gitsh`, watch [our video on Upcase][].
+
 [![Build Status](https://travis-ci.org/thoughtbot/gitsh.png?branch=master)](https://travis-ci.org/thoughtbot/gitsh)
 [![Code Climate](https://codeclimate.com/github/thoughtbot/gitsh.png)](https://codeclimate.com/github/thoughtbot/gitsh)
+
+[our video on Upcase]: https://upcase.com/videos/gitsh?utm_source=github&utm_medium=open-source&utm_campaign=gitsh
 
 ## Why should you use gitsh?
 
