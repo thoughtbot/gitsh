@@ -68,5 +68,13 @@ describe 'Chaining methods' do
         expect(gitsh).to output /nothing to commit/
       end
     end
+
+    it 'allows the right hand side to be blank' do
+      GitshRunner.interactive do |gitsh|
+        gitsh.type('init;')
+        expect(gitsh).to output_no_errors
+        expect(gitsh).to output /Initialized/
+      end
+    end
   end
 end

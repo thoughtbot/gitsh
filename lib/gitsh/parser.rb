@@ -27,8 +27,12 @@ module Gitsh
       (
         or_operation.as(:left) >>
         semicolon_operator >>
-        multi_command.as(:right)
+        (multi_command | blank).as(:right)
       ).as(:multi) | or_operation
+    end
+
+    rule(:blank) do
+      match('\s').repeat(0).as(:blank)
     end
 
     rule(:blank_line) do

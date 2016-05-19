@@ -44,7 +44,7 @@ module Gitsh
       end
     end
 
-    rule(blank: simple(:blank)) do |context|
+    rule(blank: subtree(:blank)) do |context|
       Commands::Noop.new
     end
 

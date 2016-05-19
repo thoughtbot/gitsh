@@ -231,6 +231,15 @@ describe Gitsh::Parser do
       )
     end
 
+    it 'parses a single command with a trailing semicolon' do
+      expect(parser).to parse('init;').as(
+        multi: {
+          left: { git_cmd: 'init' },
+          right: { blank: [] },
+        }
+      )
+    end
+
     it 'parses mutliple commands separated by &&' do
       expect(parser).to parse('add -p && commit -v').as(
         and: {
