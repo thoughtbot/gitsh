@@ -3,7 +3,7 @@ require 'tempfile'
 require 'tmpdir'
 require 'gitsh/cli'
 require 'gitsh/environment'
-require 'gitsh/readline_blank_filter'
+require 'gitsh/readline_history_filter'
 require 'rspec/mocks/test_double'
 require File.expand_path('../file_system', __FILE__)
 
@@ -20,7 +20,7 @@ class GitshRunner
     @input_stream = RSpec::Mocks::Double.new('STDIN', tty?: true)
     @output_stream = Tempfile.new('stdout')
     @error_stream = Tempfile.new('stderr')
-    @readline = ReadlineBlankFilter.new(FakeReadline.new)
+    @readline = ReadlineHistoryFilter.new(FakeReadline.new)
     @position_before_command = 0
     @error_position_before_command = 0
     @options = options

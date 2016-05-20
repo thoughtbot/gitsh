@@ -4,7 +4,7 @@ require 'gitsh/error'
 require 'gitsh/history'
 require 'gitsh/interpreter'
 require 'gitsh/prompter'
-require 'gitsh/readline_blank_filter'
+require 'gitsh/readline_history_filter'
 require 'gitsh/script_runner'
 require 'gitsh/terminal'
 
@@ -13,7 +13,7 @@ module Gitsh
     BLANK_LINE_REGEX = /^\s*$/
 
     def initialize(opts)
-      @readline = opts.fetch(:readline) { ReadlineBlankFilter.new(Readline) }
+      @readline = opts.fetch(:readline) { ReadlineHistoryFilter.new(Readline) }
       @env = opts[:env]
       @history = opts.fetch(:history) { History.new(@env, @readline) }
       @interpreter = opts.fetch(:interpreter) { Interpreter.new(@env) }
