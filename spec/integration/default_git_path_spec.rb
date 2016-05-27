@@ -23,8 +23,4 @@ describe 'Default git path' do
       expect(gitsh).to output /^Fake git: init/
     end
   end
-
-  def fake_git_path
-    File.expand_path('../../fixtures/fake_git', __FILE__)
-  end
 end

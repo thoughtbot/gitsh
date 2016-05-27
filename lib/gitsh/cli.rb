@@ -24,7 +24,9 @@ module Gitsh
       parse_arguments
       if unparsed_args.any?
         exit_with_usage_message
-      elsif script_file
+      end
+      ensure_executable_git
+      if script_file
         run_script
       else
         interactive_runner.run
@@ -81,6 +83,22 @@ module Gitsh
           exit EX_OK
         end
       end
+    end
+
+    def ensure_executable_git
+      IO.popen(env.git_command).close
+    rescue Errno::ENOENT
+      env.puts_error(
+        "gitsh: #{env.git_command}: No such file or directory\nEnsure git is "\
+        'on your PATH, or specify the path to git using the --git option',
+      )
+      exit EX_UNAVAILABLE
+    rescue Errno::EACCES
+      env.puts_error(
+        "gitsh: #{env.git_command}: Permission denied\nEnsure git is "\
+        'executable',
+      )
+      exit EX_UNAVAILABLE
     end
   end
 end
