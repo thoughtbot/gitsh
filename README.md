@@ -111,7 +111,7 @@ more details.
 
 ## License
 
-gitsh is Copyright © 2014 Mike Burns, George Brocklehurst, and thoughtbot. It is
+gitsh is Copyright © 2016 Mike Burns, George Brocklehurst, and thoughtbot. It is
 free software, and may be redistributed under the terms specified in the
 [LICENSE][LICENSE] file.
 
@@ -119,12 +119,16 @@ free software, and may be redistributed under the terms specified in the
 
 ![thoughtbot](https://thoughtbot.com/logo.png)
 
-gitsh is maintained and funded by thoughtbot, inc.
+gitsh is was created by thoughtbot's
+[Stockholm software development team][team]
+and continues to be maintained and funded by thoughtbot.
 The names and logos for thoughtbot are trademarks of thoughtbot, inc.
+
+[team]: https://thoughtbot.com/stockholm?utm_source=github
 
 We love open source software!
 See [our other projects][community].
 We are [available for hire][hire].
 
-[community]: https://thoughtbot.com/community?utm_source=github
+[community]: https://thoughtbot.com/tools?utm_source=github
 [hire]: https://thoughtbot.com/hire-us?utm_source=github
