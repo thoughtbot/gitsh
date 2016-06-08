@@ -1,5 +1,6 @@
 /************************************************
 
+  Based on Ruby 2.3.0's
   readline.c - GNU Readline module
 
   $Author$
@@ -33,7 +34,7 @@
 #include <editline/readline.h>
 #endif
 
-#include "internal.h"
+#include "ruby.h"
 #include "ruby/io.h"
 #include "ruby/thread.h"
 
@@ -45,7 +46,12 @@
 #include <sys/stat.h>
 #endif
 
-static VALUE mReadline;
+#if !defined(RARRAY_AREF)
+#define RARRAY_AREF(a, i) RARRAY_PTR(a)[i]
+#endif
+
+static VALUE mGitsh;
+static VALUE mLineEditor;
 
 #define EDIT_LINE_LIBRARY_VERSION "EditLine wrapper"
 #ifndef USE_INSERT_IGNORE_ESCAPE
@@ -93,38 +99,44 @@ static char **readline_attempted_completion_function(const char *text,
     (str) = rb_str_conv_enc((str), rb_enc_get(str), rb_locale_encoding());\
 } while (0)\
 
+#if !defined(HAVE_RB_OBJ_HIDE)
+#define rb_obj_hide(str) do { RBASIC(str)->klass = 0; } while (0);
+#endif
+
+#if !defined(HAVE_RB_OBJ_REVEAL)
+#define rb_obj_reveal(str, newKlass) do {\
+  RBASIC(str)->klass = newKlass;\
+} while (0);
+#endif
+
 
 /*
- * Document-class: Readline
+ * Document-class: Gitsh::LineEditor
  *
- * The Readline module provides interface for GNU Readline.
- * This module defines a number of methods to facilitate completion
- * and accesses input history from the Ruby interpreter.
- * This module supported Edit Line(libedit) too.
- * libedit is compatible with GNU Readline.
+ * The Gitsh::LineEditor module provides interface for GNU Readline.
+ * It is based on Ruby's Readline module, but provides slightly different
+ * features.
  *
  * GNU Readline:: http://www.gnu.org/directory/readline.html
- * libedit::      http://www.thrysoee.dk/editline/
  *
- * Reads one inputted line with line edit by Readline.readline method.
- * At this time, the facilitatation completion and the key
- * bind like Emacs can be operated like GNU Readline.
+ * The Gitsh::LineEditor.readline method reads one line of user input,
+ * allowing the user to take advantage of GNU Readline's Emacs- or vi-like
+ * key bindings for line editing.
  *
- *   require "readline"
- *   while buf = Readline.readline("> ", true)
+ *   require "gitsh/line_editor"
+ *   while buf = Gitsh::LineEditor.readline("> ", true)
  *     p buf
  *   end
  *
- * The content that the user input can be recorded to the history.
- * The history can be accessed by Readline::HISTORY constant.
+ * The user's input can be recorded to the history.
+ * The history can be accessed via Gitsh::LineEditor::HISTORY constant.
  *
- *   require "readline"
- *   while buf = Readline.readline("> ", true)
- *     p Readline::HISTORY.to_a
+ *   require "gitsh/line_editor"
+ *   while buf = Gitsh::LineEditor.readline("> ", true)
+ *     p Gitsh::LineEditor::HISTORY.to_a
  *     print("-> ", buf, "\n")
  *   end
  *
- * Documented by Kouji Takao <kouji dot takao at gmail dot com>.
  */
 
 static VALUE readline_instream;
@@ -388,13 +400,18 @@ prepare_readline(void)
 
 /*
  * call-seq:
- *   Readline.readline(prompt = "", add_hist = false) -> string or nil
+ *   Gitsh::LineEditor.readline(prompt = "", add_hist = false) -> string or nil
  *
  * Shows the +prompt+ and reads the inputted line with line editing.
  * The inputted line is added to the history if +add_hist+ is true.
+ * History is accessible via the +Gitsh::LineEditor::HISTORY+ constant.
  *
  * Returns nil when the inputted line is empty and user inputs EOF
  * (Presses ^D on UNIX).
+ *
+ * Raises +Interrupt+ when the user presses ^C instead of entering a line.
+ * This exception will need to be caught, or interrupt signals trapped, if
+ * you don't want ^C to terminate the ruby interpreter.
  *
  * Raises IOError exception if one of below conditions are satisfied.
  * 1. stdin was closed.
@@ -405,70 +422,6 @@ prepare_readline(void)
  *
  * Supports line edit when inputs line. Provides VI and Emacs editing mode.
  * Default is Emacs editing mode.
- *
- * NOTE: Terminates ruby interpreter and does not return the terminal
- * status after user pressed '^C' when wait inputting line.
- * Give 3 examples that avoid it.
- *
- * * Catches the Interrupt exception by pressed ^C after returns
- *   terminal status:
- *
- *     require "readline"
- *
- *     stty_save = `stty -g`.chomp
- *     begin
- *       while buf = Readline.readline
- *           p buf
- *           end
- *         rescue Interrupt
- *           system("stty", stty_save)
- *           exit
- *         end
- *       end
- *     end
- *
- * * Catches the INT signal by pressed ^C after returns terminal
- *   status:
- *
- *     require "readline"
- *
- *     stty_save = `stty -g`.chomp
- *     trap("INT") { system "stty", stty_save; exit }
- *
- *     while buf = Readline.readline
- *       p buf
- *     end
- *
- * * Ignores pressing ^C:
- *
- *     require "readline"
- *
- *     trap("INT", "SIG_IGN")
- *
- *     while buf = Readline.readline
- *       p buf
- *     end
- *
- * Can make as follows with Readline::HISTORY constant.
- * It does not record to the history if the inputted line is empty or
- * the same it as last one.
- *
- *   require "readline"
- *
- *   while buf = Readline.readline("> ", true)
- *     # p Readline::HISTORY.to_a
- *     Readline::HISTORY.pop if /^\s*$/ =~ buf
- *
- *     begin
- *       if Readline::HISTORY[Readline::HISTORY.length-2] == buf
- *         Readline::HISTORY.pop
- *       end
- *     rescue IndexError
- *     end
- *
- *     # p Readline::HISTORY.to_a
- *     print "-> ", buf, "\n"
- *   end
  */
 static VALUE
 readline_readline(int argc, VALUE *argv, VALUE self)
@@ -530,10 +483,10 @@ readline_readline(int argc, VALUE *argv, VALUE self)
 
 /*
  * call-seq:
- *   Readline.input = input
+ *   Gitsh::LineEditor.input = input
  *
  * Specifies a File object +input+ that is input stream for
- * Readline.readline method.
+ * Gitsh::LineEditor.readline method.
  */
 static VALUE
 readline_s_set_input(VALUE self, VALUE input)
@@ -566,10 +519,10 @@ readline_s_set_input(VALUE self, VALUE input)
 
 /*
  * call-seq:
- *   Readline.output = output
+ *   Gitsh::LineEditor.output = output
  *
  * Specifies a File object +output+ that is output stream for
- * Readline.readline method.
+ * Gitsh::LineEditor.readline method.
  */
 static VALUE
 readline_s_set_output(VALUE self, VALUE output)
@@ -603,7 +556,7 @@ readline_s_set_output(VALUE self, VALUE output)
 #if defined(HAVE_RL_PRE_INPUT_HOOK)
 /*
  * call-seq:
- *   Readline.pre_input_hook = proc
+ *   Gitsh::LineEditor.pre_input_hook = proc
  *
  * Specifies a Proc object +proc+ to call after the first prompt has
  * been printed and just before readline starts reading input
@@ -620,12 +573,12 @@ readline_s_set_pre_input_hook(VALUE self, VALUE proc)
 {
     if (!NIL_P(proc) && !rb_respond_to(proc, rb_intern("call")))
         rb_raise(rb_eArgError, "argument must respond to `call'");
-    return rb_ivar_set(mReadline, id_pre_input_hook, proc);
+    return rb_ivar_set(mLineEditor, id_pre_input_hook, proc);
 }
 
 /*
  * call-seq:
- *   Readline.pre_input_hook -> proc
+ *   Gitsh::LineEditor.pre_input_hook -> proc
  *
  * Returns a Proc object +proc+ to call after the first prompt has
  * been printed and just before readline starts reading input
@@ -636,7 +589,7 @@ readline_s_set_pre_input_hook(VALUE self, VALUE proc)
 static VALUE
 readline_s_get_pre_input_hook(VALUE self)
 {
-    return rb_attr_get(mReadline, id_pre_input_hook);
+    return rb_attr_get(mLineEditor, id_pre_input_hook);
 }
 
 static int
@@ -644,7 +597,7 @@ readline_pre_input_hook(void)
 {
     VALUE proc;
 
-    proc = rb_attr_get(mReadline, id_pre_input_hook);
+    proc = rb_attr_get(mLineEditor, id_pre_input_hook);
     if (!NIL_P(proc))
         rb_funcall(proc, rb_intern("call"), 0);
     return 0;
@@ -657,7 +610,7 @@ readline_pre_input_hook(void)
 #if defined(HAVE_RL_INSERT_TEXT)
 /*
  * call-seq:
- *   Readline.insert_text(string) -> self
+ *   Gitsh::LineEditor.insert_text(string) -> self
  *
  * Insert text into the line at the current cursor position.
  *
@@ -677,55 +630,21 @@ readline_s_insert_text(VALUE self, VALUE str)
 #endif
 
 #if defined(HAVE_RL_DELETE_TEXT)
-/*
- * call-seq:
- *   Readline.delete_text([start[, length]]) -> self
- *   Readline.delete_text(start..end)        -> self
- *   Readline.delete_text()                  -> self
- *
- * Delete text between start and end in the current line.
- *
- * See GNU Readline's rl_delete_text function.
- *
- * Raises NotImplementedError if the using readline library does not support.
- */
 static VALUE
-readline_s_delete_text(int argc, VALUE *argv, VALUE self)
+readline_s_delete_bytes(VALUE self, VALUE r_beg, VALUE r_len)
 {
-    rb_check_arity(argc, 0, 2);
-    if (rl_line_buffer) {
-        char *p, *ptr = rl_line_buffer;
-        long beg = 0, len = strlen(rl_line_buffer);
-        struct RString fakestr;
-        VALUE str = rb_setup_fake_str(&fakestr, ptr, len, rb_locale_encoding());
-        OBJ_FREEZE(str);
-        if (argc == 2) {
-            beg = NUM2LONG(argv[0]);
-            len = NUM2LONG(argv[1]);
-          num_pos:
-            p = rb_str_subpos(str, beg, &len);
-            if (!p) rb_raise(rb_eArgError, "invalid index");
-            beg = p - ptr;
-        }
-        else if (argc == 1) {
-            len = rb_str_strlen(str);
-            if (!rb_range_beg_len(argv[0], &beg, &len, len, 1)) {
-                beg = NUM2LONG(argv[0]);
-                goto num_pos;
-            }
-        }
-        rl_delete_text(rb_long2int(beg), rb_long2int(beg + len));
-    }
+    int beg = NUM2INT(r_beg), len = NUM2INT(r_len);
+    rl_delete_text(beg, beg + len);
     return self;
 }
 #else
-#define readline_s_delete_text rb_f_notimplement
+#define readline_s_delete_bytes rb_f_notimplement
 #endif
 
 #if defined(HAVE_RL_REDISPLAY)
 /*
  * call-seq:
- *   Readline.redisplay -> self
+ *   Gitsh::LineEditor.redisplay -> self
  *
  * Change what's displayed on the screen to reflect the current
  * contents.
@@ -746,69 +665,22 @@ readline_s_redisplay(VALUE self)
 
 /*
  * call-seq:
- *   Readline.completion_proc = proc
+ *   Gitsh::LineEditor.completion_proc = proc
  *
  * Specifies a Proc object +proc+ to determine completion behavior.  It
  * should take input string and return an array of completion candidates.
  *
- * The default completion is used if +proc+ is nil.
+ * GNU Readline's default file path completion is used if +proc+ is nil.
  *
  * The String that is passed to the Proc depends on the
- * Readline.completer_word_break_characters property.  By default the word
- * under the cursor is passed to the Proc.  For example, if the input is "foo
- * bar" then only "bar" would be passed to the completion Proc.
+ * Gitsh::LineEditor.completer_word_break_characters property.
+ * By default the word under the cursor is passed to the Proc. For example,
+ * if the input is "foo bar" then only "bar" would be passed to the completion
+ * Proc.
  *
- * Upon successful completion the Readline.completion_append_character will be
- * appended to the input so the user can start working on their next argument.
- *
- * = Examples
- *
- * == Completion for a Static List
- *
- *   require 'readline'
- *
- *   LIST = [
- *     'search', 'download', 'open',
- *     'help', 'history', 'quit',
- *     'url', 'next', 'clear',
- *     'prev', 'past'
- *   ].sort
- *
- *   comp = proc { |s| LIST.grep(/^#{Regexp.escape(s)}/) }
- *
- *   Readline.completion_append_character = " "
- *   Readline.completion_proc = comp
- *
- *   while line = Readline.readline('> ', true)
- *     p line
- *   end
- *
- * == Completion For Directory Contents
- *
- *   require 'readline'
- *
- *   Readline.completion_append_character = " "
- *   Readline.completion_proc = Proc.new do |str|
- *     Dir[str+'*'].grep(/^#{Regexp.escape(str)}/)
- *   end
- *
- *   while line = Readline.readline('> ', true)
- *     p line
- *   end
- *
- * = Autocomplete strategies
- *
- * When working with auto-complete there are some strategies that work well.
- * To get some ideas you can take a look at the
- * completion.rb[http://svn.ruby-lang.org/repos/ruby/trunk/lib/irb/completion.rb]
- * file for irb.
- *
- * The common strategy is to take a list of possible completions and filter it
- * down to those completions that start with the user input.  In the above
- * examples Enumerator.grep is used.  The input is escaped to prevent Regexp
- * special characters from interfering with the matching.
- *
- * It may also be helpful to use the Abbrev library to generate completions.
+ * Upon successful completion the Gitsh::LineEditor.completion_append_character
+ * will be appended to the input so the user can start working on their next
+ * argument.
  *
  * Raises ArgumentError if +proc+ does not respond to the call method.
  */
@@ -817,66 +689,59 @@ readline_s_set_completion_proc(VALUE self, VALUE proc)
 {
     if (!NIL_P(proc) && !rb_respond_to(proc, rb_intern("call")))
         rb_raise(rb_eArgError, "argument must respond to `call'");
-    return rb_ivar_set(mReadline, completion_proc, proc);
+    return rb_ivar_set(mLineEditor, completion_proc, proc);
 }
 
 /*
  * call-seq:
- *   Readline.completion_proc -> proc
+ *   Gitsh::LineEditor.completion_proc -> proc
  *
  * Returns the completion Proc object.
  */
 static VALUE
 readline_s_get_completion_proc(VALUE self)
 {
-    return rb_attr_get(mReadline, completion_proc);
+    return rb_attr_get(mLineEditor, completion_proc);
 }
 
 /*
  * call-seq:
- *   Readline.completion_case_fold = bool
+ *   Gitsh::LineEditor.completion_case_fold = bool
  *
  * Sets whether or not to ignore case on completion.
  */
 static VALUE
 readline_s_set_completion_case_fold(VALUE self, VALUE val)
 {
-    return rb_ivar_set(mReadline, completion_case_fold, val);
+    return rb_ivar_set(mLineEditor, completion_case_fold, val);
 }
 
 /*
  * call-seq:
- *   Readline.completion_case_fold -> bool
+ *   Gitsh::LineEditor.completion_case_fold -> bool
  *
  * Returns true if completion ignores case. If no, returns false.
  *
  * NOTE: Returns the same object that is specified by
- * Readline.completion_case_fold= method.
- *
- *   require "readline"
- *
- *   Readline.completion_case_fold = "This is a String."
- *   p Readline.completion_case_fold # => "This is a String."
+ * Gitsh::LineEditor.completion_case_fold= method.
  */
 static VALUE
 readline_s_get_completion_case_fold(VALUE self)
 {
-    return rb_attr_get(mReadline, completion_case_fold);
+    return rb_attr_get(mLineEditor, completion_case_fold);
 }
 
 #ifdef HAVE_RL_LINE_BUFFER
 /*
  * call-seq:
- *   Readline.line_buffer -> string
+ *   Gitsh::LineEditor.line_buffer -> string
  *
  * Returns the full line that is being edited. This is useful from
  * within the complete_proc for determining the context of the
  * completion request.
  *
- * The length of +Readline.line_buffer+ and GNU Readline's rl_end are
+ * The length of +Gitsh::LineEditor.line_buffer+ and GNU Readline's rl_end are
  * same.
- *
- * Raises NotImplementedError if the using readline library does not support.
  */
 static VALUE
 readline_s_get_line_buffer(VALUE self)
@@ -892,16 +757,16 @@ readline_s_get_line_buffer(VALUE self)
 #ifdef HAVE_RL_POINT
 /*
  * call-seq:
- *   Readline.point -> int
+ *   Gitsh::LineEditor.point -> int
  *
  * Returns the index of the current cursor position in
- * +Readline.line_buffer+.
+ * +Gitsh::LineEditor.line_buffer+.
  *
- * The index in +Readline.line_buffer+ which matches the start of
+ * The index in +Gitsh::LineEditor.line_buffer+ which matches the start of
  * input-string passed to completion_proc is computed by subtracting
- * the length of input-string from +Readline.point+.
+ * the length of input-string from +Gitsh::LineEditor.point+.
  *
- *   start = (the length of input-string) - Readline.point
+ *   start = (the length of input-string) - Gitsh::LineEditor.point
  *
  * Raises NotImplementedError if the using readline library does not support.
  */
@@ -913,14 +778,14 @@ readline_s_get_point(VALUE self)
 
 /*
  * call-seq:
- *   Readline.point = int
+ *   Gitsh::LineEditor.point = int
  *
  * Set the index of the current cursor position in
- * +Readline.line_buffer+.
+ * +Gitsh::LineEditor.line_buffer+.
  *
  * Raises NotImplementedError if the using readline library does not support.
  *
- * See +Readline.point+.
+ * See +Gitsh::LineEditor.point+.
  */
 static VALUE
 readline_s_set_point(VALUE self, VALUE pos)
@@ -943,7 +808,7 @@ readline_attempted_completion_function(const char *text, int start, int end)
     rb_encoding *enc;
     VALUE encobj;
 
-    proc = rb_attr_get(mReadline, completion_proc);
+    proc = rb_attr_get(mLineEditor, completion_proc);
     if (NIL_P(proc))
         return NULL;
 #ifdef HAVE_RL_COMPLETION_APPEND_CHARACTER
@@ -952,7 +817,7 @@ readline_attempted_completion_function(const char *text, int start, int end)
 #ifdef HAVE_RL_ATTEMPTED_COMPLETION_OVER
     rl_attempted_completion_over = 1;
 #endif
-    case_fold = RTEST(rb_attr_get(mReadline, completion_case_fold));
+    case_fold = RTEST(rb_attr_get(mLineEditor, completion_case_fold));
     ary = rb_funcall(proc, rb_intern("call"), 1, rb_locale_str_new_cstr(text));
     if (!RB_TYPE_P(ary, T_ARRAY))
         ary = rb_Array(ary);
@@ -1010,13 +875,11 @@ readline_attempted_completion_function(const char *text, int start, int end)
 #ifdef HAVE_RL_SET_SCREEN_SIZE
 /*
  * call-seq:
- *   Readline.set_screen_size(rows, columns) -> self
+ *   Gitsh::LineEditor.set_screen_size(rows, columns) -> self
  *
  * Set terminal size to +rows+ and +columns+.
  *
  * See GNU Readline's rl_set_screen_size function.
- *
- * Raises NotImplementedError if the using readline library does not support.
  */
 static VALUE
 readline_s_set_screen_size(VALUE self, VALUE rows, VALUE columns)
@@ -1031,7 +894,7 @@ readline_s_set_screen_size(VALUE self, VALUE rows, VALUE columns)
 #ifdef HAVE_RL_GET_SCREEN_SIZE
 /*
  * call-seq:
- *   Readline.get_screen_size -> [rows, columns]
+ *   Gitsh::LineEditor.get_screen_size -> [rows, columns]
  *
  * Returns the terminal's rows and columns.
  *
@@ -1058,7 +921,7 @@ readline_s_get_screen_size(VALUE self)
 #ifdef HAVE_RL_VI_EDITING_MODE
 /*
  * call-seq:
- *   Readline.vi_editing_mode -> nil
+ *   Gitsh::LineEditor.vi_editing_mode -> nil
  *
  * Specifies VI editing mode. See the manual of GNU Readline for
  * details of VI editing mode.
@@ -1078,11 +941,9 @@ readline_s_vi_editing_mode(VALUE self)
 #ifdef HAVE_RL_EDITING_MODE
 /*
  * call-seq:
- *   Readline.vi_editing_mode? -> bool
+ *   Gitsh::LineEditor.vi_editing_mode? -> bool
  *
  * Returns true if vi mode is active. Returns false if not.
- *
- * Raises NotImplementedError if the using readline library does not support.
  */
 static VALUE
 readline_s_vi_editing_mode_p(VALUE self)
@@ -1096,7 +957,7 @@ readline_s_vi_editing_mode_p(VALUE self)
 #ifdef HAVE_RL_EMACS_EDITING_MODE
 /*
  * call-seq:
- *   Readline.emacs_editing_mode -> nil
+ *   Gitsh::LineEditor.emacs_editing_mode -> nil
  *
  * Specifies Emacs editing mode. The default is this mode. See the
  * manual of GNU Readline for details of Emacs editing mode.
@@ -1116,11 +977,9 @@ readline_s_emacs_editing_mode(VALUE self)
 #ifdef  HAVE_RL_EDITING_MODE
 /*
  * call-seq:
- *   Readline.emacs_editing_mode? -> bool
+ *   Gitsh::LineEditor.emacs_editing_mode? -> bool
  *
  * Returns true if emacs mode is active. Returns false if not.
- *
- * Raises NotImplementedError if the using readline library does not support.
  */
 static VALUE
 readline_s_emacs_editing_mode_p(VALUE self)
@@ -1134,39 +993,14 @@ readline_s_emacs_editing_mode_p(VALUE self)
 #ifdef HAVE_RL_COMPLETION_APPEND_CHARACTER
 /*
  * call-seq:
- *   Readline.completion_append_character = char
+ *   Gitsh::LineEditor.completion_append_character = char
  *
  * Specifies a character to be appended on completion.
  * Nothing will be appended if an empty string ("") or nil is
  * specified.
  *
- * For example:
- *   require "readline"
- *
- *   Readline.readline("> ", true)
- *   Readline.completion_append_character = " "
- *
- * Result:
- *   >
- *   Input "/var/li".
- *
- *   > /var/li
- *   Press TAB key.
- *
- *   > /var/lib
- *   Completes "b" and appends " ". So, you can continuously input "/usr".
- *
- *   > /var/lib /usr
- *
  * NOTE: Only one character can be specified. When "string" is
  * specified, sets only "s" that is the first.
- *
- *   require "readline"
- *
- *   Readline.completion_append_character = "string"
- *   p Readline.completion_append_character # => "s"
- *
- * Raises NotImplementedError if the using readline library does not support.
  */
 static VALUE
 readline_s_set_completion_append_character(VALUE self, VALUE str)
@@ -1191,12 +1025,10 @@ readline_s_set_completion_append_character(VALUE self, VALUE str)
 #ifdef HAVE_RL_COMPLETION_APPEND_CHARACTER
 /*
  * call-seq:
- *   Readline.completion_append_character -> char
+ *   Gitsh::LineEditor.completion_append_character -> char
  *
  * Returns a string containing a character to be appended on
  * completion. The default is a space (" ").
- *
- * Raises NotImplementedError if the using readline library does not support.
  */
 static VALUE
 readline_s_get_completion_append_character(VALUE self)
@@ -1271,7 +1103,7 @@ readline_s_get_basic_word_break_characters(VALUE self, VALUE str)
 #ifdef HAVE_RL_COMPLETER_WORD_BREAK_CHARACTERS
 /*
  * call-seq:
- *   Readline.completer_word_break_characters = string
+ *   Gitsh::LineEditor.completer_word_break_characters = string
  *
  * Sets the basic list of characters that signal a break between words
  * for rl_complete_internal(). The default is the value of
@@ -1305,7 +1137,7 @@ readline_s_set_completer_word_break_characters(VALUE self, VALUE str)
 #ifdef HAVE_RL_COMPLETER_WORD_BREAK_CHARACTERS
 /*
  * call-seq:
- *   Readline.completer_word_break_characters -> string
+ *   Gitsh::LineEditor.completer_word_break_characters -> string
  *
  * Gets the basic list of characters that signal a break between words
  * for rl_complete_internal().
@@ -1326,7 +1158,7 @@ readline_s_get_completer_word_break_characters(VALUE self, VALUE str)
 #if defined(HAVE_RL_SPECIAL_PREFIXES)
 /*
  * call-seq:
- *   Readline.special_prefixes = string
+ *   Gitsh::LineEditor.special_prefixes = string
  *
  * Sets the list of characters that are word break characters, but
  * should be left in text when it is passed to the completion
@@ -1346,7 +1178,7 @@ readline_s_set_special_prefixes(VALUE self, VALUE str)
         str = rb_str_dup_frozen(str);
         rb_obj_hide(str);
     }
-    rb_ivar_set(mReadline, id_special_prefixes, str);
+    rb_ivar_set(mLineEditor, id_special_prefixes, str);
     if (NIL_P(str)) {
         rl_special_prefixes = NULL;
     }
@@ -1358,7 +1190,7 @@ readline_s_set_special_prefixes(VALUE self, VALUE str)
 
 /*
  * call-seq:
- *   Readline.special_prefixes -> string
+ *   Gitsh::LineEditor.special_prefixes -> string
  *
  * Gets the list of characters that are word break characters, but
  * should be left in text when it is passed to the completion
@@ -1373,7 +1205,7 @@ readline_s_get_special_prefixes(VALUE self)
 {
     VALUE str;
     if (rl_special_prefixes == NULL) return Qnil;
-    str = rb_ivar_get(mReadline, id_special_prefixes);
+    str = rb_ivar_get(mLineEditor, id_special_prefixes);
     if (!NIL_P(str)) {
         str = rb_str_dup_frozen(str);
         rb_obj_reveal(str, rb_cString);
@@ -1441,11 +1273,11 @@ readline_s_get_basic_quote_characters(VALUE self, VALUE str)
 #ifdef HAVE_RL_COMPLETER_QUOTE_CHARACTERS
 /*
  * call-seq:
- *   Readline.completer_quote_characters = string
+ *   Gitsh::LineEditor.completer_quote_characters = string
  *
  * Sets a list of characters which can be used to quote a substring of
  * the line. Completion occurs on the entire substring, and within
- * the substring Readline.completer_word_break_characters are treated
+ * the substring Gitsh::LineEditor.completer_word_break_characters are treated
  * as any other character, unless they also appear within this list.
  *
  * Raises NotImplementedError if the using readline library does not support.
@@ -1476,7 +1308,7 @@ readline_s_set_completer_quote_characters(VALUE self, VALUE str)
 #ifdef HAVE_RL_COMPLETER_QUOTE_CHARACTERS
 /*
  * call-seq:
- *   Readline.completer_quote_characters -> string
+ *   Gitsh::LineEditor.completer_quote_characters -> string
  *
  * Gets a list of characters which can be used to quote a substring of
  * the line.
@@ -1551,7 +1383,7 @@ readline_s_get_filename_quote_characters(VALUE self, VALUE str)
 #ifdef HAVE_RL_REFRESH_LINE
 /*
  * call-seq:
- *   Readline.refresh_line -> nil
+ *   Gitsh::LineEditor.refresh_line -> nil
  *
  * Clear the current input line.
  */
@@ -1795,7 +1627,7 @@ username_completion_proc_call(VALUE self, VALUE str)
 }
 
 void
-Init_readline(void)
+Init_line_editor_native(void)
 {
     VALUE history, fcomp, ucomp, version;
 
@@ -1822,78 +1654,79 @@ Init_readline(void)
     id_special_prefixes = rb_intern("special_prefixes");
 #endif
 
-    mReadline = rb_define_module("Readline");
-    rb_define_module_function(mReadline, "readline",
+    mGitsh = rb_define_module("Gitsh");
+    mLineEditor = rb_define_module_under(mGitsh, "LineEditor");
+    rb_define_module_function(mLineEditor, "readline",
                               readline_readline, -1);
-    rb_define_singleton_method(mReadline, "input=",
+    rb_define_singleton_method(mLineEditor, "input=",
                                readline_s_set_input, 1);
-    rb_define_singleton_method(mReadline, "output=",
+    rb_define_singleton_method(mLineEditor, "output=",
                                readline_s_set_output, 1);
-    rb_define_singleton_method(mReadline, "completion_proc=",
+    rb_define_singleton_method(mLineEditor, "completion_proc=",
                                readline_s_set_completion_proc, 1);
-    rb_define_singleton_method(mReadline, "completion_proc",
+    rb_define_singleton_method(mLineEditor, "completion_proc",
                                readline_s_get_completion_proc, 0);
-    rb_define_singleton_method(mReadline, "completion_case_fold=",
+    rb_define_singleton_method(mLineEditor, "completion_case_fold=",
                                readline_s_set_completion_case_fold, 1);
-    rb_define_singleton_method(mReadline, "completion_case_fold",
+    rb_define_singleton_method(mLineEditor, "completion_case_fold",
                                readline_s_get_completion_case_fold, 0);
-    rb_define_singleton_method(mReadline, "line_buffer",
+    rb_define_singleton_method(mLineEditor, "line_buffer",
                                readline_s_get_line_buffer, 0);
-    rb_define_singleton_method(mReadline, "point",
+    rb_define_singleton_method(mLineEditor, "point",
                                readline_s_get_point, 0);
-    rb_define_singleton_method(mReadline, "point=",
+    rb_define_singleton_method(mLineEditor, "point=",
                                readline_s_set_point, 1);
-    rb_define_singleton_method(mReadline, "set_screen_size",
+    rb_define_singleton_method(mLineEditor, "set_screen_size",
                                readline_s_set_screen_size, 2);
-    rb_define_singleton_method(mReadline, "get_screen_size",
+    rb_define_singleton_method(mLineEditor, "get_screen_size",
                                readline_s_get_screen_size, 0);
-    rb_define_singleton_method(mReadline, "vi_editing_mode",
+    rb_define_singleton_method(mLineEditor, "vi_editing_mode",
                                readline_s_vi_editing_mode, 0);
-    rb_define_singleton_method(mReadline, "vi_editing_mode?",
+    rb_define_singleton_method(mLineEditor, "vi_editing_mode?",
                                readline_s_vi_editing_mode_p, 0);
-    rb_define_singleton_method(mReadline, "emacs_editing_mode",
+    rb_define_singleton_method(mLineEditor, "emacs_editing_mode",
                                readline_s_emacs_editing_mode, 0);
-    rb_define_singleton_method(mReadline, "emacs_editing_mode?",
+    rb_define_singleton_method(mLineEditor, "emacs_editing_mode?",
                                readline_s_emacs_editing_mode_p, 0);
-    rb_define_singleton_method(mReadline, "completion_append_character=",
+    rb_define_singleton_method(mLineEditor, "completion_append_character=",
                                readline_s_set_completion_append_character, 1);
-    rb_define_singleton_method(mReadline, "completion_append_character",
+    rb_define_singleton_method(mLineEditor, "completion_append_character",
                                readline_s_get_completion_append_character, 0);
-    rb_define_singleton_method(mReadline, "basic_word_break_characters=",
+    rb_define_singleton_method(mLineEditor, "basic_word_break_characters=",
                                readline_s_set_basic_word_break_characters, 1);
-    rb_define_singleton_method(mReadline, "basic_word_break_characters",
+    rb_define_singleton_method(mLineEditor, "basic_word_break_characters",
                                readline_s_get_basic_word_break_characters, 0);
-    rb_define_singleton_method(mReadline, "completer_word_break_characters=",
+    rb_define_singleton_method(mLineEditor, "completer_word_break_characters=",
                                readline_s_set_completer_word_break_characters, 1);
-    rb_define_singleton_method(mReadline, "completer_word_break_characters",
+    rb_define_singleton_method(mLineEditor, "completer_word_break_characters",
                                readline_s_get_completer_word_break_characters, 0);
-    rb_define_singleton_method(mReadline, "basic_quote_characters=",
+    rb_define_singleton_method(mLineEditor, "basic_quote_characters=",
                                readline_s_set_basic_quote_characters, 1);
-    rb_define_singleton_method(mReadline, "basic_quote_characters",
+    rb_define_singleton_method(mLineEditor, "basic_quote_characters",
                                readline_s_get_basic_quote_characters, 0);
-    rb_define_singleton_method(mReadline, "completer_quote_characters=",
+    rb_define_singleton_method(mLineEditor, "completer_quote_characters=",
                                readline_s_set_completer_quote_characters, 1);
-    rb_define_singleton_method(mReadline, "completer_quote_characters",
+    rb_define_singleton_method(mLineEditor, "completer_quote_characters",
                                readline_s_get_completer_quote_characters, 0);
-    rb_define_singleton_method(mReadline, "filename_quote_characters=",
+    rb_define_singleton_method(mLineEditor, "filename_quote_characters=",
                                readline_s_set_filename_quote_characters, 1);
-    rb_define_singleton_method(mReadline, "filename_quote_characters",
+    rb_define_singleton_method(mLineEditor, "filename_quote_characters",
                                readline_s_get_filename_quote_characters, 0);
-    rb_define_singleton_method(mReadline, "refresh_line",
+    rb_define_singleton_method(mLineEditor, "refresh_line",
                                readline_s_refresh_line, 0);
-    rb_define_singleton_method(mReadline, "pre_input_hook=",
+    rb_define_singleton_method(mLineEditor, "pre_input_hook=",
                                readline_s_set_pre_input_hook, 1);
-    rb_define_singleton_method(mReadline, "pre_input_hook",
+    rb_define_singleton_method(mLineEditor, "pre_input_hook",
                                readline_s_get_pre_input_hook, 0);
-    rb_define_singleton_method(mReadline, "insert_text",
+    rb_define_singleton_method(mLineEditor, "insert_text",
                                readline_s_insert_text, 1);
-    rb_define_singleton_method(mReadline, "delete_text",
-                               readline_s_delete_text, -1);
-    rb_define_singleton_method(mReadline, "redisplay",
+    rb_define_singleton_method(mLineEditor, "delete_bytes",
+                               readline_s_delete_bytes, 2);
+    rb_define_singleton_method(mLineEditor, "redisplay",
                                readline_s_redisplay, 0);
-    rb_define_singleton_method(mReadline, "special_prefixes=",
+    rb_define_singleton_method(mLineEditor, "special_prefixes=",
                                readline_s_set_special_prefixes, 1);
-    rb_define_singleton_method(mReadline, "special_prefixes",
+    rb_define_singleton_method(mLineEditor, "special_prefixes",
                                readline_s_get_special_prefixes, 0);
 
 #if USE_INSERT_IGNORE_ESCAPE
@@ -1923,25 +1756,25 @@ Init_readline(void)
      * For example, gets the fifth content that the user input by
      * HISTORY[4].
      */
-    rb_define_const(mReadline, "HISTORY", history);
+    rb_define_const(mLineEditor, "HISTORY", history);
 
     fcomp = rb_obj_alloc(rb_cObject);
     rb_define_singleton_method(fcomp, "call",
                                filename_completion_proc_call, 1);
     /*
      * The Object with the call method that is a completion for filename.
-     * This is sets by Readline.completion_proc= method.
+     * This is sets by Gitsh::LineEditor.completion_proc= method.
      */
-    rb_define_const(mReadline, "FILENAME_COMPLETION_PROC", fcomp);
+    rb_define_const(mLineEditor, "FILENAME_COMPLETION_PROC", fcomp);
 
     ucomp = rb_obj_alloc(rb_cObject);
     rb_define_singleton_method(ucomp, "call",
                                username_completion_proc_call, 1);
     /*
      * The Object with the call method that is a completion for usernames.
-     * This is sets by Readline.completion_proc= method.
+     * This is sets by Gitsh::LineEditor.completion_proc= method.
      */
-    rb_define_const(mReadline, "USERNAME_COMPLETION_PROC", ucomp);
+    rb_define_const(mLineEditor, "USERNAME_COMPLETION_PROC", ucomp);
     history_get_offset_func = history_get_offset_history_base;
     history_replace_offset_func = history_get_offset_0;
 #if defined HAVE_RL_LIBRARY_VERSION
@@ -1975,7 +1808,7 @@ Init_readline(void)
     version = rb_str_new_cstr("2.0 or prior version");
 #endif
     /* Version string of GNU Readline or libedit. */
-    rb_define_const(mReadline, "VERSION", version);
+    rb_define_const(mLineEditor, "VERSION", version);
 
     rl_attempted_completion_function = readline_attempted_completion_function;
 #if defined(HAVE_RL_PRE_INPUT_HOOK)

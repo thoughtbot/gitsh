@@ -480,6 +480,14 @@ describe Gitsh::LineEditor do
       expect(described_class.line_buffer).to eq ''
       expect(described_class.point).to eq 2 * str.length
     end
+
+    context 'when passed too many arguments' do
+      it 'raises an argument error' do
+        expect {
+          described_class.delete_text(1, 2, 3)
+        }.to raise_exception(ArgumentError, /wrong number of arguments/)
+      end
+    end
   end
 
   describe '.point' do

@@ -106,4 +106,7 @@ unless readline.have_type("rl_hook_func_t*")
   $defs << "-Drl_hook_func_t=Function"
 end
 
-create_makefile('readline', 'src')
+have_func("rb_obj_reveal", ["ruby.h"])
+have_func("rb_obj_hide", ["ruby.h"])
+
+create_makefile('gitsh/line_editor_native', 'src')
