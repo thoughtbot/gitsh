@@ -15,7 +15,7 @@ instructions in this guide.
 Prerequisites
 -------------
 
-* Ruby version 1.9.3 or later
+* Ruby version 2.0.0 or later
 * gcc or a similar C compiler
 
 
@@ -23,7 +23,7 @@ gitsh and Ruby version managers
 -------------------------------
 
 The gitsh configuration script will attempt to find a system wide version of
-Ruby 1.9.3 or later. Rubies installed by Ruby version managers will usually be
+Ruby 2.0.0 or later. Rubies installed by Ruby version managers will usually be
 ignored to avoid problems when those binaries are moved or deleted.
 
 To force gitsh to use a specific Ruby binary, set the $RUBY environment variable
