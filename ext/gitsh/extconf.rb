@@ -53,6 +53,7 @@ end
 
 readline.require_func("rl_set_screen_size")
 readline.require_var("rl_completion_append_character")
+readline.require_var("rl_editing_mode")
 readline.require_var("rl_line_buffer")
 
 readline.have_func("rl_getc")
@@ -69,7 +70,6 @@ readline.have_var("rl_completer_quote_characters")
 readline.have_var("rl_filename_quote_characters")
 readline.have_var("rl_attempted_completion_over")
 readline.have_var("rl_library_version")
-readline.have_var("rl_editing_mode")
 readline.have_var("rl_point")
 # workaround for native windows.
 /mswin|bccwin|mingw/ !~ RUBY_PLATFORM && readline.have_var("rl_event_hook")

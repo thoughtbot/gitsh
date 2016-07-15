@@ -917,7 +917,6 @@ readline_s_vi_editing_mode(VALUE self)
 #define readline_s_vi_editing_mode rb_f_notimplement
 #endif
 
-#ifdef HAVE_RL_EDITING_MODE
 /*
  * call-seq:
  *   Gitsh::LineEditor.vi_editing_mode? -> bool
@@ -929,9 +928,6 @@ readline_s_vi_editing_mode_p(VALUE self)
 {
     return rl_editing_mode == 0 ? Qtrue : Qfalse;
 }
-#else
-#define readline_s_vi_editing_mode_p rb_f_notimplement
-#endif
 
 #ifdef HAVE_RL_EMACS_EDITING_MODE
 /*
@@ -953,7 +949,6 @@ readline_s_emacs_editing_mode(VALUE self)
 #define readline_s_emacs_editing_mode rb_f_notimplement
 #endif
 
-#ifdef  HAVE_RL_EDITING_MODE
 /*
  * call-seq:
  *   Gitsh::LineEditor.emacs_editing_mode? -> bool
@@ -965,9 +960,6 @@ readline_s_emacs_editing_mode_p(VALUE self)
 {
     return rl_editing_mode == 1 ? Qtrue : Qfalse;
 }
-#else
-#define readline_s_emacs_editing_mode_p rb_f_notimplement
-#endif
 
 /*
  * call-seq:
