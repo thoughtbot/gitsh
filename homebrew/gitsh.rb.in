@@ -16,6 +16,7 @@ class Gitsh < Formula
   if old_system_ruby?
     depends_on 'Ruby'
   end
+  depends_on 'readline'
 
   def install
     set_ruby_path
