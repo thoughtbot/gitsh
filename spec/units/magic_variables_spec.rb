@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'pathname'
 require 'gitsh/magic_variables'
 
 describe Gitsh::MagicVariables do
