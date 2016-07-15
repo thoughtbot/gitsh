@@ -89,6 +89,8 @@ describe Gitsh::Terminal do
   end
 
   class CommandStubber
+    include RSpec::Mocks::ExampleMethods
+
     def initialize(command, success, output)
       @command = command
       @success = success
