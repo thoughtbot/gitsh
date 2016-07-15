@@ -24,15 +24,8 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
-#ifdef HAVE_READLINE_READLINE_H
 #include <readline/readline.h>
-#endif
-#ifdef HAVE_READLINE_HISTORY_H
 #include <readline/history.h>
-#endif
-#ifdef HAVE_EDITLINE_READLINE_H
-#include <editline/readline.h>
-#endif
 
 #include "ruby.h"
 #include "ruby/io.h"
@@ -87,9 +80,7 @@ static ID id_special_prefixes;
 
 static int (*history_get_offset_func)(int);
 static int (*history_replace_offset_func)(int);
-#ifdef HAVE_RL_COMPLETION_APPEND_CHARACTER
 static int readline_completion_append_character;
-#endif
 
 static char **readline_attempted_completion_function(const char *text,
                                                      int start, int end);
@@ -340,9 +331,7 @@ insert_ignore_escape(VALUE self, VALUE prompt)
 static VALUE
 readline_get(VALUE prompt)
 {
-#ifdef HAVE_RL_COMPLETION_APPEND_CHARACTER
     readline_completion_append_character = rl_completion_append_character;
-#endif
     return (VALUE)readline((char *)prompt);
 }
 
@@ -731,7 +720,6 @@ readline_s_get_completion_case_fold(VALUE self)
     return rb_attr_get(mLineEditor, completion_case_fold);
 }
 
-#ifdef HAVE_RL_LINE_BUFFER
 /*
  * call-seq:
  *   Gitsh::LineEditor.line_buffer -> string
@@ -750,9 +738,6 @@ readline_s_get_line_buffer(VALUE self)
         return Qnil;
     return rb_locale_str_new_cstr(rl_line_buffer);
 }
-#else
-#define readline_s_get_line_buffer rb_f_notimplement
-#endif
 
 #ifdef HAVE_RL_POINT
 /*
@@ -811,9 +796,7 @@ readline_attempted_completion_function(const char *text, int start, int end)
     proc = rb_attr_get(mLineEditor, completion_proc);
     if (NIL_P(proc))
         return NULL;
-#ifdef HAVE_RL_COMPLETION_APPEND_CHARACTER
     rl_completion_append_character = readline_completion_append_character;
-#endif
 #ifdef HAVE_RL_ATTEMPTED_COMPLETION_OVER
     rl_attempted_completion_over = 1;
 #endif
@@ -872,7 +855,6 @@ readline_attempted_completion_function(const char *text, int start, int end)
     return result;
 }
 
-#ifdef HAVE_RL_SET_SCREEN_SIZE
 /*
  * call-seq:
  *   Gitsh::LineEditor.set_screen_size(rows, columns) -> self
@@ -887,9 +869,6 @@ readline_s_set_screen_size(VALUE self, VALUE rows, VALUE columns)
     rl_set_screen_size(NUM2INT(rows), NUM2INT(columns));
     return self;
 }
-#else
-#define readline_s_set_screen_size rb_f_notimplement
-#endif
 
 #ifdef HAVE_RL_GET_SCREEN_SIZE
 /*
@@ -990,7 +969,6 @@ readline_s_emacs_editing_mode_p(VALUE self)
 #define readline_s_emacs_editing_mode_p rb_f_notimplement
 #endif
 
-#ifdef HAVE_RL_COMPLETION_APPEND_CHARACTER
 /*
  * call-seq:
  *   Gitsh::LineEditor.completion_append_character = char
@@ -1018,11 +996,7 @@ readline_s_set_completion_append_character(VALUE self, VALUE str)
     }
     return self;
 }
-#else
-#define readline_s_set_completion_append_character rb_f_notimplement
-#endif
 
-#ifdef HAVE_RL_COMPLETION_APPEND_CHARACTER
 /*
  * call-seq:
  *   Gitsh::LineEditor.completion_append_character -> char
@@ -1041,9 +1015,6 @@ readline_s_get_completion_append_character(VALUE self)
     buf[0] = (char) rl_completion_append_character;
     return rb_locale_str_new(buf, 1);
 }
-#else
-#define readline_s_get_completion_append_character rb_f_notimplement
-#endif
 
 #ifdef HAVE_RL_BASIC_WORD_BREAK_CHARACTERS
 /*
