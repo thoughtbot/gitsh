@@ -17,6 +17,7 @@ Prerequisites
 
 * Ruby version 2.0.0 or later
 * gcc or a similar C compiler
+* GNU Readline
 
 
 gitsh and Ruby version managers
@@ -33,30 +34,24 @@ binary on the $PATH:
         RUBY=$(which ruby) ./configure
 
 
-libedit vs. GNU Readline
-------------------------
+GNU Readline
+------------
 
-Ruby can use two different line editors: GNU Readline, which has more features
-but a more restrictive license; and libedit, which has fewer features and more
-bugs but a more permissive license. Since gitsh involves a lot of line editing,
-it may be preferable to use GNU Readline where possible.
+gitsh provides a Ruby C extension that integrates with GNU Readline. Ruby ships
+with its own Readline module, but it doesn't offer all of the features required
+for comprehensive tab-completion.
 
-You can determine which line editor your version of Ruby is compiled against
-using the following command:
+Other line editor libraries, like libedit, are partly compatible with GNU
+Readline, but don't offer enough features to be supported by gitsh.
 
-        path/to/ruby -r readline -e Readline.vi_editing_mode?
+The configure script may fail if GNU Readline isn't found. You can set the
+$CPPFLAGS and $LDFLAGS environment variables to provides paths for the compiler
+and linker to use. For example, with GNU Readline install under /usr/local/opt,
+you might use:
 
-If the command exits silently, then your Ruby is built with GNU Readline. If it
-outputs a "NotImplementedError" message, then it is built with libedit. Note
-that gitsh will try to use a system-wide Ruby version, so you should make sure
-you're not running this line editor version check against a Ruby installed by a
-Ruby version manager.
-
-Once gitsh is installed, it will indicate which line editor is in used when
-executed with the --version option:
-
-        $ gitsh --version
-        @PACKAGE_VERSION@ (using GNU Readline)
+        CPPFLAGS="-I/usr/local/opt/readline/include" \
+          LDFLAGS="-L/usr/local/opt/readline/lib" \
+          ./configure
 
 
 Installation
@@ -70,7 +65,7 @@ Installation
 
 2. Configure the distribution. This step will determine which version of Ruby
    should be used, which has important implications; see the notes on "gitsh and
-   Ruby version managers" and "libedit vs. GNU Readline" above.
+   Ruby version managers" above.
 
         ./configure
 
