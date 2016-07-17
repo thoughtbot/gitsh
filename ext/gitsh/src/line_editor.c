@@ -1008,69 +1008,13 @@ readline_s_get_completion_append_character(VALUE self)
     return rb_locale_str_new(buf, 1);
 }
 
-#ifdef HAVE_RL_BASIC_WORD_BREAK_CHARACTERS
-/*
- * call-seq:
- *   Readline.basic_word_break_characters = string
- *
- * Sets the basic list of characters that signal a break between words
- * for the completer routine. The default is the characters which
- * break words for completion in Bash: " \t\n\"\\'`@$><=;|&{(".
- *
- * Raises NotImplementedError if the using readline library does not support.
- */
-static VALUE
-readline_s_set_basic_word_break_characters(VALUE self, VALUE str)
-{
-    static char *basic_word_break_characters = NULL;
-
-    OutputStringValue(str);
-    if (basic_word_break_characters == NULL) {
-        basic_word_break_characters =
-            ALLOC_N(char, RSTRING_LEN(str) + 1);
-    }
-    else {
-        REALLOC_N(basic_word_break_characters, char, RSTRING_LEN(str) + 1);
-    }
-    strncpy(basic_word_break_characters,
-            RSTRING_PTR(str), RSTRING_LEN(str));
-    basic_word_break_characters[RSTRING_LEN(str)] = '\0';
-    rl_basic_word_break_characters = basic_word_break_characters;
-    return self;
-}
-#else
-#define readline_s_set_basic_word_break_characters rb_f_notimplement
-#endif
-
-#ifdef HAVE_RL_BASIC_WORD_BREAK_CHARACTERS
-/*
- * call-seq:
- *   Readline.basic_word_break_characters -> string
- *
- * Gets the basic list of characters that signal a break between words
- * for the completer routine.
- *
- * Raises NotImplementedError if the using readline library does not support.
- */
-static VALUE
-readline_s_get_basic_word_break_characters(VALUE self, VALUE str)
-{
-    if (rl_basic_word_break_characters == NULL)
-        return Qnil;
-    return rb_locale_str_new_cstr(rl_basic_word_break_characters);
-}
-#else
-#define readline_s_get_basic_word_break_characters rb_f_notimplement
-#endif
-
 #ifdef HAVE_RL_COMPLETER_WORD_BREAK_CHARACTERS
 /*
  * call-seq:
  *   Gitsh::LineEditor.completer_word_break_characters = string
  *
  * Sets the basic list of characters that signal a break between words
- * for rl_complete_internal(). The default is the value of
- * Readline.basic_word_break_characters.
+ * for rl_complete_internal().
  *
  * Raises NotImplementedError if the using readline library does not support.
  */
@@ -1180,59 +1124,6 @@ readline_s_get_special_prefixes(VALUE self)
 #define readline_s_get_special_prefixes rb_f_notimplement
 #endif
 
-#ifdef HAVE_RL_BASIC_QUOTE_CHARACTERS
-/*
- * call-seq:
- *   Readline.basic_quote_characters = string
- *
- * Sets a list of quote characters which can cause a word break.
- *
- * Raises NotImplementedError if the using readline library does not support.
- */
-static VALUE
-readline_s_set_basic_quote_characters(VALUE self, VALUE str)
-{
-    static char *basic_quote_characters = NULL;
-
-    OutputStringValue(str);
-    if (basic_quote_characters == NULL) {
-        basic_quote_characters =
-            ALLOC_N(char, RSTRING_LEN(str) + 1);
-    }
-    else {
-        REALLOC_N(basic_quote_characters, char, RSTRING_LEN(str) + 1);
-    }
-    strncpy(basic_quote_characters,
-            RSTRING_PTR(str), RSTRING_LEN(str));
-    basic_quote_characters[RSTRING_LEN(str)] = '\0';
-    rl_basic_quote_characters = basic_quote_characters;
-
-    return self;
-}
-#else
-#define readline_s_set_basic_quote_characters rb_f_notimplement
-#endif
-
-#ifdef HAVE_RL_BASIC_QUOTE_CHARACTERS
-/*
- * call-seq:
- *   Readline.basic_quote_characters -> string
- *
- * Gets a list of quote characters which can cause a word break.
- *
- * Raises NotImplementedError if the using readline library does not support.
- */
-static VALUE
-readline_s_get_basic_quote_characters(VALUE self, VALUE str)
-{
-    if (rl_basic_quote_characters == NULL)
-        return Qnil;
-    return rb_locale_str_new_cstr(rl_basic_quote_characters);
-}
-#else
-#define readline_s_get_basic_quote_characters rb_f_notimplement
-#endif
-
 #ifdef HAVE_RL_COMPLETER_QUOTE_CHARACTERS
 /*
  * call-seq:
@@ -1287,60 +1178,6 @@ readline_s_get_completer_quote_characters(VALUE self, VALUE str)
 }
 #else
 #define readline_s_get_completer_quote_characters rb_f_notimplement
-#endif
-
-#ifdef HAVE_RL_FILENAME_QUOTE_CHARACTERS
-/*
- * call-seq:
- *   Readline.filename_quote_characters = string
- *
- * Sets a list of characters that cause a filename to be quoted by the completer
- * when they appear in a completed filename. The default is nil.
- *
- * Raises NotImplementedError if the using readline library does not support.
- */
-static VALUE
-readline_s_set_filename_quote_characters(VALUE self, VALUE str)
-{
-    static char *filename_quote_characters = NULL;
-
-    OutputStringValue(str);
-    if (filename_quote_characters == NULL) {
-        filename_quote_characters =
-            ALLOC_N(char, RSTRING_LEN(str) + 1);
-    }
-    else {
-        REALLOC_N(filename_quote_characters, char, RSTRING_LEN(str) + 1);
-    }
-    strncpy(filename_quote_characters, RSTRING_PTR(str), RSTRING_LEN(str));
-    filename_quote_characters[RSTRING_LEN(str)] = '\0';
-    rl_filename_quote_characters = filename_quote_characters;
-
-    return self;
-}
-#else
-#define readline_s_set_filename_quote_characters rb_f_notimplement
-#endif
-
-#ifdef HAVE_RL_FILENAME_QUOTE_CHARACTERS
-/*
- * call-seq:
- *   Readline.filename_quote_characters -> string
- *
- * Gets a list of characters that cause a filename to be quoted by the completer
- * when they appear in a completed filename.
- *
- * Raises NotImplementedError if the using readline library does not support.
- */
-static VALUE
-readline_s_get_filename_quote_characters(VALUE self, VALUE str)
-{
-    if (rl_filename_quote_characters == NULL)
-        return Qnil;
-    return rb_locale_str_new_cstr(rl_filename_quote_characters);
-}
-#else
-#define readline_s_get_filename_quote_characters rb_f_notimplement
 #endif
 
 #ifdef HAVE_RL_REFRESH_LINE
@@ -1655,26 +1492,14 @@ Init_line_editor_native(void)
                                readline_s_set_completion_append_character, 1);
     rb_define_singleton_method(mLineEditor, "completion_append_character",
                                readline_s_get_completion_append_character, 0);
-    rb_define_singleton_method(mLineEditor, "basic_word_break_characters=",
-                               readline_s_set_basic_word_break_characters, 1);
-    rb_define_singleton_method(mLineEditor, "basic_word_break_characters",
-                               readline_s_get_basic_word_break_characters, 0);
     rb_define_singleton_method(mLineEditor, "completer_word_break_characters=",
                                readline_s_set_completer_word_break_characters, 1);
     rb_define_singleton_method(mLineEditor, "completer_word_break_characters",
                                readline_s_get_completer_word_break_characters, 0);
-    rb_define_singleton_method(mLineEditor, "basic_quote_characters=",
-                               readline_s_set_basic_quote_characters, 1);
-    rb_define_singleton_method(mLineEditor, "basic_quote_characters",
-                               readline_s_get_basic_quote_characters, 0);
     rb_define_singleton_method(mLineEditor, "completer_quote_characters=",
                                readline_s_set_completer_quote_characters, 1);
     rb_define_singleton_method(mLineEditor, "completer_quote_characters",
                                readline_s_get_completer_quote_characters, 0);
-    rb_define_singleton_method(mLineEditor, "filename_quote_characters=",
-                               readline_s_set_filename_quote_characters, 1);
-    rb_define_singleton_method(mLineEditor, "filename_quote_characters",
-                               readline_s_get_filename_quote_characters, 0);
     rb_define_singleton_method(mLineEditor, "refresh_line",
                                readline_s_refresh_line, 0);
     rb_define_singleton_method(mLineEditor, "pre_input_hook=",

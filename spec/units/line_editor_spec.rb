@@ -531,43 +531,6 @@ describe Gitsh::LineEditor do
     end
   end
 
-  describe 'other character settings' do
-    # The Ruby test suite for Readline only covers setting and getting
-    # these options; it doesn't cover their effects.
-    #
-    # I've expanded the tests for various similar options, but in these
-    # cases I either can't work out what they do, or I can't get them to
-    # work in the context of a test suite (i.e. if they're after Readline
-    # is used for the first time, they have no effect).
-
-    [
-      :basic_word_break_characters,
-      :basic_quote_characters,
-      :filename_quote_characters,
-    ].each do |method_name|
-      it "allows us to set #{method_name}" do
-        setter_method = "#{method_name}=".to_sym
-        enc = get_default_internal_encoding
-        saved = described_class.send(method_name)
-
-        begin
-          [" ", " .,|\t", ""].each do |expected|
-            described_class.send(setter_method, expected)
-
-            read = described_class.send(method_name.to_sym)
-
-            expect(read).to eq expected
-            expect(read.encoding).to eq enc
-          end
-        ensure
-          if saved
-            described_class.send(setter_method, saved)
-          end
-        end
-      end
-    end
-  end
-
   def with_temp_stdio
     TempStdio.new.apply do |stdio|
       described_class.input = STDIN
