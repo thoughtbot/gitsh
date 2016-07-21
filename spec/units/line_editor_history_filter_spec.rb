@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'gitsh/line_editor_history_filter'
 
-describe LineEditorHistoryFilter do
+describe Gitsh::LineEditorHistoryFilter do
   describe '#readline' do
     let(:fake_line_editor) { FakeLineEditor.new }
     before { fake_line_editor::HISTORY.clear }

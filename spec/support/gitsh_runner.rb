@@ -20,7 +20,7 @@ class GitshRunner
     @input_stream = RSpec::Mocks::Double.new('STDIN', tty?: true)
     @output_stream = Tempfile.new('stdout')
     @error_stream = Tempfile.new('stderr')
-    @line_editor = LineEditorHistoryFilter.new(FakeLineEditor.new)
+    @line_editor = Gitsh::LineEditorHistoryFilter.new(FakeLineEditor.new)
     @position_before_command = 0
     @error_position_before_command = 0
     @options = options
