@@ -1,5 +1,6 @@
 require 'gitsh/error'
 require 'gitsh/git_repository'
+require 'gitsh/line_editor'
 require 'gitsh/magic_variables'
 
 module Gitsh
@@ -110,7 +111,7 @@ module Gitsh
     end
 
     def readline_version
-      Readline.emacs_editing_mode
+      LineEditor.emacs_editing_mode
       'GNU Readline'
     rescue NotImplementedError
       'libedit'

@@ -5,7 +5,9 @@
 # executed by the C binary built from src/gitsh.c
 
 require 'bundler/setup'
-$LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
+%w( lib ext ).each do |directory|
+  $LOAD_PATH.unshift(File.expand_path("../../#{directory}", __FILE__))
+end
 
 require 'gitsh/cli'
 

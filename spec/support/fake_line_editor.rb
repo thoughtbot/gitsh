@@ -1,11 +1,12 @@
 require 'thread'
+require 'gitsh/line_editor'
 require 'gitsh/module_delegator'
 
 class FakeLineEditor < ModuleDelegator
   def initialize
     @prompt_queue = Queue.new
     @input_read, @input_write = IO.pipe
-    super(Readline)
+    super(Gitsh::LineEditor)
   end
 
   def readline(prompt, add_to_history)
