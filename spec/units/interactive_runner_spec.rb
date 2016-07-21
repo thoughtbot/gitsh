@@ -17,12 +17,12 @@ describe Gitsh::InteractiveRunner do
       expect(history).to have_received(:save)
     end
 
-    it 'sets up readline' do
+    it 'sets up the line editor' do
       runner = build_interactive_runner
       runner.run
 
-      expect(readline).to have_received(:completion_append_character=)
-      expect(readline).to have_received(:completion_proc=)
+      expect(line_editor).to have_received(:completion_append_character=)
+      expect(line_editor).to have_received(:completion_proc=)
     end
 
     it 'loads the ~/.gitshrc file' do
@@ -36,12 +36,12 @@ describe Gitsh::InteractiveRunner do
 
     it 'handles a SIGINT' do
       runner = build_interactive_runner
-      readline_results = StubbedMethodResult.new.
+      line_editor_results = StubbedMethodResult.new.
         returns('a').
         raises(Interrupt).
         returns('b').
         raises(SystemExit)
-      allow(readline).to receive(:readline) { readline_results.next_result }
+      allow(line_editor).to receive(:readline) { line_editor_results.next_result }
 
       begin
         runner.run
@@ -54,33 +54,33 @@ describe Gitsh::InteractiveRunner do
     end
 
     it 'handles a SIGWINCH' do
-      readline = SignallingReadline.new('WINCH')
-      allow(readline).to receive(:set_screen_size)
-      runner = build_interactive_runner(readline: readline)
+      line_editor = SignallingLineEditor.new('WINCH')
+      allow(line_editor).to receive(:set_screen_size)
+      runner = build_interactive_runner(line_editor: line_editor)
 
       expect { runner.run }.not_to raise_exception
-      expect(readline).to have_received(:set_screen_size).with(24, 80)
+      expect(line_editor).to have_received(:set_screen_size).with(24, 80)
     end
 
     it 'handles a SIGWINCH when the terminal size cannot be determined' do
-      readline = SignallingReadline.new('WINCH')
-      allow(readline).to receive(:set_screen_size)
+      line_editor = SignallingLineEditor.new('WINCH')
+      allow(line_editor).to receive(:set_screen_size)
       terminal = double('Terminal', color_support?: true)
       allow(terminal).to receive(:size).and_raise(
         Gitsh::Terminal::UnknownSizeError,
         'Unknown terminal size',
       )
-      runner = build_interactive_runner(readline: readline, terminal: terminal)
+      runner = build_interactive_runner(readline: line_editor, terminal: terminal)
 
       expect { runner.run }.not_to raise_exception
-      expect(readline).not_to have_received(:set_screen_size)
+      expect(line_editor).not_to have_received(:set_screen_size)
     end
   end
 
   def build_interactive_runner(options={})
     Gitsh::InteractiveRunner.new(
       interpreter: interpreter,
-      readline: options.fetch(:readline, readline),
+      line_editor: options.fetch(:line_editor, line_editor),
       history: history,
       env: env,
       terminal: options.fetch(:terminal, terminal),
@@ -100,8 +100,8 @@ describe Gitsh::InteractiveRunner do
     @history ||= spy('history', load: nil, save: nil)
   end
 
-  def readline
-    @readline ||= spy('readline', {
+  def line_editor
+    @line_editor ||= spy('LineEditor', {
       :'completion_append_character=' => nil,
       :'completion_proc=' => nil,
       readline: nil

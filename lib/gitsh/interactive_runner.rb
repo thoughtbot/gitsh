@@ -1,10 +1,10 @@
-require 'readline'
 require 'gitsh/completer'
 require 'gitsh/error'
 require 'gitsh/history'
 require 'gitsh/interpreter'
+require 'gitsh/line_editor'
+require 'gitsh/line_editor_history_filter'
 require 'gitsh/prompter'
-require 'gitsh/readline_history_filter'
 require 'gitsh/script_runner'
 require 'gitsh/terminal'
 
@@ -13,9 +13,11 @@ module Gitsh
     BLANK_LINE_REGEX = /^\s*$/
 
     def initialize(opts)
-      @readline = opts.fetch(:readline) { ReadlineHistoryFilter.new(Readline) }
+      @line_editor = opts.fetch(:line_editor) do
+        LineEditorHistoryFilter.new(Gitsh::LineEditor)
+      end
       @env = opts[:env]
-      @history = opts.fetch(:history) { History.new(@env, @readline) }
+      @history = opts.fetch(:history) { History.new(@env, @line_editor) }
       @interpreter = opts.fetch(:interpreter) { Interpreter.new(@env) }
       @terminal = opts.fetch(:terminal) { Terminal.instance }
       @script_runner = opts.fetch(:script_runner) { ScriptRunner.new(env: @env) }
@@ -23,7 +25,7 @@ module Gitsh
 
     def run
       history.load
-      setup_readline
+      setup_line_editor
       handle_window_resize
       greet_user
       load_gitshrc
@@ -34,18 +36,18 @@ module Gitsh
 
     private
 
-    attr_reader :history, :readline, :env, :interpreter, :terminal,
+    attr_reader :history, :line_editor, :env, :interpreter, :terminal,
       :script_runner
 
-    def setup_readline
-      readline.completion_append_character = nil
-      readline.completion_proc = Completer.new(readline, env)
+    def setup_line_editor
+      line_editor.completion_append_character = nil
+      line_editor.completion_proc = Completer.new(line_editor, env)
     end
 
     def handle_window_resize
       Signal.trap('WINCH') do
         begin
-          readline.set_screen_size(*terminal.size)
+          line_editor.set_screen_size(*terminal.size)
         rescue Terminal::UnknownSizeError
         end
       end
@@ -81,7 +83,7 @@ module Gitsh
     end
 
     def read_command
-      command = readline.readline(prompt, true)
+      command = line_editor.readline(prompt, true)
       if command && command.match(BLANK_LINE_REGEX)
         env.fetch('gitsh.defaultCommand') { 'status' }
       else

@@ -1,4 +1,4 @@
-class SignallingReadline
+class SignallingLineEditor
   def initialize(signal)
     @signal = signal
   end

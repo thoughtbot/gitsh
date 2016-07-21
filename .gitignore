@@ -25,6 +25,11 @@ gitsh-*.tar.gz
 vendor/gems
 *.o
 
+# Ruby C-extension
+*.bundle
+mkmf.log
+.RUBYARCHDIR*
+
 # Sub-repositories for release
 gh-pages
 homebrew-formulae

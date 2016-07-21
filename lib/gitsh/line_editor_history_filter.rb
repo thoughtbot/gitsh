@@ -1,6 +1,6 @@
 require 'gitsh/module_delegator'
 
-class ReadlineHistoryFilter < ModuleDelegator
+class LineEditorHistoryFilter < ModuleDelegator
   def readline(prompt, add_hist = false)
     module_delegator_target.readline(prompt, add_hist).tap do |input|
       if add_hist && input && should_not_have_been_added_to_history?

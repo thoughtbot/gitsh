@@ -2,20 +2,20 @@ require 'gitsh/commands/internal_command'
 
 module Gitsh
   class Completer
-    def initialize(readline, env, internal_command=Commands::InternalCommand)
-      @readline = readline
+    def initialize(line_editor, env, internal_command=Commands::InternalCommand)
+      @line_editor = line_editor
       @env = env
       @internal_command = internal_command
     end
 
     def call(input)
-      InputCompleter.new(input, @readline, @env, @internal_command).complete
+      InputCompleter.new(input, @line_editor, @env, @internal_command).complete
     end
 
     class InputCompleter
-      def initialize(input, readline, env, internal_command)
+      def initialize(input, line_editor, env, internal_command)
         @input = input
-        @readline = readline
+        @line_editor = line_editor
         @env = env
         @internal_command = internal_command
       end
@@ -26,7 +26,7 @@ module Gitsh
 
       private
 
-      attr_reader :input, :readline, :env, :internal_command
+      attr_reader :input, :line_editor, :env, :internal_command
 
       def available_completers
         if completing_arguments?
@@ -37,7 +37,7 @@ module Gitsh
       end
 
       def completing_arguments?
-        full_input = readline.line_buffer
+        full_input = line_editor.line_buffer
         tokens = full_input.split
         tokens.any? && full_input.end_with?(' ') || tokens.size > 1
       end

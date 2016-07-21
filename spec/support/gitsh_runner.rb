@@ -3,7 +3,7 @@ require 'tempfile'
 require 'tmpdir'
 require 'gitsh/cli'
 require 'gitsh/environment'
-require 'gitsh/readline_history_filter'
+require 'gitsh/line_editor_history_filter'
 require 'rspec/mocks/test_double'
 require File.expand_path('../file_system', __FILE__)
 
@@ -20,7 +20,7 @@ class GitshRunner
     @input_stream = RSpec::Mocks::Double.new('STDIN', tty?: true)
     @output_stream = Tempfile.new('stdout')
     @error_stream = Tempfile.new('stderr')
-    @readline = ReadlineHistoryFilter.new(FakeReadline.new)
+    @line_editor = LineEditorHistoryFilter.new(FakeLineEditor.new)
     @position_before_command = 0
     @error_position_before_command = 0
     @options = options
@@ -36,7 +36,7 @@ class GitshRunner
 
         yield(self)
 
-        readline.type(':exit')
+        line_editor.type(':exit')
         runner.join
       end
     end
@@ -49,7 +49,7 @@ class GitshRunner
   def type(string)
     @error_position_before_command = error_stream.pos
     @position_before_command = output_stream.pos
-    readline.type(string)
+    line_editor.type(string)
     wait_for_prompt
   end
 
@@ -73,7 +73,7 @@ class GitshRunner
 
   private
 
-  attr_reader :input_stream, :output_stream, :error_stream, :readline, :options
+  attr_reader :input_stream, :output_stream, :error_stream, :line_editor, :options
 
   def start_runner_thread
     Thread.abort_on_exception = true
@@ -95,7 +95,7 @@ class GitshRunner
 
   def interactive_runner
     Gitsh::InteractiveRunner.new(
-      readline: readline,
+      line_editor: line_editor,
       env: env
     )
   end
@@ -114,7 +114,7 @@ class GitshRunner
   end
 
   def wait_for_prompt
-    @prompt = readline.prompt
+    @prompt = line_editor.prompt
   end
 
   def setup_unix_env

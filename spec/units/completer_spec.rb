@@ -103,7 +103,7 @@ describe Gitsh::Completer do
   end
 
   def build_completer(options)
-    readline = double('Readline', line_buffer: options.fetch(:input))
+    line_editor = double('LineEditor', line_buffer: options.fetch(:input))
     env = double('Environment', {
       git_commands: options.fetch(:git_commands, %w( add commit )),
       git_aliases: options.fetch(:git_aliases, %w( graph )),
@@ -113,7 +113,7 @@ describe Gitsh::Completer do
     internal_command = double('InternalCommand', {
       commands: options.fetch(:internal_commands, %w( :set :exit ))
     })
-    Gitsh::Completer.new(readline, env, internal_command)
+    Gitsh::Completer.new(line_editor, env, internal_command)
   end
 
   def first_regular_file(directory)
