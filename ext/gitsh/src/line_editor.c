@@ -57,7 +57,8 @@ static VALUE mLineEditor;
 
 #define COMPLETION_PROC "completion_proc"
 #define COMPLETION_CASE_FOLD "completion_case_fold"
-static ID completion_proc, completion_case_fold;
+#define QUOTING_DETECTION_PROC "quoting_detection_proc"
+static ID completion_proc, completion_case_fold, quoting_detection_proc;
 #if USE_INSERT_IGNORE_ESCAPE
 static ID id_orig_prompt, id_last_prompt;
 #endif
@@ -84,6 +85,8 @@ static int readline_completion_append_character;
 
 static char **readline_attempted_completion_function(const char *text,
                                                      int start, int end);
+int readline_char_is_quoted(char *text, int index);
+long byte_index_to_char_index(VALUE str, long byte_index);
 
 #define OutputStringValue(str) do {\
     SafeStringValue(str);\
@@ -252,6 +255,49 @@ readline_event(void)
 #endif
 }
 #endif
+
+int
+readline_char_is_quoted(char *text, int byte_index)
+{
+    VALUE proc, result, str;
+    long char_index;
+
+    proc = rb_attr_get(mLineEditor, quoting_detection_proc);
+    if (NIL_P(proc)) {
+        return 0;
+    }
+
+    str = rb_locale_str_new_cstr(text);
+    char_index = byte_index_to_char_index(str, (long)byte_index);
+
+    if (char_index == -1) {
+        rb_raise(rb_eIndexError, "failed to find character at byte index");
+    }
+
+    result = rb_funcall(proc, rb_intern("call"), 2, str, LONG2FIX(char_index));
+    return result ? 1 : 0;
+}
+
+long
+byte_index_to_char_index(VALUE str, long byte_index)
+{
+    const char *ptr;
+    long ci, bi, len, clen;
+    rb_encoding *enc;
+
+    enc = rb_enc_get(str);
+    len = RSTRING_LEN(str);
+    ptr = RSTRING_PTR(str);
+
+    for (bi = 0, ci = 0; bi < len; bi += clen, ++ci) {
+        if (bi == byte_index) {
+            return ci;
+        }
+        clen = rb_enc_mbclen(ptr + bi, ptr + len, enc);
+    }
+
+    return -1;
+}
 
 #if USE_INSERT_IGNORE_ESCAPE
 static VALUE
@@ -693,6 +739,20 @@ readline_s_get_completion_proc(VALUE self)
     return rb_attr_get(mLineEditor, completion_proc);
 }
 
+static VALUE
+readline_s_set_quoting_detection_proc(VALUE self, VALUE proc)
+{
+    if (!NIL_P(proc) && !rb_respond_to(proc, rb_intern("call")))
+        rb_raise(rb_eArgError, "argument must respond to `call'");
+    return rb_ivar_set(mLineEditor, quoting_detection_proc, proc);
+}
+
+static VALUE
+readline_s_get_quoting_detection_proc(VALUE self)
+{
+    return rb_attr_get(mLineEditor, quoting_detection_proc);
+}
+
 /*
  * call-seq:
  *   Gitsh::LineEditor.completion_case_fold = bool
@@ -1005,6 +1065,28 @@ readline_s_get_completion_append_character(VALUE self)
         return Qnil;
 
     buf[0] = (char) rl_completion_append_character;
+    return rb_locale_str_new(buf, 1);
+}
+
+/*
+ * call-seq:
+ *   Gitsh::LineEditor.completion_quote_character -> char
+ *
+ * When called during a completion (e.g. from within your completion_proc),
+ * it will return a string containing the chracter used to quote the
+ * argument being completed, or nil if the argument is unquoted.
+ *
+ * When called at other times, it will always return nil.
+ */
+static VALUE
+readline_s_get_completion_quote_character(VALUE self)
+{
+    char buf[1];
+
+    if (rl_completion_quote_character == '\0')
+        return Qnil;
+
+    buf[0] = (char) rl_completion_quote_character;
     return rb_locale_str_new(buf, 1);
 }
 
@@ -1443,10 +1525,13 @@ Init_line_editor_native(void)
     rl_event_hook = readline_event;
 #endif
 
+    rl_char_is_quoted_p = &readline_char_is_quoted;
+
     using_history();
 
     completion_proc = rb_intern(COMPLETION_PROC);
     completion_case_fold = rb_intern(COMPLETION_CASE_FOLD);
+    quoting_detection_proc = rb_intern(QUOTING_DETECTION_PROC);
 #if defined(HAVE_RL_PRE_INPUT_HOOK)
     id_pre_input_hook = rb_intern("pre_input_hook");
 #endif
@@ -1466,6 +1551,10 @@ Init_line_editor_native(void)
                                readline_s_set_completion_proc, 1);
     rb_define_singleton_method(mLineEditor, "completion_proc",
                                readline_s_get_completion_proc, 0);
+    rb_define_singleton_method(mLineEditor, "quoting_detection_proc=",
+                               readline_s_set_quoting_detection_proc, 1);
+    rb_define_singleton_method(mLineEditor, "quoting_detection_proc",
+                               readline_s_get_quoting_detection_proc, 0);
     rb_define_singleton_method(mLineEditor, "completion_case_fold=",
                                readline_s_set_completion_case_fold, 1);
     rb_define_singleton_method(mLineEditor, "completion_case_fold",
@@ -1492,6 +1581,8 @@ Init_line_editor_native(void)
                                readline_s_set_completion_append_character, 1);
     rb_define_singleton_method(mLineEditor, "completion_append_character",
                                readline_s_get_completion_append_character, 0);
+    rb_define_singleton_method(mLineEditor, "completion_quote_character",
+                               readline_s_get_completion_quote_character, 0);
     rb_define_singleton_method(mLineEditor, "completer_word_break_characters=",
                                readline_s_set_completer_word_break_characters, 1);
     rb_define_singleton_method(mLineEditor, "completer_word_break_characters",

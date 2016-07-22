@@ -180,6 +180,72 @@ describe Gitsh::LineEditor do
       end
     end
 
+    describe '.quoting_detection_proc=' do
+      it 'raises when given something without a #call method' do
+        expect { described_class.quoting_detection_proc = :not_a_proc }.
+          to raise_exception(ArgumentError)
+      end
+    end
+
+    describe '.quoting_detection_proc' do
+      it 'returns the value passed to quoting_detection_proc=' do
+        my_proc = proc { |input| input }
+
+        described_class.quoting_detection_proc = my_proc
+
+        expect(described_class.quoting_detection_proc).to eq my_proc
+      end
+    end
+
+    describe '.completion_quote_character' do
+      context 'while completing an unquoted argument' do
+        it 'returns nil' do
+          with_temp_stdio do |stdio|
+            stdio.type("input\t")
+            quote_character = nil
+            described_class.completion_proc = -> (_) do
+              quote_character = described_class.completion_quote_character
+              []
+            end
+            described_class.completer_quote_characters = '\'"'
+            described_class.readline("> ", false)
+
+            expect(quote_character).to be_nil
+          end
+        end
+      end
+
+      context 'while completing a quoted argument' do
+        it 'returns a string containing the quote character' do
+          with_temp_stdio do |stdio|
+            stdio.type("~input\t")
+            quote_character = nil
+            described_class.completion_proc = -> (_) do
+              quote_character = described_class.completion_quote_character
+              []
+            end
+            described_class.completer_quote_characters = '~'
+            described_class.readline("> ", false)
+
+            expect(quote_character).to eq '~'
+          end
+        end
+      end
+
+      context 'after completion is finished' do
+        it 'returns nil' do
+          with_temp_stdio do |stdio|
+            stdio.type("\"input\t")
+            described_class.completion_proc = -> (_) { [] }
+            described_class.completer_quote_characters = '\'"'
+            described_class.readline("> ", false)
+
+            expect(described_class.completion_quote_character).to be nil
+          end
+        end
+      end
+    end
+
     it 'passes the last word of the user input to the completion proc' do
       with_temp_stdio do |stdio|
         passed_text = nil
@@ -374,6 +440,56 @@ describe Gitsh::LineEditor do
           expect {
             described_class.readline
           }.to raise_exception(Encoding::CompatibilityError)
+        end
+      end
+    end
+
+    context 'with quoting_detection_proc set' do
+      it 'determines if a word break character really applies' do
+        with_temp_stdio do |stdio|
+          passed_text = nil
+          described_class.completion_proc = -> (text) do
+            passed_text = text
+            ['completion']
+          end
+          described_class.completer_quote_characters = '\'"'
+          described_class.completer_word_break_characters = ' '
+          described_class.quoting_detection_proc = -> (text, index) do
+            index > 0 && text[index-1] == '\\'
+          end
+
+          stdio.type("first second\\ third\t")
+          line = described_class.readline('> ', false)
+
+          expect(passed_text).to eq 'second\\ third'
+          expect(line).to eq 'first completion '
+        end
+      end
+    end
+
+    context 'with quoting_detection_proc set and multibyte input' do
+      it 'determines if a word break character really applies' do
+        with_temp_stdio do |stdio|
+          passed_text = nil
+          escaped_char_indexes = []
+          described_class.completion_proc = -> (text) do
+            passed_text = text
+            ['completion']
+          end
+          described_class.completer_quote_characters = '\'"'
+          described_class.completer_word_break_characters = ' '
+          described_class.quoting_detection_proc = -> (text, index) do
+            escaped = index > 0 && text[index-1] == '\\'
+            escaped_char_indexes << index if escaped
+            escaped
+          end
+
+          stdio.type("\u3042\u3093 second\\ third\t")
+          line = described_class.readline('> ', false)
+
+          expect(escaped_char_indexes).to eq [10]
+          expect(passed_text).to eq 'second\\ third'
+          expect(line).to eq "\u3042\u3093 completion "
         end
       end
     end

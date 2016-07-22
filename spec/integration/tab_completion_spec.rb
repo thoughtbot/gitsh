@@ -43,6 +43,9 @@ describe 'Completing things with tab' do
       gitsh.type('init')
 
       gitsh.type(":se\t arthur 'Arthur Dent <arthur@tea.example.com>'")
+
+      expect(gitsh).to output_no_errors
+
       gitsh.type('commit --allow-empty --author $arthur -m "More tea"')
       gitsh.type('log --format="%ae - %s"')
 
@@ -66,12 +69,21 @@ describe 'Completing things with tab' do
   it 'completes paths' do
     GitshRunner.interactive do |gitsh|
       gitsh.type('init')
-      write_file('foo.txt')
-      gitsh.type("add f\t")
-      gitsh.type('commit -m "Add foo.txt"')
+      write_file('some text file.txt')
+      write_file('another file.txt')
+      gitsh.type("add som\t")
+
+      expect(gitsh).to output_no_errors
+
+      gitsh.type("add another\\ f\t")
+
+      expect(gitsh).to output_no_errors
+
+      gitsh.type('commit -m "Add some text file"')
       gitsh.type('ls-files')
 
-      expect(gitsh).to output(/foo\.txt/)
+      expect(gitsh).to output(/another file\.txt/)
+      expect(gitsh).to output(/some text file\.txt/)
     end
   end
 
