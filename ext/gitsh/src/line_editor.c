@@ -57,7 +57,8 @@ static VALUE mLineEditor;
 
 #define COMPLETION_PROC "completion_proc"
 #define COMPLETION_CASE_FOLD "completion_case_fold"
-static ID completion_proc, completion_case_fold;
+#define QUOTING_DETECTION_PROC "quoting_detection_proc"
+static ID completion_proc, completion_case_fold, quoting_detection_proc;
 #if USE_INSERT_IGNORE_ESCAPE
 static ID id_orig_prompt, id_last_prompt;
 #endif
@@ -252,6 +253,21 @@ readline_event(void)
 #endif
 }
 #endif
+
+int
+readline_char_is_quoted(char *text, int index)
+{
+    VALUE proc, result;
+
+    proc = rb_attr_get(mLineEditor, quoting_detection_proc);
+    if (NIL_P(proc)) {
+        return 0;
+    }
+
+    result = rb_funcall(proc, rb_intern("call"), 2,
+            rb_locale_str_new_cstr(text), INT2FIX(index));
+    return result ? 1 : 0;
+}
 
 #if USE_INSERT_IGNORE_ESCAPE
 static VALUE
@@ -691,6 +707,20 @@ static VALUE
 readline_s_get_completion_proc(VALUE self)
 {
     return rb_attr_get(mLineEditor, completion_proc);
+}
+
+static VALUE
+readline_s_set_quoting_detection_proc(VALUE self, VALUE proc)
+{
+    if (!NIL_P(proc) && !rb_respond_to(proc, rb_intern("call")))
+        rb_raise(rb_eArgError, "argument must respond to `call'");
+    return rb_ivar_set(mLineEditor, quoting_detection_proc, proc);
+}
+
+static VALUE
+readline_s_get_quoting_detection_proc(VALUE self)
+{
+    return rb_attr_get(mLineEditor, quoting_detection_proc);
 }
 
 /*
@@ -1443,10 +1473,13 @@ Init_line_editor_native(void)
     rl_event_hook = readline_event;
 #endif
 
+    rl_char_is_quoted_p = &readline_char_is_quoted;
+
     using_history();
 
     completion_proc = rb_intern(COMPLETION_PROC);
     completion_case_fold = rb_intern(COMPLETION_CASE_FOLD);
+    quoting_detection_proc = rb_intern(QUOTING_DETECTION_PROC);
 #if defined(HAVE_RL_PRE_INPUT_HOOK)
     id_pre_input_hook = rb_intern("pre_input_hook");
 #endif
@@ -1466,6 +1499,10 @@ Init_line_editor_native(void)
                                readline_s_set_completion_proc, 1);
     rb_define_singleton_method(mLineEditor, "completion_proc",
                                readline_s_get_completion_proc, 0);
+    rb_define_singleton_method(mLineEditor, "quoting_detection_proc=",
+                               readline_s_set_quoting_detection_proc, 1);
+    rb_define_singleton_method(mLineEditor, "quoting_detection_proc",
+                               readline_s_get_quoting_detection_proc, 0);
     rb_define_singleton_method(mLineEditor, "completion_case_fold=",
                                readline_s_set_completion_case_fold, 1);
     rb_define_singleton_method(mLineEditor, "completion_case_fold",

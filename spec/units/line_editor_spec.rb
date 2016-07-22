@@ -180,6 +180,23 @@ describe Gitsh::LineEditor do
       end
     end
 
+    describe '.quoting_detection_proc=' do
+      it 'raises when given something without a #call method' do
+        expect { described_class.quoting_detection_proc = :not_a_proc }.
+          to raise_exception(ArgumentError)
+      end
+    end
+
+    describe '.quoting_detection_proc' do
+      it 'returns the value passed to quoting_detection_proc=' do
+        my_proc = proc { |input| input }
+
+        described_class.quoting_detection_proc = my_proc
+
+        expect(described_class.quoting_detection_proc).to eq my_proc
+      end
+    end
+
     it 'passes the last word of the user input to the completion proc' do
       with_temp_stdio do |stdio|
         passed_text = nil
@@ -374,6 +391,29 @@ describe Gitsh::LineEditor do
           expect {
             described_class.readline
           }.to raise_exception(Encoding::CompatibilityError)
+        end
+      end
+    end
+
+    context 'with quoting_detection_proc set' do
+      it 'determines if a word break character really applies' do
+        with_temp_stdio do |stdio|
+          passed_text = nil
+          described_class.completion_proc = -> (text) do
+            passed_text = text
+            ['completion']
+          end
+          described_class.completer_quote_characters = '\'"'
+          described_class.completer_word_break_characters = ' '
+          described_class.quoting_detection_proc = -> (text, index) do
+            index > 0 && text[index-1] == '\\'
+          end
+
+          stdio.type("first second\\ third\t")
+          line = described_class.readline('> ', false)
+
+          expect(passed_text).to eq 'second\\ third'
+          expect(line).to eq 'first completion '
         end
       end
     end
