@@ -11,11 +11,11 @@ describe 'Completing things with tab' do
 
       gitsh.type("com\t --allow-empty -m 'Some commit'")
 
-      expect(gitsh).to output /Some commit/
+      expect(gitsh).to output(/Some commit/)
 
       gitsh.type("bra\t")
 
-      expect(gitsh).to output /my-feature/
+      expect(gitsh).to output(/my-feature/)
     end
   end
 
@@ -27,14 +27,14 @@ describe 'Completing things with tab' do
       gitsh.type("zec\t")
 
       expect(gitsh).to output_no_errors
-      expect(gitsh).to output /zzz/
+      expect(gitsh).to output(/zzz/)
 
       gitsh.type(':set alias.yecho "!echo yyy"')
 
       gitsh.type("yec\t")
 
       expect(gitsh).to output_no_errors
-      expect(gitsh).to output /yyy/
+      expect(gitsh).to output(/yyy/)
     end
   end
 
@@ -47,7 +47,7 @@ describe 'Completing things with tab' do
       gitsh.type('log --format="%ae - %s"')
 
       expect(gitsh).to output_no_errors
-      expect(gitsh).to output /^arthur@tea\.example\.com - More tea$/
+      expect(gitsh).to output(/^arthur@tea\.example\.com - More tea$/)
     end
   end
 
@@ -71,7 +71,7 @@ describe 'Completing things with tab' do
       gitsh.type('commit -m "Add foo.txt"')
       gitsh.type('ls-files')
 
-      expect(gitsh).to output /foo\.txt/
+      expect(gitsh).to output(/foo\.txt/)
     end
   end
 
@@ -84,7 +84,7 @@ describe 'Completing things with tab' do
       gitsh.type("log --format=%s master~2..mas\t")
 
       expect(gitsh).to output_no_errors
-      expect(gitsh).to output /\AThird\nSecond\n\Z/
+      expect(gitsh).to output(/\AThird\nSecond\n\Z/)
     end
   end
 end
