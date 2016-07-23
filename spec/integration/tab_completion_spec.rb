@@ -82,6 +82,7 @@ describe 'Completing things with tab' do
       gitsh.type('commit -m "Add some text file"')
       gitsh.type('ls-files')
 
+      expect(gitsh).to output(/another file\.txt/)
       expect(gitsh).to output(/some text file\.txt/)
     end
   end
