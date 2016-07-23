@@ -1,4 +1,5 @@
 require 'gitsh/completer'
+require 'gitsh/completion_escaper'
 require 'gitsh/error'
 require 'gitsh/history'
 require 'gitsh/interpreter'
@@ -42,7 +43,10 @@ module Gitsh
 
     def setup_line_editor
       line_editor.completion_append_character = nil
-      line_editor.completion_proc = Completer.new(line_editor, env)
+      line_editor.completion_proc = CompletionEscaper.new(
+        Completer.new(line_editor, env),
+        line_editor: line_editor,
+      )
       line_editor.completer_quote_characters = '\'"'
       line_editor.completer_word_break_characters = ' &|;'
       line_editor.quoting_detection_proc = QuoteDetector.new

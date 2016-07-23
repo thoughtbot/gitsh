@@ -21,7 +21,7 @@ module Gitsh
       end
 
       def complete
-        available_completers.flat_map(&:completions).map { |arg| escape(arg) }
+        available_completers.map(&:completions).flatten
       end
 
       private
@@ -36,29 +36,10 @@ module Gitsh
         end
       end
 
-      def escape(arg)
-        if completing_quoted_argument?
-          arg.strip
-        else
-          arg.gsub(/ (?!$)/, '\ ')
-        end
-      end
-
       def completing_arguments?
+        full_input = line_editor.line_buffer
         tokens = full_input.split
         tokens.any? && full_input.end_with?(' ') || tokens.size > 1
-      end
-
-      def completing_quoted_argument?
-        @_quoted ||= input_before_current_argument.end_with?('"', "'")
-      end
-
-      def input_before_current_argument
-        full_input[0...-input.length]
-      end
-
-      def full_input
-        line_editor.line_buffer
       end
 
       def commands
