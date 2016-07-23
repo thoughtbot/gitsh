@@ -1,6 +1,6 @@
 module Gitsh
   class CompletionEscaper
-    QUOTABLE_CHARACTERS = [' ', '"', '\'', '\\']
+    ESCAPABLE_CHARACTERS = [' ', '"', '\'', '\\']
 
     def initialize(completer, options)
       @completer = completer
@@ -43,7 +43,7 @@ module Gitsh
           quote_char = input_before_current_argument[-1]
           escape_chars(option, [quote_char, '\\']).strip
         else
-          escape_chars(option, QUOTABLE_CHARACTERS)
+          escape_chars(option, ESCAPABLE_CHARACTERS)
         end
       end
 
