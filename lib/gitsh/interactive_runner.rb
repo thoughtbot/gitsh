@@ -5,6 +5,7 @@ require 'gitsh/interpreter'
 require 'gitsh/line_editor'
 require 'gitsh/line_editor_history_filter'
 require 'gitsh/prompter'
+require 'gitsh/quote_detector'
 require 'gitsh/script_runner'
 require 'gitsh/terminal'
 
@@ -42,6 +43,9 @@ module Gitsh
     def setup_line_editor
       line_editor.completion_append_character = nil
       line_editor.completion_proc = Completer.new(line_editor, env)
+      line_editor.completer_quote_characters = '\'"'
+      line_editor.completer_word_break_characters = ' &|;'
+      line_editor.quoting_detection_proc = QuoteDetector.new
     end
 
     def handle_window_resize

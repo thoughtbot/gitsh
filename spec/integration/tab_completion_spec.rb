@@ -67,7 +67,12 @@ describe 'Completing things with tab' do
     GitshRunner.interactive do |gitsh|
       gitsh.type('init')
       write_file('some text file.txt')
+      write_file('another file.txt')
       gitsh.type("add som\t")
+
+      expect(gitsh).to output_no_errors
+
+      gitsh.type("add another\\ f\t")
 
       expect(gitsh).to output_no_errors
 
