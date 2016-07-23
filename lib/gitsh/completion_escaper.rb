@@ -1,11 +1,11 @@
+require 'gitsh/parser'
+
 module Gitsh
   class CompletionEscaper
-    UNQUOTED_STRING_ESCAPE_CHARACTERS = [
-      ' ', '"', '\'', '\\', '$', '&', '|', ';', '#',
-    ].freeze
-    QUOTED_STRING_ESCAPE_CHARACTERS = {
-      '"' => ['"', '\\', '$'],
-      "'" => ["'", '\\'],
+    UNQUOTED_STRING_ESCAPABLES = Gitsh::Parser::UNQUOTED_STRING_ESCAPABLES
+    QUOTED_STRING_ESCAPABLES = {
+      '"' => Gitsh::Parser::SOFT_STRING_ESCAPABLES,
+      "'" => Gitsh::Parser::HARD_STRING_ESCAPABLES,
     }.freeze
 
     def initialize(completer, options)
@@ -47,16 +47,14 @@ module Gitsh
       def escape(option)
         if completing_quoted_argument?
           quote_char = input_before_current_argument[-1]
-          escape_chars = QUOTED_STRING_ESCAPE_CHARACTERS[quote_char]
-          escape_chars(option, escape_chars).strip
+          escape_chars(option, QUOTED_STRING_ESCAPABLES[quote_char]).strip
         else
-          escape_chars(option, UNQUOTED_STRING_ESCAPE_CHARACTERS)
+          escape_chars(option, UNQUOTED_STRING_ESCAPABLES)
         end
       end
 
       def escape_chars(text, chars)
-        quotable_characters = Regexp.escape(chars.join)
-        text.gsub(/([#{quotable_characters}])(?!$)/) { |char| "\\#{char}" }
+        text.gsub(/([#{chars}])(?!$)/) { |char| "\\#{char}" }
       end
 
       def unescape(input)

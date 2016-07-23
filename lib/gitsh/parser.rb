@@ -3,6 +3,11 @@ require 'gitsh/transformer'
 
 module Gitsh
   class Parser < Parslet::Parser
+    UNQUOTED_STRING_TERMINATORS = %q(\\s'"&|;#).freeze
+    UNQUOTED_STRING_ESCAPABLES = (UNQUOTED_STRING_TERMINATORS + %q(\\\$)).freeze
+    SOFT_STRING_ESCAPABLES = %q(\\\$").freeze
+    HARD_STRING_ESCAPABLES = %q(\\\').freeze
+
     def initialize(options={})
       super()
       @env = options.fetch(:env)
@@ -73,12 +78,13 @@ module Gitsh
         unquoted_string_escaped_literal |
         variable |
         subshell |
-        match(%q([^\s'"&|;#])).as(:literal)
+        match(not_character_class(UNQUOTED_STRING_TERMINATORS)).as(:literal)
       ).repeat(1)
     end
 
     rule(:unquoted_string_escaped_literal) do
-      str('\\') >> match(%q([ '"&|;#$\\\])).as(:literal)
+      str('\\') >>
+        match(character_class(UNQUOTED_STRING_ESCAPABLES)).as(:literal)
     end
 
     rule(:empty_string) do
@@ -95,7 +101,7 @@ module Gitsh
     end
 
     rule(:soft_string_escaped_literal) do
-      str('\\') >> match('[$"\\\]').as(:literal)
+      str('\\') >> match(character_class(SOFT_STRING_ESCAPABLES)).as(:literal)
     end
 
     rule(:hard_string) do
@@ -106,7 +112,7 @@ module Gitsh
     end
 
     rule(:hard_string_escaped_literal) do
-      str('\\') >> match(%q(['\\\])).as(:literal)
+      str('\\') >> match(character_class(HARD_STRING_ESCAPABLES)).as(:literal)
     end
 
     rule(:command_identifier) do
@@ -175,6 +181,14 @@ module Gitsh
 
     def autocorrect_enabled?
       env.fetch('help.autocorrect') { '0' } != '0'
+    end
+
+    def character_class(characters)
+      "[#{characters}]"
+    end
+
+    def not_character_class(characters)
+      "[^#{characters}]"
     end
   end
 end
