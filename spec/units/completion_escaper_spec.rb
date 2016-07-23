@@ -4,7 +4,7 @@ require 'gitsh/completion_escaper'
 describe Gitsh::CompletionEscaper do
   describe '#call' do
     context 'without any quote characters' do
-      it 'quotes spaces, slashes, and quotes' do
+      it 'escapes spaces, slashes, quotes, operators, etc.' do
         options = escape_options(
           full_input: 'add op',
           completer_input: 'op',
@@ -15,6 +15,11 @@ describe Gitsh::CompletionEscaper do
               %q("quotes" ),
               %q('quotes' ),
               %q(slash\ ),
+              %q($var_like ),
+              %q(a&b ),
+              %q(a|b ),
+              %q(a;b ),
+              %q(#comment-like ),
             ]
           end,
         )
@@ -25,6 +30,11 @@ describe Gitsh::CompletionEscaper do
           %q(\"quotes\" ),
           %q(\'quotes\' ),
           %q(slash\\\\ ),
+          %q(\$var_like ),
+          %q(a\&b ),
+          %q(a\|b ),
+          %q(a\;b ),
+          %q(\#comment-like ),
         ]
       end
 
@@ -57,6 +67,11 @@ describe Gitsh::CompletionEscaper do
               %q("quotes" ),
               %q('quotes' ),
               %q(slash\ ),
+              %q($var_like ),
+              %q(a&b ),
+              %q(a|b ),
+              %q(a;b ),
+              %q(#comment-like ),
             ]
           end,
         )
@@ -67,12 +82,17 @@ describe Gitsh::CompletionEscaper do
           %q("quotes"),
           %q(\'quotes\'),
           %q(slash\\\\),
+          %q($var_like),
+          %q(a&b),
+          %q(a|b),
+          %q(a;b),
+          %q(#comment-like),
         ]
       end
     end
 
     context 'with an unclosed double quote' do
-      it 'escapes slashes and double quotes, and strips trailing whitespace' do
+      it 'escapes slashes, double quotes, and $, and strips trailing whitespace' do
         options = escape_options(
           full_input: 'add "op',
           completer_input: 'op',
@@ -83,6 +103,11 @@ describe Gitsh::CompletionEscaper do
               %q("quotes" ),
               %q('quotes' ),
               %q(slash\ ),
+              %q($var_like ),
+              %q(a&b ),
+              %q(a|b ),
+              %q(a;b ),
+              %q(#comment-like ),
             ]
           end,
         )
@@ -93,6 +118,11 @@ describe Gitsh::CompletionEscaper do
           %q(\"quotes\"),
           %q('quotes'),
           %q(slash\\\\),
+          %q(\$var_like),
+          %q(a&b),
+          %q(a|b),
+          %q(a;b),
+          %q(#comment-like),
         ]
       end
     end

@@ -1,6 +1,12 @@
 module Gitsh
   class CompletionEscaper
-    ESCAPABLE_CHARACTERS = [' ', '"', '\'', '\\']
+    UNQUOTED_STRING_ESCAPE_CHARACTERS = [
+      ' ', '"', '\'', '\\', '$', '&', '|', ';', '#',
+    ].freeze
+    QUOTED_STRING_ESCAPE_CHARACTERS = {
+      '"' => ['"', '\\', '$'],
+      "'" => ["'", '\\'],
+    }.freeze
 
     def initialize(completer, options)
       @completer = completer
@@ -41,9 +47,10 @@ module Gitsh
       def escape(option)
         if completing_quoted_argument?
           quote_char = input_before_current_argument[-1]
-          escape_chars(option, [quote_char, '\\']).strip
+          escape_chars = QUOTED_STRING_ESCAPE_CHARACTERS[quote_char]
+          escape_chars(option, escape_chars).strip
         else
-          escape_chars(option, ESCAPABLE_CHARACTERS)
+          escape_chars(option, UNQUOTED_STRING_ESCAPE_CHARACTERS)
         end
       end
 
