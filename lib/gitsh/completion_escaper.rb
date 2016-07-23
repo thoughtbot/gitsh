@@ -1,6 +1,6 @@
 module Gitsh
   class CompletionEscaper
-    QUOTABLE_CHARACTERS = [' ']
+    QUOTABLE_CHARACTERS = [' ', '"', '\'', '\\']
 
     def initialize(completer, options)
       @completer = completer
@@ -9,7 +9,7 @@ module Gitsh
 
     def call(input)
       OptionEscaper.new(
-        completer.call(input),
+        completer,
         input,
         line_editor.line_buffer,
       ).escaped_options
@@ -20,8 +20,8 @@ module Gitsh
     attr_reader :completer, :line_editor
 
     class OptionEscaper
-      def initialize(unescaped_options, input, full_input)
-        @unescaped_options = unescaped_options
+      def initialize(completer, input, full_input)
+        @completer = completer
         @input = input
         @full_input = full_input
       end
@@ -32,14 +32,36 @@ module Gitsh
 
       private
 
-      attr_reader :unescaped_options, :input, :full_input
+      attr_reader :completer, :input, :full_input
+
+      def unescaped_options
+        completer.call(unescape(input))
+      end
 
       def escape(option)
         if completing_quoted_argument?
-          option.strip
+          quote_char = input_before_current_argument[-1]
+          escape_chars(option, [quote_char, '\\']).strip
         else
-          quotable_characters = QUOTABLE_CHARACTERS.join
-          option.gsub(/([#{quotable_characters}])(?!$)/) { |char| "\\#{char}" }
+          escape_chars(option, QUOTABLE_CHARACTERS)
+        end
+      end
+
+      def escape_chars(text, chars)
+        quotable_characters = Regexp.escape(chars.join)
+        text.gsub(/([#{quotable_characters}])(?!$)/) { |char| "\\#{char}" }
+      end
+
+      def unescape(input)
+        found_quote = false
+        input.chars.inject('') do |unescaped, char|
+          if !found_quote && char == '\\'
+            found_quote = true
+            unescaped
+          else
+            found_quote = false
+            unescaped + char
+          end
         end
       end
 
