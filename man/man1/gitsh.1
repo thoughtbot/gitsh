@@ -93,7 +93,7 @@ fails.
 execute
 .Ic left ,
 and then
-.Ic right.
+.Ic right .
 .El
 .
 .Sh PROMPT
@@ -268,6 +268,53 @@ For example:
 .Bd -literal -offset indent
 @ :set directory $(!pwd)
 .Ed
+.Sh COMMAND ARGUMENTS
+.Pp
+When arguments are passed to Git commands, internal commands, or shell
+commands, gitsh will recognise and interpret various methods of quoting
+characters. These are similar to those supported by
+.Xr sh 1 ,
+and other general-purpose shells.
+.Pp
+In general, a charater which would otherwise have some special meaning may
+be included as a literal character in an argument if it is prefixed with a
+.Ic \e
+character.
+.Pp
+In an
+.Em unquoted
+argument, the string delimiters
+.Pf ( Ic '" Ns ),
+the variable or sub-shell prefix
+.Pf ( Ic $ Ns ),
+and any character which would indicated the end of the argument
+(spaces,
+.Ic &|;# Ns )
+can be escaped.
+.Pp
+In a
+.Em double-quoted
+argument, only the string delimiter
+.Pf ( Ic \(dq Ns ),
+and the variable or sub-shell prefix
+.Pf ( Ic $ Ns )
+can be escaped.
+.Pp
+In a
+.Em single-quoted
+argument, very few characters have special meaning, and so only the
+string delimiter
+.Pf ( Ic ' Ns )
+can be escaped.
+.Pp
+A literal
+.Ic \e
+character can always be produced by repeating it
+.Pf ( Ic \e\e Ns ),
+but a single
+.Ic \e
+will also be interpreted as a literal as long as it isn't followed by
+a character that can be escaped in the current context.
 .Sh CONFIGURATION
 The following
 .Xr git-config 1
