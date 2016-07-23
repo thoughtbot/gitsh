@@ -70,11 +70,15 @@ module Gitsh
 
     rule(:unquoted_string) do
       (
-        escaped_literal |
+        unquoted_string_escaped_literal |
         variable |
         subshell |
         match(%q([^\s'"&|;#])).as(:literal)
       ).repeat(1)
+    end
+
+    rule(:unquoted_string_escaped_literal) do
+      str('\\') >> match(%q([ '"&|;#$\\\])).as(:literal)
     end
 
     rule(:empty_string) do
@@ -83,19 +87,26 @@ module Gitsh
 
     rule(:soft_string) do
       str('"') >> (
-        escaped_literal |
+        soft_string_escaped_literal |
         variable |
         subshell |
         (str('"').absent? >> any).as(:literal)
       ).repeat(0) >> str('"')
     end
 
-    rule(:hard_string) do
-      str("'") >> (str("'").absent? >> any).as(:literal).repeat(0) >> str("'")
+    rule(:soft_string_escaped_literal) do
+      str('\\') >> match('[$"\\\]').as(:literal)
     end
 
-    rule(:escaped_literal) do
-      str('\\') >> match('[$"\\\ ]').as(:literal)
+    rule(:hard_string) do
+      str("'") >> (
+        hard_string_escaped_literal |
+        (str("'").absent? >> any).as(:literal)
+      ).repeat(0) >> str("'")
+    end
+
+    rule(:hard_string_escaped_literal) do
+      str('\\') >> match(%q(['\\\])).as(:literal)
     end
 
     rule(:command_identifier) do

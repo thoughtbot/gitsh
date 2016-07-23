@@ -101,21 +101,16 @@ describe Gitsh::Parser do
     end
 
     it 'parses a command with unquoted arguments containing escaped characters' do
-      expect(parser).to parse(%q(add some\ file.txt hello\"world \\)).as(
-        git_cmd: 'add',
-        args: [
-          { arg: parser_literals('some file.txt') },
-          { arg: parser_literals('hello"world') },
-          { arg: parser_literals('\\') }
-        ]
-      )
-    end
-
-    it 'parses a command with unquoted arguments containing escaped variables' do
-      expect(parser).to parse(%q(add \$not_a_variable)).as(
-        git_cmd: 'add',
-        args: [{ arg: parser_literals('$not_a_variable') }]
-      )
+      [' ', '"', '\'', '\\', '$', '&', '|', ';', '#'].each do |char|
+        expect(parser).to parse("add first pre\\#{char}post third").as(
+          git_cmd: 'add',
+          args: [
+            { arg: parser_literals('first') },
+            { arg: parser_literals("pre#{char}post") },
+            { arg: parser_literals('third') }
+          ]
+        )
+      end
     end
 
     it 'parses a command with variable arguments' do
@@ -178,14 +173,26 @@ describe Gitsh::Parser do
       )
     end
 
-    it 'parses a command with string arguments containing escaped characters' do
-      expect(parser).to parse(%q(commit "It's\ \"great\"" "C:\\foo\bar")).as(
-        git_cmd: 'commit',
-        args: [
-          { arg: parser_literals('It\'s "great"') },
-          { arg: parser_literals('C:\foo\bar') }
-        ]
-      )
+    it 'parses a command with double-quoted arguments containing escaped characters' do
+      ['"', '\\', '$'].each do |char|
+        expect(parser).to parse("add \"pre\\#{char}post\"").as(
+          git_cmd: 'add',
+          args: [
+            { arg: parser_literals("pre#{char}post") },
+          ]
+        )
+      end
+    end
+
+    it 'does not interpret all \ characters in double-quoted arguments as escapes' do
+      ['a', ' ', '\'', '&', '|', ';', '#'].each do |char|
+        expect(parser).to parse("add \"pre\\#{char}post\"").as(
+          git_cmd: 'add',
+          args: [
+            { arg: parser_literals("pre\\#{char}post") },
+          ]
+        )
+      end
     end
 
     it 'parses a command with string arguments containing the comment prefix' do
@@ -193,15 +200,6 @@ describe Gitsh::Parser do
         git_cmd: 'commit',
         args: [
           { arg: parser_literals('Not a #comment') },
-        ]
-      )
-    end
-
-    it 'parses a command with double-quoted arguments containing escaped variables' do
-      expect(parser).to parse('foo "prefix \$bar"').as(
-        git_cmd: 'foo',
-        args: [
-          { arg: parser_literals('prefix $bar') }
         ]
       )
     end
@@ -215,6 +213,28 @@ describe Gitsh::Parser do
           { arg: parser_literals('$path/file') }
         ]
       )
+    end
+
+    it 'parses a command with single-quoted arguments containing escaped characters' do
+      ['\'', '\\'].each do |char|
+        expect(parser).to parse("add 'pre\\#{char}post'").as(
+          git_cmd: 'add',
+          args: [
+            { arg: parser_literals("pre#{char}post") },
+          ]
+        )
+      end
+    end
+
+    it 'does not interpret all \ characters in single-quoted arguments as escapes' do
+      ['a', ' ', '"', '&', '|', ';', '#', '$'].each do |char|
+        expect(parser).to parse("add 'pre\\#{char}post'").as(
+          git_cmd: 'add',
+          args: [
+            { arg: parser_literals("pre\\#{char}post") },
+          ]
+        )
+      end
     end
 
     it 'parses a shell command with arguments' do
