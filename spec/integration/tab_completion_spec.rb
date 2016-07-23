@@ -43,6 +43,9 @@ describe 'Completing things with tab' do
       gitsh.type('init')
 
       gitsh.type(":se\t arthur 'Arthur Dent <arthur@tea.example.com>'")
+
+      expect(gitsh).to output_no_errors
+
       gitsh.type('commit --allow-empty --author $arthur -m "More tea"')
       gitsh.type('log --format="%ae - %s"')
 
