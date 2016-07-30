@@ -42,7 +42,6 @@ module Gitsh
       :script_runner
 
     def setup_line_editor
-      line_editor.completion_append_character = nil
       line_editor.completion_proc = CompletionEscaper.new(
         Completer.new(line_editor, env),
         line_editor: line_editor,

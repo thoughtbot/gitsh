@@ -21,7 +21,6 @@ describe Gitsh::InteractiveRunner do
       runner = build_interactive_runner
       runner.run
 
-      expect(line_editor).to have_received(:completion_append_character=)
       expect(line_editor).to have_received(:completion_proc=)
     end
 
