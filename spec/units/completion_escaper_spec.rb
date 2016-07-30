@@ -10,31 +10,31 @@ describe Gitsh::CompletionEscaper do
           completer_input: 'op',
           completer: -> (_) do
             [
-              %q(option ),
-              %q(with space ),
-              %q("quotes" ),
-              %q('quotes' ),
-              %q(slash\ ),
-              %q($var_like ),
-              %q(a&b ),
-              %q(a|b ),
-              %q(a;b ),
-              %q(#comment-like ),
+              %q(option),
+              %q(with space),
+              %q("quotes"),
+              %q('quotes'),
+              %q(slash\\),
+              %q($var_like),
+              %q(a&b),
+              %q(a|b),
+              %q(a;b),
+              %q(#comment-like),
             ]
           end,
         )
 
         expect(options).to eq [
-          %q(option ),
-          %q(with\ space ),
-          %q(\"quotes\" ),
-          %q(\'quotes\' ),
-          %q(slash\\\\ ),
-          %q(\$var_like ),
-          %q(a\&b ),
-          %q(a\|b ),
-          %q(a\;b ),
-          %q(\#comment-like ),
+          %q(option),
+          %q(with\ space),
+          %q(\"quotes\"),
+          %q(\'quotes\'),
+          %q(slash\\\\),
+          %q(\$var_like),
+          %q(a\&b),
+          %q(a\|b),
+          %q(a\;b),
+          %q(\#comment-like),
         ]
       end
 
@@ -42,7 +42,7 @@ describe Gitsh::CompletionEscaper do
         completer_argument = nil
         completer = -> (text) do
           completer_argument = text
-          ['some file.txt ']
+          ['some file.txt']
         end
         options = escape_options(
           quote_character: nil,
@@ -51,7 +51,7 @@ describe Gitsh::CompletionEscaper do
         )
 
         expect(completer_argument).to eq 'some f'
-        expect(options).to eq ['some\\ file.txt ']
+        expect(options).to eq ['some\\ file.txt']
       end
 
       it 'recognises escaped escape characters' do
@@ -86,22 +86,22 @@ describe Gitsh::CompletionEscaper do
     end
 
     context 'with an unclosed single quote' do
-      it 'escapes slashes and single quotes, and strips trailing whitespace' do
+      it 'escapes slashes and single quotes' do
         options = escape_options(
           quote_character: "'",
           completer_input: 'op',
           completer: -> (_) do
             [
-              %q(option ),
-              %q(with space ),
-              %q("quotes" ),
-              %q('quotes' ),
-              %q(slash\ ),
-              %q($var_like ),
-              %q(a&b ),
-              %q(a|b ),
-              %q(a;b ),
-              %q(#comment-like ),
+              %q(option),
+              %q(with space),
+              %q("quotes"),
+              %q('quotes'),
+              %q(slash\\),
+              %q($var_like),
+              %q(a&b),
+              %q(a|b),
+              %q(a;b),
+              %q(#comment-like),
             ]
           end,
         )
@@ -122,22 +122,22 @@ describe Gitsh::CompletionEscaper do
     end
 
     context 'with an unclosed double quote' do
-      it 'escapes slashes, double quotes, and $, and strips trailing whitespace' do
+      it 'escapes slashes, double quotes, and $' do
         options = escape_options(
           quote_character: '"',
           completer_input: 'op',
           completer: -> (_) do
             [
-              %q(option ),
-              %q(with space ),
-              %q("quotes" ),
-              %q('quotes' ),
-              %q(slash\ ),
-              %q($var_like ),
-              %q(a&b ),
-              %q(a|b ),
-              %q(a;b ),
-              %q(#comment-like ),
+              %q(option),
+              %q(with space),
+              %q("quotes"),
+              %q('quotes'),
+              %q(slash\\),
+              %q($var_like),
+              %q(a&b),
+              %q(a|b),
+              %q(a;b),
+              %q(#comment-like),
             ]
           end,
         )

@@ -6,6 +6,10 @@ module FileSystemHelper
     File.open(name, 'w') { |f| f << "#{contents}\n" }
   end
 
+  def make_directory(name)
+    Dir.mkdir(name)
+  end
+
   def temp_file(name, contents)
     Tempfile.new(name).tap do |f|
       f.write("#{contents}\n")

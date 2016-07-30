@@ -9,7 +9,7 @@ module Gitsh
     end
 
     def call(input)
-      InputCompleter.new(input, @line_editor, @env, @internal_command).complete
+      InputCompleter.new(input, @line_editor, @env, @internal_command).call
     end
 
     class InputCompleter
@@ -20,13 +20,26 @@ module Gitsh
         @internal_command = internal_command
       end
 
-      def complete
-        available_completers.map(&:completions).flatten
+      def call
+        line_editor.completion_append_character = completion_append_character
+        matches
       end
 
       private
 
       attr_reader :input, :line_editor, :env, :internal_command
+
+      def completion_append_character
+        if matches.size == 1 && matches.first.end_with?('/')
+          nil
+        else
+          ' '
+        end
+      end
+
+      def matches
+        @_matches ||= available_completers.flat_map(&:completions)
+      end
 
       def available_completers
         if completing_arguments?
@@ -66,16 +79,12 @@ module Gitsh
         def completions
           collection.
             select { |option| option.start_with?(matchable_input) }.
-            map { |option| option.sub(matchable_input, input) + suffix(option) }
+            map { |option| option.sub(matchable_input, input) }
         end
 
         private
 
         attr_reader :input
-
-        def suffix(_)
-          ' '
-        end
       end
 
       class HeadCompleter < TextCompleter
@@ -103,14 +112,12 @@ module Gitsh
         private
 
         def collection
-          Dir["#{matchable_input}*"]
-        end
-
-        def suffix(path)
-          if File.directory?(path)
-            '/'
-          else
-            ' '
+          Dir["#{matchable_input}*"].map do |path|
+            if File.directory?(path)
+              path + '/'
+            else
+              path
+            end
           end
         end
 

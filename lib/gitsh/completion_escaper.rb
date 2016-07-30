@@ -22,13 +22,7 @@ module Gitsh
     attr_reader :completer, :line_editor
 
     def escape(option)
-      escaped = option.gsub(/([#{escapables}])(?!$)/) { |char| "\\#{char}" }
-
-      if completing_quoted_argument?
-        escaped.strip
-      else
-        escaped
-      end
+      option.gsub(/([#{escapables}])/) { |char| "\\#{char}" }
     end
 
     def unescape(input)
@@ -37,10 +31,6 @@ module Gitsh
 
     def escapables
       @_escapables ||= ESCAPABLES[line_editor.completion_quote_character]
-    end
-
-    def completing_quoted_argument?
-      !line_editor.completion_quote_character.nil?
     end
   end
 end
