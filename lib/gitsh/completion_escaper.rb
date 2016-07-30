@@ -45,33 +45,33 @@ module Gitsh
       end
 
       def escape(option)
+        escaped = option.gsub(/([#{escapables}])(?!$)/) { |char| "\\#{char}" }
+
         if completing_quoted_argument?
-          quote_char = input_before_current_argument[-1]
-          escape_chars(option, QUOTED_STRING_ESCAPABLES[quote_char]).strip
+          escaped.strip
         else
-          escape_chars(option, UNQUOTED_STRING_ESCAPABLES)
+          escaped
         end
       end
 
-      def escape_chars(text, chars)
-        text.gsub(/([#{chars}])(?!$)/) { |char| "\\#{char}" }
+      def unescape(input)
+        input.gsub(/\\([#{escapables}])/, '\1')
       end
 
-      def unescape(input)
-        found_quote = false
-        input.chars.inject('') do |unescaped, char|
-          if !found_quote && char == '\\'
-            found_quote = true
-            unescaped
-          else
-            found_quote = false
-            unescaped + char
-          end
+      def escapables
+        if completing_quoted_argument?
+          QUOTED_STRING_ESCAPABLES[quote_char]
+        else
+          UNQUOTED_STRING_ESCAPABLES
         end
       end
 
       def completing_quoted_argument?
-        @_quoted ||= input_before_current_argument.end_with?('"', "'")
+        @_quoted ||= (quote_char == '"' || quote_char == "'")
+      end
+
+      def quote_char
+        input_before_current_argument[-1]
       end
 
       def input_before_current_argument

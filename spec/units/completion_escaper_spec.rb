@@ -53,6 +53,36 @@ describe Gitsh::CompletionEscaper do
         expect(completer_argument).to eq 'some f'
         expect(options).to eq ['some\\ file.txt ']
       end
+
+      it 'recognises escaped escape characters' do
+        completer_argument = nil
+        completer = -> (text) do
+          completer_argument = text
+          []
+        end
+        escape_options(
+          full_input: 'add some\\\\ f',
+          completer_input: 'some\\\\ f',
+          completer: completer,
+        )
+
+        expect(completer_argument).to eq 'some\\ f'
+      end
+
+      it 'only unescapes valid escape sequences' do
+        completer_argument = nil
+        completer = -> (text) do
+          completer_argument = text
+          []
+        end
+        escape_options(
+          full_input: 'add not\\escaped',
+          completer_input: 'not\\escaped',
+          completer: completer,
+        )
+
+        expect(completer_argument).to eq 'not\\escaped'
+      end
     end
 
     context 'with an unclosed single quote' do
