@@ -17,7 +17,7 @@ module Gitsh
       OptionEscaper.new(
         completer,
         input,
-        line_editor.line_buffer,
+        line_editor,
       ).escaped_options
     end
 
@@ -26,10 +26,10 @@ module Gitsh
     attr_reader :completer, :line_editor
 
     class OptionEscaper
-      def initialize(completer, input, full_input)
+      def initialize(completer, input, line_editor)
         @completer = completer
         @input = input
-        @full_input = full_input
+        @line_editor = line_editor
       end
 
       def escaped_options
@@ -38,7 +38,7 @@ module Gitsh
 
       private
 
-      attr_reader :completer, :input, :full_input
+      attr_reader :completer, :input, :line_editor
 
       def unescaped_options
         completer.call(unescape(input))
@@ -60,22 +60,14 @@ module Gitsh
 
       def escapables
         if completing_quoted_argument?
-          QUOTED_STRING_ESCAPABLES[quote_char]
+          QUOTED_STRING_ESCAPABLES[line_editor.completion_quote_character]
         else
           UNQUOTED_STRING_ESCAPABLES
         end
       end
 
       def completing_quoted_argument?
-        @_quoted ||= (quote_char == '"' || quote_char == "'")
-      end
-
-      def quote_char
-        input_before_current_argument[-1]
-      end
-
-      def input_before_current_argument
-        full_input[0...-input.length]
+        !line_editor.completion_quote_character.nil?
       end
     end
   end

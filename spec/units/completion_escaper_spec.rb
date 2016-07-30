@@ -6,7 +6,7 @@ describe Gitsh::CompletionEscaper do
     context 'without any quote characters' do
       it 'escapes spaces, slashes, quotes, operators, etc.' do
         options = escape_options(
-          full_input: 'add op',
+          quote_character: nil,
           completer_input: 'op',
           completer: -> (_) do
             [
@@ -45,7 +45,7 @@ describe Gitsh::CompletionEscaper do
           ['some file.txt ']
         end
         options = escape_options(
-          full_input: 'add some\\ f',
+          quote_character: nil,
           completer_input: 'some\\ f',
           completer: completer,
         )
@@ -61,7 +61,7 @@ describe Gitsh::CompletionEscaper do
           []
         end
         escape_options(
-          full_input: 'add some\\\\ f',
+          quote_character: nil,
           completer_input: 'some\\\\ f',
           completer: completer,
         )
@@ -76,7 +76,7 @@ describe Gitsh::CompletionEscaper do
           []
         end
         escape_options(
-          full_input: 'add not\\escaped',
+          quote_character: nil,
           completer_input: 'not\\escaped',
           completer: completer,
         )
@@ -88,7 +88,7 @@ describe Gitsh::CompletionEscaper do
     context 'with an unclosed single quote' do
       it 'escapes slashes and single quotes, and strips trailing whitespace' do
         options = escape_options(
-          full_input: 'add \'op',
+          quote_character: "'",
           completer_input: 'op',
           completer: -> (_) do
             [
@@ -124,7 +124,7 @@ describe Gitsh::CompletionEscaper do
     context 'with an unclosed double quote' do
       it 'escapes slashes, double quotes, and $, and strips trailing whitespace' do
         options = escape_options(
-          full_input: 'add "op',
+          quote_character: '"',
           completer_input: 'op',
           completer: -> (_) do
             [
@@ -159,11 +159,14 @@ describe Gitsh::CompletionEscaper do
   end
 
   def escape_options(options)
-    full_input = options.fetch(:full_input)
+    quote_character = options.fetch(:quote_character)
     completer_input = options.fetch(:completer_input)
     completer = options.fetch(:completer)
 
-    line_editor = double(:line_editor, line_buffer: full_input)
+    line_editor = double(
+      :line_editor,
+      completion_quote_character: quote_character,
+    )
     escaper = described_class.new(completer, line_editor: line_editor)
     escaper.call(completer_input)
   end
