@@ -197,6 +197,55 @@ describe Gitsh::LineEditor do
       end
     end
 
+    describe '.completion_quote_character' do
+      context 'while completing an unquoted argument' do
+        it 'returns nil' do
+          with_temp_stdio do |stdio|
+            stdio.type("input\t")
+            quote_character = nil
+            described_class.completion_proc = -> (_) do
+              quote_character = described_class.completion_quote_character
+              []
+            end
+            described_class.completer_quote_characters = '\'"'
+            described_class.readline("> ", false)
+
+            expect(quote_character).to be_nil
+          end
+        end
+      end
+
+      context 'while completing a quoted argument' do
+        it 'returns a string containing the quote character' do
+          with_temp_stdio do |stdio|
+            stdio.type("~input\t")
+            quote_character = nil
+            described_class.completion_proc = -> (_) do
+              quote_character = described_class.completion_quote_character
+              []
+            end
+            described_class.completer_quote_characters = '~'
+            described_class.readline("> ", false)
+
+            expect(quote_character).to eq '~'
+          end
+        end
+      end
+
+      context 'after completion is finished' do
+        it 'returns nil' do
+          with_temp_stdio do |stdio|
+            stdio.type("\"input\t")
+            described_class.completion_proc = -> (_) { [] }
+            described_class.completer_quote_characters = '\'"'
+            described_class.readline("> ", false)
+
+            expect(described_class.completion_quote_character).to be nil
+          end
+        end
+      end
+    end
+
     it 'passes the last word of the user input to the completion proc' do
       with_temp_stdio do |stdio|
         passed_text = nil

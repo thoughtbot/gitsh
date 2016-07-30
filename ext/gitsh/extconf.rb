@@ -56,6 +56,7 @@ readline.require_var("rl_completion_append_character")
 readline.require_var("rl_editing_mode")
 readline.require_var("rl_line_buffer")
 readline.require_var("rl_char_is_quoted_p")
+readline.require_var("rl_completion_quote_character")
 
 readline.have_func("rl_getc")
 readline.have_func("rl_getc_function")

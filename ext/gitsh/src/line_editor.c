@@ -1038,6 +1038,28 @@ readline_s_get_completion_append_character(VALUE self)
     return rb_locale_str_new(buf, 1);
 }
 
+/*
+ * call-seq:
+ *   Gitsh::LineEditor.completion_quote_character -> char
+ *
+ * When called during a completion (e.g. from within your completion_proc),
+ * it will return a string containing the chracter used to quote the
+ * argument being completed, or nil if the argument is unquoted.
+ *
+ * When called at other times, it will always return nil.
+ */
+static VALUE
+readline_s_get_completion_quote_character(VALUE self)
+{
+    char buf[1];
+
+    if (rl_completion_quote_character == '\0')
+        return Qnil;
+
+    buf[0] = (char) rl_completion_quote_character;
+    return rb_locale_str_new(buf, 1);
+}
+
 #ifdef HAVE_RL_COMPLETER_WORD_BREAK_CHARACTERS
 /*
  * call-seq:
@@ -1529,6 +1551,8 @@ Init_line_editor_native(void)
                                readline_s_set_completion_append_character, 1);
     rb_define_singleton_method(mLineEditor, "completion_append_character",
                                readline_s_get_completion_append_character, 0);
+    rb_define_singleton_method(mLineEditor, "completion_quote_character",
+                               readline_s_get_completion_quote_character, 0);
     rb_define_singleton_method(mLineEditor, "completer_word_break_characters=",
                                readline_s_set_completer_word_break_characters, 1);
     rb_define_singleton_method(mLineEditor, "completer_word_break_characters",
