@@ -82,16 +82,8 @@ module Gitsh
       repo.current_head
     end
 
-    def repo_initialized?
-      repo.initialized?
-    end
-
-    def repo_has_modified_files?
-      repo.has_modified_files?
-    end
-
-    def repo_has_untracked_files?
-      repo.has_untracked_files?
+    def repo_status
+      repo.status
     end
 
     def repo_config_color(name, default)

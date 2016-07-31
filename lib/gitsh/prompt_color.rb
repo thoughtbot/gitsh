@@ -6,12 +6,12 @@ module Gitsh
       @env = env
     end
 
-    def status_color
-      if !env.repo_initialized?
+    def status_color(status)
+      if !status.initialized?
         env.repo_config_color('gitsh.color.uninitialized', 'normal red')
-      elsif env.repo_has_untracked_files?
+      elsif status.has_untracked_files?
         env.repo_config_color('gitsh.color.untracked', 'red')
-      elsif env.repo_has_modified_files?
+      elsif status.has_modified_files?
         env.repo_config_color('gitsh.color.modified', 'yellow')
       else
         env.repo_config_color('gitsh.color.default', 'blue')

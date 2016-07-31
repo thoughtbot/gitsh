@@ -244,23 +244,9 @@ describe Gitsh::Environment do
       end
     end
 
-    describe '#repo_initialized?' do
+    describe '#repo_status' do
       it 'is delegated to the GitRepository' do
-        expect(env).to delegate(:repo_initialized?).to(repo, :initialized?)
-      end
-    end
-
-    describe '#repo_has_modified_files?' do
-      it 'is delegated to the GitRepository' do
-        expect(env).to delegate(:repo_has_modified_files?).
-          to(repo, :has_modified_files?)
-      end
-    end
-
-    describe '#repo_has_untracked_files?' do
-      it 'is delegated to the GitRepository' do
-        expect(env).to delegate(:repo_has_untracked_files?).
-          to(repo, :has_untracked_files?)
+        expect(env).to delegate(:repo_status).to(repo, :status)
       end
     end
 

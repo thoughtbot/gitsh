@@ -1,14 +1,12 @@
 require 'open3'
 require 'shellwords'
+require 'gitsh/git_repository/status'
 
 module Gitsh
   class GitRepository
-    def initialize(env)
+    def initialize(env, options={})
       @env = env
-    end
-
-    def initialized?
-      git_dir && File.exist?(git_dir)
+      @status_factory = options.fetch(:status_factory, Status)
     end
 
     def git_dir
@@ -19,12 +17,8 @@ module Gitsh
       current_branch_name || current_tag_name || abbreviated_sha
     end
 
-    def has_untracked_files?
-      status.untracked_files.any?
-    end
-
-    def has_modified_files?
-      status.modified_files.any?
+    def status
+      status_factory.new(git_output('status --porcelain'), git_dir)
     end
 
     def heads
@@ -97,7 +91,7 @@ module Gitsh
 
     private
 
-    attr_reader :env
+    attr_reader :env, :status_factory
 
     def current_branch_name
       branch_name = git_output('symbolic-ref HEAD --short')
@@ -120,34 +114,12 @@ module Gitsh
       end
     end
 
-    def status
-      StatusParser.new(git_output('status --porcelain'))
-    end
-
     def git_output(command)
       Open3.capture3(git_command(command)).first.chomp
     end
 
     def git_command(sub_command, force_default = false)
       "#{env.git_command(force_default)} #{sub_command}"
-    end
-
-    class StatusParser
-      def initialize(status_porcelain)
-        @status_porcelain = status_porcelain
-      end
-
-      def untracked_files
-        status_porcelain.lines.select { |l| l.start_with?('??') }
-      end
-
-      def modified_files
-        status_porcelain.lines.select { |l| l =~ /^ ?[A-Z]/ }
-      end
-
-      private
-
-      attr_reader :status_porcelain
     end
   end
 end

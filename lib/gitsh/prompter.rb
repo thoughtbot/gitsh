@@ -16,83 +16,105 @@ module Gitsh
     end
 
     def prompt
-      padded_prompt_format.gsub(/%[bBcdDw#]/, {
-        '%b' => branch_name,
-        "%B" => shortened_branch_name,
-        '%c' => status_color,
-        '%d' => working_directory,
-        '%D' => File.basename(working_directory),
-        '%w' => clear_color,
-        '%#' => terminator
-      })
+      Prompt.new(env, use_color, prompt_color).to_s
     end
 
     private
 
-    attr_reader :env, :prompt_color
+    attr_reader :env, :use_color, :prompt_color
 
-    def working_directory
-      Dir.getwd.sub(/\A#{Dir.home}/, '~')
-    end
-
-    def padded_prompt_format
-      "#{prompt_format.chomp} "
-    end
-
-    def prompt_format
-      env.fetch('gitsh.prompt') { DEFAULT_FORMAT }
-    end
-
-    def shortened_branch_name
-      branch_name[0...BRANCH_CHAR_LIMIT] + ellipsis
-    end
-
-    def ellipsis
-      if branch_name.length > BRANCH_CHAR_LIMIT
-        '…'
-      else
-        ''
+    class Prompt
+      def initialize(env, use_color, prompt_color)
+        @env = env
+        @use_color = use_color
+        @prompt_color = prompt_color
       end
-    end
 
-    def branch_name
-      if env.repo_initialized?
-        env.repo_current_head
-      else
-        'uninitialized'
+      def to_s
+        padded_prompt_format.gsub(/%[bBcdDw#]/) do |match|
+          case match
+          when "%b" then branch_name
+          when "%B" then shortened_branch_name
+          when "%c" then status_color
+          when "%d" then working_directory
+          when "%D" then File.basename(working_directory)
+          when "%w" then clear_color
+          when "%#" then terminator
+          end
+        end
       end
-    end
 
-    def terminator
-      if !env.repo_initialized?
-        '!!'
-      elsif env.repo_has_untracked_files?
-        '!'
-      elsif env.repo_has_modified_files?
-        '&'
-      else
-        '@'
+      private
+
+      attr_reader :env, :prompt_color
+
+      def working_directory
+        Dir.getwd.sub(/\A#{Dir.home}/, '~')
       end
-    end
 
-    def status_color
-      if use_color?
-        prompt_color.status_color
-      else
-        Colors::NONE
+      def padded_prompt_format
+        "#{prompt_format.chomp} "
       end
-    end
 
-    def clear_color
-      if use_color?
-        Colors::CLEAR
-      else
-        Colors::NONE
+      def prompt_format
+        env.fetch('gitsh.prompt') { DEFAULT_FORMAT }
       end
-    end
 
-    def use_color?
-      @use_color
+      def shortened_branch_name
+        branch_name[0...BRANCH_CHAR_LIMIT] + ellipsis
+      end
+
+      def ellipsis
+        if branch_name.length > BRANCH_CHAR_LIMIT
+          '…'
+        else
+          ''
+        end
+      end
+
+      def branch_name
+        @branch_name ||= if repo_status.initialized?
+          env.repo_current_head
+        else
+          'uninitialized'
+        end
+      end
+
+      def terminator
+        if !repo_status.initialized?
+          '!!'
+        elsif repo_status.has_untracked_files?
+          '!'
+        elsif repo_status.has_modified_files?
+          '&'
+        else
+          '@'
+        end
+      end
+
+      def status_color
+        if use_color?
+          prompt_color.status_color(repo_status)
+        else
+          Colors::NONE
+        end
+      end
+
+      def clear_color
+        if use_color?
+          Colors::CLEAR
+        else
+          Colors::NONE
+        end
+      end
+
+      def use_color?
+        @use_color
+      end
+
+      def repo_status
+        @repo_status ||= env.repo_status
+      end
     end
   end
 end

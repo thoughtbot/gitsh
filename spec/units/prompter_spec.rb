@@ -10,7 +10,9 @@ describe Gitsh::Prompter do
     context 'with the default prompt format' do
       context 'an un-initialized git repository' do
         it 'displays an uninitialized prompt' do
-          env = env_double(repo_initialized?: false)
+          env = env_double(
+            repo_status: double("Status", initialized?: false),
+          )
           prompter = Gitsh::Prompter.new(env: env)
 
           expect(prompter.prompt).to eq(
@@ -32,7 +34,13 @@ describe Gitsh::Prompter do
 
       context 'a repository with untracked files' do
         it 'displays the branch name and an untracked symbol' do
-          env = env_double(repo_has_untracked_files?: true)
+          env = env_double(
+            repo_status: double(
+              "Status",
+              initialized?: true,
+              has_untracked_files?: true,
+            ),
+          )
           prompter = Gitsh::Prompter.new(env: env)
 
           expect(prompter.prompt).to eq(
@@ -43,7 +51,14 @@ describe Gitsh::Prompter do
 
       context 'a repository with uncommitted changes' do
         it 'displays the branch name an a modified symbol' do
-          env = env_double(repo_has_modified_files?: true)
+          env = env_double(
+            repo_status: double(
+              "Status",
+              initialized?: true,
+              has_modified_files?: true,
+              has_untracked_files?: false,
+            ),
+          )
           prompter = Gitsh::Prompter.new(env: env)
 
           expect(prompter.prompt).to eq(
@@ -54,7 +69,14 @@ describe Gitsh::Prompter do
 
       context 'with color disabled' do
         it 'displays the prompt without colors' do
-          env = env_double(repo_has_modified_files?: true)
+          env = env_double(
+            repo_status: double(
+              "Status",
+              initialized?: true,
+              has_modified_files?: true,
+              has_untracked_files?: false,
+            ),
+          )
           prompter = Gitsh::Prompter.new(color: false, env: env)
 
           expect(prompter.prompt).to eq "#{cwd_basename} master& "
@@ -73,18 +95,33 @@ describe Gitsh::Prompter do
 
     context 'with a custom prompt format' do
       it 'replaces %# with the prompt terminator' do
-        env = env_double(repo_has_modified_files?: true, format: '%#')
+        env = env_double(
+          repo_status: double(
+            "Status",
+            initialized?: true,
+            has_modified_files?: true,
+            has_untracked_files?: false,
+          ),
+          format: "%#",
+        )
         prompter = Gitsh::Prompter.new(env: env)
 
         expect(prompter.prompt).to eq "& "
       end
 
       it 'replaces %c with a color code based on the status' do
-        prompt_color = double('PromptColor', status_color: blue)
-        env = env_double(repo_has_modified_files?: true, format: '%c')
-        prompter = Gitsh::Prompter.new(env: env, prompt_color: prompt_color)
+        env = env_double(
+          repo_status: double(
+            "Status",
+            initialized?: true,
+            has_modified_files?: true,
+            has_untracked_files?: false,
+          ),
+          format: "%c",
+        )
+        prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq "#{blue} "
+        expect(prompter.prompt).to eq "#{red} "
       end
 
       it 'replaces %w with the code to restore the default color' do
@@ -134,9 +171,12 @@ describe Gitsh::Prompter do
     def env_double(attrs={})
       format = attrs.delete(:format)
       default_attrs = {
-        repo_initialized?: true,
-        repo_has_modified_files?: false,
-        repo_has_untracked_files?: false,
+        repo_status: double(
+          "Status",
+          initialized?: true,
+          has_modified_files?: false,
+          has_untracked_files?: false,
+        ),
         repo_current_head: 'master',
         repo_config_color: red,
       }

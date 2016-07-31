@@ -37,4 +37,23 @@ describe 'The gitsh prompt' do
       expect(gitsh).to prompt_with "#{Dir.getwd}:master@ "
     end
   end
+
+  it 'displays the repository status using prompt sigils' do
+    GitshRunner.interactive do |gitsh|
+      expect(gitsh).to prompt_with "#{cwd_basename} uninitialized!! "
+
+      gitsh.type('init')
+
+      expect(gitsh).to prompt_with "#{cwd_basename} master@ "
+
+      write_file 'example.txt'
+      gitsh.type('')
+
+      expect(gitsh).to prompt_with "#{cwd_basename} master! "
+
+      gitsh.type('add --intent-to-add example.txt')
+
+      expect(gitsh).to prompt_with "#{cwd_basename} master& "
+    end
+  end
 end

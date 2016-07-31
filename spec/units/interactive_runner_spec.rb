@@ -111,7 +111,6 @@ describe Gitsh::InteractiveRunner do
     @env ||= double('Environment', {
       print: nil,
       puts: nil,
-      repo_initialized?: false,
       repo_config_color: '',
       fetch: '',
       :[] => nil
