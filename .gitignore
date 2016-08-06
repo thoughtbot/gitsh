@@ -27,6 +27,7 @@ vendor/gems
 
 # Ruby C-extension
 *.bundle
+*.so
 mkmf.log
 .RUBYARCHDIR*
 
