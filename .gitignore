@@ -24,6 +24,7 @@ lib/gitsh/version.rb
 gitsh-*.tar.gz
 vendor/gems
 *.o
+*.so
 
 # Ruby C-extension
 *.bundle
