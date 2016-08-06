@@ -20,8 +20,8 @@ module Gitsh
         '%b' => branch_name,
         "%B" => shortened_branch_name,
         '%c' => status_color,
-        '%d' => Dir.getwd,
-        '%D' => File.basename(Dir.getwd),
+        '%d' => working_directory,
+        '%D' => File.basename(working_directory),
         '%w' => clear_color,
         '%#' => terminator
       })
@@ -30,6 +30,10 @@ module Gitsh
     private
 
     attr_reader :env, :prompt_color
+
+    def working_directory
+      Dir.getwd.sub(/\A#{Dir.home}/, '~')
+    end
 
     def padded_prompt_format
       "#{prompt_format.chomp} "
