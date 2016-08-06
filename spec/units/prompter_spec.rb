@@ -118,14 +118,16 @@ describe Gitsh::Prompter do
         env = env_double(format: '%d')
         prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq "#{Dir.getwd} "
+        expect(prompter.prompt).to eq "#{Dir.getwd.sub(/\A#{Dir.home}/, '~')} "
       end
 
       it 'replaces %D with the basename of the current directory' do
         env = env_double(format: '%D')
         prompter = Gitsh::Prompter.new(env: env)
 
-        expect(prompter.prompt).to eq "#{File.basename(Dir.getwd)} "
+        expect(prompter.prompt).to eq(
+          "#{File.basename(Dir.getwd.sub(/\A#{Dir.home}/, '~'))} "
+        )
       end
     end
 
