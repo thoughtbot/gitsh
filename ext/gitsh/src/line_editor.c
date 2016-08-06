@@ -85,6 +85,8 @@ static int readline_completion_append_character;
 
 static char **readline_attempted_completion_function(const char *text,
                                                      int start, int end);
+int readline_char_is_quoted(char *text, int index);
+long byte_index_to_char_index(VALUE str, long byte_index);
 
 #define OutputStringValue(str) do {\
     SafeStringValue(str);\
@@ -255,18 +257,46 @@ readline_event(void)
 #endif
 
 int
-readline_char_is_quoted(char *text, int index)
+readline_char_is_quoted(char *text, int byte_index)
 {
-    VALUE proc, result;
+    VALUE proc, result, str;
+    long char_index;
 
     proc = rb_attr_get(mLineEditor, quoting_detection_proc);
     if (NIL_P(proc)) {
         return 0;
     }
 
-    result = rb_funcall(proc, rb_intern("call"), 2,
-            rb_locale_str_new_cstr(text), INT2FIX(index));
+    str = rb_locale_str_new_cstr(text);
+    char_index = byte_index_to_char_index(str, (long)byte_index);
+
+    if (char_index == -1) {
+        rb_raise(rb_eIndexError, "failed to find character at byte index");
+    }
+
+    result = rb_funcall(proc, rb_intern("call"), 2, str, LONG2FIX(char_index));
     return result ? 1 : 0;
+}
+
+long
+byte_index_to_char_index(VALUE str, long byte_index)
+{
+    const char *ptr;
+    long ci, bi, len, clen;
+    rb_encoding *enc;
+
+    enc = rb_enc_get(str);
+    len = RSTRING_LEN(str);
+    ptr = RSTRING_PTR(str);
+
+    for (bi = 0, ci = 0; bi < len; bi += clen, ++ci) {
+        if (bi == byte_index) {
+            return ci;
+        }
+        clen = rb_enc_mbclen(ptr + bi, ptr + len, enc);
+    }
+
+    return -1;
 }
 
 #if USE_INSERT_IGNORE_ESCAPE

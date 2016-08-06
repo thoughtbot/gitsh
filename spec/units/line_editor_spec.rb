@@ -466,6 +466,33 @@ describe Gitsh::LineEditor do
         end
       end
     end
+
+    context 'with quoting_detection_proc set and multibyte input' do
+      it 'determines if a word break character really applies' do
+        with_temp_stdio do |stdio|
+          passed_text = nil
+          escaped_char_indexes = []
+          described_class.completion_proc = -> (text) do
+            passed_text = text
+            ['completion']
+          end
+          described_class.completer_quote_characters = '\'"'
+          described_class.completer_word_break_characters = ' '
+          described_class.quoting_detection_proc = -> (text, index) do
+            escaped = index > 0 && text[index-1] == '\\'
+            escaped_char_indexes << index if escaped
+            escaped
+          end
+
+          stdio.type("\u3042\u3093 second\\ third\t")
+          line = described_class.readline('> ', false)
+
+          expect(escaped_char_indexes).to eq [10]
+          expect(passed_text).to eq 'second\\ third'
+          expect(line).to eq "\u3042\u3093 completion "
+        end
+      end
+    end
   end
 
   describe 'pre-input hooks' do
