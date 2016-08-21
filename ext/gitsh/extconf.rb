@@ -53,6 +53,7 @@ end
 
 readline.require_func("rl_set_screen_size")
 readline.require_var("rl_completion_append_character")
+readline.require_var("rl_completion_suppress_quote")
 readline.require_var("rl_editing_mode")
 readline.require_var("rl_line_buffer")
 readline.require_var("rl_char_is_quoted_p")

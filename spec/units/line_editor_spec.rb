@@ -13,6 +13,7 @@ describe Gitsh::LineEditor do
       completer_quote_characters: described_class.completer_quote_characters || '',
       completer_word_break_characters: described_class.completer_word_break_characters || ' ',
       completion_append_character: described_class.completion_append_character,
+      completion_suppress_quote: described_class.completion_suppress_quote,
       completion_case_fold: described_class.completion_case_fold,
       completion_proc: described_class.completion_proc,
       pre_input_hook: described_class.pre_input_hook,
@@ -20,6 +21,7 @@ describe Gitsh::LineEditor do
     }
 
     described_class.completion_append_character = ' '
+    described_class.completion_suppress_quote = false
     described_class.delete_text
     described_class.point = 0
   end
@@ -362,6 +364,23 @@ describe Gitsh::LineEditor do
           line = described_class.readline('> ', false)
 
           expect(line).to eq 'first outputx'
+        end
+      end
+    end
+
+    context 'when completion_suppress_quote is set' do
+      it 'does not append a closing quote' do
+        with_temp_stdio do |stdio|
+          described_class.completion_proc = -> (_text) do
+            described_class.completion_suppress_quote = true
+            ['output']
+          end
+          described_class.completer_quote_characters = "'"
+
+          stdio.type("first 'second\t")
+          line = described_class.readline('> ', false)
+
+          expect(line).to eq "first 'output "
         end
       end
     end

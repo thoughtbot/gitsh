@@ -22,6 +22,8 @@ module Gitsh
 
       def call
         line_editor.completion_append_character = completion_append_character
+        line_editor.completion_suppress_quote = incomplete_path?
+
         matches
       end
 
@@ -30,11 +32,15 @@ module Gitsh
       attr_reader :input, :line_editor, :env, :internal_command
 
       def completion_append_character
-        if matches.size == 1 && matches.first.end_with?('/')
+        if incomplete_path?
           nil
         else
           ' '
         end
+      end
+
+      def incomplete_path?
+        matches.size == 1 && matches.first.end_with?('/')
       end
 
       def matches

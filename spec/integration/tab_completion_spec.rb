@@ -87,6 +87,23 @@ describe 'Completing things with tab' do
     end
   end
 
+  it 'completes quoted paths' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type('init')
+      make_directory('sub directory')
+      write_file('sub directory/some text file.txt')
+      write_file('sub directory/some other file.txt')
+      gitsh.type("add 'sub\tso\tother\t")
+
+      expect(gitsh).to output_no_errors
+
+      gitsh.type('commit -m "First commit"')
+      gitsh.type('ls-files')
+
+      expect(gitsh).to output(/sub directory\/some other file\.txt/)
+    end
+  end
+
   it 'completes after punctuation' do
     GitshRunner.interactive do |gitsh|
       gitsh.type('init')

@@ -102,7 +102,7 @@ describe Gitsh::Completer do
     end
 
     context 'with multiple matching options' do
-      it 'sets the completion_append_character to a space' do
+      it 'configures the line editor to append quotes and spaces' do
         line_editor = build_line_editor(input: 'add ')
         completer = build_completer(line_editor: line_editor)
         in_a_temporary_directory do
@@ -113,12 +113,14 @@ describe Gitsh::Completer do
 
           expect(line_editor).
             to have_received(:completion_append_character=).with(' ')
+          expect(line_editor).
+            to have_received(:completion_suppress_quote=).with(false)
         end
       end
     end
 
     context 'with a single matching option that is not a directory path' do
-      it 'sets the completion_append_character to a space' do
+      it 'configures the line editor to append quotes and spaces' do
         line_editor = build_line_editor(input: 'add ')
         completer = build_completer(line_editor: line_editor)
         in_a_temporary_directory do
@@ -128,12 +130,14 @@ describe Gitsh::Completer do
 
           expect(line_editor).
             to have_received(:completion_append_character=).with(' ')
+          expect(line_editor).
+            to have_received(:completion_suppress_quote=).with(false)
         end
       end
     end
 
     context 'with a single matching option that is a directory path' do
-      it 'sets the completion_append_character to nil' do
+      it 'configures the line editor not to append quotes or spaces' do
         line_editor = build_line_editor(input: 'add ')
         completer = build_completer(line_editor: line_editor)
         in_a_temporary_directory do
@@ -143,6 +147,8 @@ describe Gitsh::Completer do
 
           expect(line_editor).
             to have_received(:completion_append_character=).with(nil)
+          expect(line_editor).
+            to have_received(:completion_suppress_quote=).with(true)
         end
       end
     end
@@ -167,6 +173,7 @@ describe Gitsh::Completer do
       'LineEditor',
       line_buffer: options.fetch(:input),
       :completion_append_character= => nil,
+      :completion_suppress_quote= => nil,
     )
   end
 

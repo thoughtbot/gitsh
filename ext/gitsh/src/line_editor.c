@@ -1070,6 +1070,36 @@ readline_s_get_completion_append_character(VALUE self)
 
 /*
  * call-seq:
+ *   Gitsh::LineEditor.completion_suppress_quote = true_or_false
+ *
+ * When set to true, indicates that Readline should not append a closing
+ * quote character when completing a quoted argument.
+ *
+ * Can only be set during a completion, i.e. from within your
+ * LineEditor.completion_proc.
+ */
+static VALUE
+readline_s_set_completion_supress_quote(VALUE self, VALUE flag)
+{
+    rl_completion_suppress_quote = RTEST(flag);
+    return self;
+}
+
+/*
+ * call-seq:
+ *   Gitsh::LineEditor.completion_suppress_quote -> boolean
+ *
+ * Returns a boolean indicating if Readline will suppress the closing quote
+ * when completion a quoted argument. The default is false (a closing
+ * quote will be appended).
+ */
+static VALUE
+readline_s_get_completion_supress_quote(VALUE self)
+{
+    return rl_completion_suppress_quote ? Qtrue : Qfalse;
+}
+/*
+ * call-seq:
  *   Gitsh::LineEditor.completion_quote_character -> char
  *
  * When called during a completion (e.g. from within your completion_proc),
@@ -1581,6 +1611,10 @@ Init_line_editor_native(void)
                                readline_s_set_completion_append_character, 1);
     rb_define_singleton_method(mLineEditor, "completion_append_character",
                                readline_s_get_completion_append_character, 0);
+    rb_define_singleton_method(mLineEditor, "completion_suppress_quote=",
+                               readline_s_set_completion_supress_quote, 1);
+    rb_define_singleton_method(mLineEditor, "completion_suppress_quote",
+                               readline_s_get_completion_supress_quote, 0);
     rb_define_singleton_method(mLineEditor, "completion_quote_character",
                                readline_s_get_completion_quote_character, 0);
     rb_define_singleton_method(mLineEditor, "completer_word_break_characters=",
