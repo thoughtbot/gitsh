@@ -22,15 +22,15 @@ module Gitsh
     attr_reader :completer, :line_editor
 
     def escape(option)
-      option.gsub(/([#{escapables}])/) { |char| "\\#{char}" }
+      option.gsub(escapables) { |char| "\\#{char}" }
     end
 
     def unescape(input)
-      input.gsub(/\\([#{escapables}])/, '\1')
+      input.gsub(/\\(#{escapables})/, '\1')
     end
 
     def escapables
-      ESCAPABLES[line_editor.completion_quote_character]
+      ESCAPABLES[line_editor.completion_quote_character].to_regexp
     end
   end
 end
