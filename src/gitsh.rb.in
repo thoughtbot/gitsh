@@ -1,6 +1,6 @@
 #!@RUBY@ --disable-gems
 
-$LOAD_PATH.unshift('@rubydir@')
+$LOAD_PATH.unshift('@rubylibdir@')
 
 require '@gemsetuppath@'
 require 'gitsh/cli'

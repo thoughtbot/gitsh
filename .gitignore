@@ -16,9 +16,10 @@ compile
 depcomp
 test-driver
 */.deps
+*/.dirstamp
 
 # Make targets
-src/gitsh
+gitsh
 src/gitsh.rb
 lib/gitsh/version.rb
 gitsh-*.tar.gz

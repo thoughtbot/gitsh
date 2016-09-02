@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.68])
 AC_INIT(gitsh, 0.10, hello@thoughtbot.com)
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([subdir-objects])
 
 AC_ARG_VAR([RUBY],[The path of the Ruby binary to use])
 
@@ -44,19 +44,21 @@ AS_IF(
 cd "$current_dir"
 
 rubydir=$datadir/$PACKAGE/ruby
-pkgrubydir=$rubydir/$PACKAGE
-libfiles="$(cd "$(dirname "$0")/lib/gitsh"; echo $(find . -name \*.rb | cut -c 3-))"
-vendorfiles="$(cd "$(dirname "$0")/vendor"; echo $(find gems -type f))"
-testfiles="$(cd "$(dirname "$0")/spec"; echo $(find integration units -type f -name \*rb))"
-gemsetuppath=$datadir/$PACKAGE/gems/setup.rb
+rubylibdir=$rubydir/lib
+pkgrubylibdir=$rubylibdir/gitsh
+libfiles="$(echo $(find "$(dirname "$0")/lib/gitsh" -name \*.rb | cut -c 3-))"
+vendorfiles="$(echo $(find "$(dirname "$0")/vendor/gems" -type f))"
+testfiles="$(echo $(find "$(dirname "$0")/spec/integration" "$(dirname "$0")/spec/units" -type f -name \*rb))"
+gemsetuppath=$datadir/$PACKAGE/vendor/gems/setup.rb
 
 AC_SUBST([RUBY])
 AC_SUBST([rubydir])
-AC_SUBST([pkgrubydir])
+AC_SUBST([rubylibdir])
+AC_SUBST([pkgrubylibdir])
 AC_SUBST([libfiles])
 AC_SUBST([vendorfiles])
 AC_SUBST([testfiles])
 AC_SUBST([gemsetuppath])
 
-AC_CONFIG_FILES([Makefile src/Makefile lib/gitsh/Makefile man/Makefile vendor/Makefile spec/Makefile INSTALL])
+AC_CONFIG_FILES([Makefile INSTALL])
 AC_OUTPUT

@@ -1,6 +1,59 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = src man vendor spec ext/gitsh lib/gitsh
-EXTRA_DIST = LICENSE README.md INSTALL
+EXTRA_DIST = \
+	LICENSE \
+	README.md \
+	INSTALL \
+	vendor/vendorize \
+	ext/gitsh/extconf.rb \
+	ext/gitsh/src/line_editor.c \
+	src/gitsh.rb.in \
+	lib/gitsh/version.rb.in
+
+bin_PROGRAMS = gitsh
+gitsh_SOURCES = src/gitsh.c
+AM_CPPFLAGS = -DGITSH_RB_PATH="\"$(rubydir)/$(PACKAGE).rb\""
+
+dist_man_MANS = man/man1/gitsh.1
+nobase_dist_pkgdata_DATA = $(vendorfiles)
+nobase_dist_ruby_DATA = $(libfiles)
+pkgrubylib_DATA = lib/gitsh/version.rb
+ruby_SCRIPTS = src/gitsh.rb
+
+CLEANFILES = src/gitsh.rb lib/gitsh/version.rb
+
+substitute_values = sed \
+	-e 's|@RUBY[@]|$(RUBY)|g' \
+	-e 's|@rubylibdir[@]|$(rubylibdir)|g' \
+	-e 's|@gemsetuppath[@]|$(gemsetuppath)|g' \
+	-e 's|@PACKAGE_VERSION[@]|$(PACKAGE_VERSION)|g'
+
+src/gitsh.rb: Makefile src/gitsh.rb.in
+	$(substitute_values) $(srcdir)/$@.in > $@
+	chmod +x $@
+
+lib/gitsh/version.rb: Makefile lib/gitsh/version.rb.in
+	$(substitute_values) $(srcdir)/$@.in > $@
+
+all-local: 
+	cd ext/gitsh && $(MAKE)
+
+clean-local:
+	cd ext/gitsh && $(MAKE) clean
+
+distclean-local:
+	rm -rf vendor/gems
+	rm -f ext/gitsh/Makefile
+
+
+# Test
+
+TESTS = $(testfiles)
+TEST_EXTENSIONS = .rb
+RB_LOG_COMPILER = bundle exec rspec
+AM_RB_LOG_FLAGS = -I $(abs_top_builddir)/spec -I $(abs_top_builddir)/lib
+
+
+# Release
 
 .PHONY: release \
 	release_build release_push release_clean \
@@ -8,7 +61,7 @@ EXTRA_DIST = LICENSE README.md INSTALL
 	release_push_tarball release_push_homebrew release_push_arch \
 	release_clean_tarball release_clean_homebrew release_clean_arch
 
-edit_package = sed \
+substitute_package_values = sed \
 	-e 's|@PACKAGE[@]|$(PACKAGE)|g' \
 	-e 's|@PACKAGE_VERSION[@]|$(PACKAGE_VERSION)|g' \
 	-e 's|@DIST_ARCHIVES[@]|$(DIST_ARCHIVES)|g' \
@@ -38,7 +91,7 @@ release_clean_tarball:
 
 release_build_homebrew: DIST_SHA
 	git clone git@github.com:thoughtbot/homebrew-formulae.git homebrew-formulae
-	$(edit_package) homebrew/gitsh.rb.in > homebrew-formulae/Formula/gitsh.rb
+	$(substitute_package_values) homebrew/gitsh.rb.in > homebrew-formulae/Formula/gitsh.rb
 	cd homebrew-formulae &&\
 		git commit -am "gitsh: Release version $(PACKAGE_VERSION)"
 
@@ -52,7 +105,7 @@ release_clean_homebrew:
 release_build_arch: DIST_SHA
 	git clone --branch master git@github.com:thoughtbot/gitsh.git release-arch
 	cd release-arch &&\
-		$(edit_package) arch/PKGBUILD.in > arch/PKGBUILD &&\
+		$(substitute_package_values) arch/PKGBUILD.in > arch/PKGBUILD &&\
 		git commit -m "Arch package for version $(PACKAGE_VERSION)" -- arch/PKGBUILD &&\
 		git tag v$(PACKAGE_VERSION)
 
