@@ -119,7 +119,7 @@ free software, and may be redistributed under the terms specified in the
 
 ![thoughtbot](https://thoughtbot.com/logo.png)
 
-gitsh is was created by thoughtbot's
+gitsh was created by thoughtbot's
 [Stockholm software development team][team]
 and continues to be maintained and funded by thoughtbot.
 The names and logos for thoughtbot are trademarks of thoughtbot, inc.
