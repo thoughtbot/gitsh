@@ -30,7 +30,7 @@ sh$</code></pre>
         gitsh% ⏎
         # On branch master
         nothing to commit, working directory clean
-        gitsh% 
+        gitsh%
 
 * Easily execute shell commands:
 
@@ -76,6 +76,7 @@ sh$</code></pre>
 
 * Mac OS X, via homebrew:
 
+        brew install ruby   # for proper readline support
         brew tap thoughtbot/formulae
         brew install gitsh
 
@@ -85,7 +86,7 @@ sh$</code></pre>
 
         sudo pkg_add gitsh
 
-See the [installation guide][INSTALL] for install instructions for other
+See the [installation guide][INSTALL] for details and install instructions for other
 operating systems.
 
 ## Contributing to gitsh
