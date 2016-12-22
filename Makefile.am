@@ -122,4 +122,4 @@ release_clean_arch:
 	rm -rf release-arch
 
 DIST_SHA: Makefile dist
-	$(eval DIST_SHA := $(shell shasum $(srcdir)/$(DIST_ARCHIVES) | cut -d' ' -f1))
+	$(eval DIST_SHA := $(shell shasum -a 256 $(srcdir)/$(DIST_ARCHIVES) | cut -d' ' -f1))
