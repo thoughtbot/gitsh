@@ -41,8 +41,8 @@ clean-local:
 	cd ext/gitsh && $(MAKE) clean
 
 install-data-local:
-	mkdir -p "$(pkgrubylibdir)"
-	cp ext/gitsh/line_editor_native.* "$(pkgrubylibdir)"
+	mkdir -p "$(DESTDIR)$(pkgrubylibdir)"
+	cp ext/gitsh/line_editor_native.* "$(DESTDIR)$(pkgrubylibdir)"
 
 distclean-local:
 	rm -rf vendor/gems
