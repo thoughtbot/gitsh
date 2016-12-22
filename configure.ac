@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT(gitsh, 0.10, hello@thoughtbot.com)
+AC_INIT(gitsh, 0.11, hello@thoughtbot.com)
 AM_INIT_AUTOMAKE([subdir-objects])
 
 AC_ARG_VAR([RUBY],[The path of the Ruby binary to use])
