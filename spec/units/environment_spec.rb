@@ -210,23 +210,6 @@ describe Gitsh::Environment do
     end
   end
 
-  describe '#readline_version' do
-    it 'returns libedit if Readline.emacs_editing_mode is not implemented' do
-      allow(Gitsh::LineEditor).to receive(:emacs_editing_mode).
-        and_raise(NotImplementedError)
-      env = described_class.new
-
-      expect(env.readline_version).to eq('libedit')
-    end
-
-    it 'returns GNU Readline if Readline.emacs_editing_mode is implemented' do
-      allow(Gitsh::LineEditor).to receive(:emacs_editing_mode).and_return(nil)
-      env = described_class.new
-
-      expect(env.readline_version).to eq('GNU Readline')
-    end
-  end
-
   context 'delegated methods' do
     let(:repo) { double }
     let(:repo_factory) { double('RepositoryFactory', new: repo) }

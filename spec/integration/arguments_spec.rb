@@ -14,8 +14,7 @@ describe '--version' do
 
     expect(runner).to raise_error SystemExit
     expect(error.string).to be_empty
-    expect(output.string.chomp).
-      to eq "#{Gitsh::VERSION} (using #{env.readline_version})"
+    expect(output.string.chomp).to eq Gitsh::VERSION
   end
 end
 

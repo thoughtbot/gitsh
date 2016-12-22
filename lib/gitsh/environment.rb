@@ -102,13 +102,6 @@ module Gitsh
       (repo.aliases + local_aliases).sort
     end
 
-    def readline_version
-      LineEditor.emacs_editing_mode
-      'GNU Readline'
-    rescue NotImplementedError
-      'libedit'
-    end
-
     private
 
     attr_reader :variables, :magic_variables, :repo

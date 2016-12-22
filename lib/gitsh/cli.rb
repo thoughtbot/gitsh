@@ -74,7 +74,7 @@ module Gitsh
         end
 
         opts.on_tail('--version', 'Display the version and exit') do
-          env.puts "#{VERSION} (using #{env.readline_version})"
+          env.puts VERSION
           exit EX_OK
         end
 
