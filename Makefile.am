@@ -75,7 +75,7 @@ release_push: release_push_tarball release_push_homebrew release_push_arch
 
 release_clean: release_clean_tarball release_clean_homebrew release_clean_arch
 
-release_build_tarball: Makefile distcheck
+release_build_tarball: Makefile dist
 	git clone --branch gh-pages git@github.com:thoughtbot/gitsh.git gh-pages
 	cp $(DIST_ARCHIVES) gh-pages
 	cd gh-pages &&\
@@ -117,5 +117,5 @@ release_push_arch:
 release_clean_arch:
 	rm -rf release-arch
 
-DIST_SHA: Makefile distcheck
+DIST_SHA: Makefile dist
 	$(eval DIST_SHA := $(shell shasum $(srcdir)/$(DIST_ARCHIVES) | cut -d' ' -f1))
