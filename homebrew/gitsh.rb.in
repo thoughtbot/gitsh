@@ -4,6 +4,7 @@ class Gitsh < Formula
   SYSTEM_RUBY_PATH = '/usr/bin/ruby'
   HOMEBREW_RUBY_PATH = "#{HOMEBREW_PREFIX}/bin/ruby"
 
+  env :std
   homepage 'https://github.com/thoughtbot/@PACKAGE@/'
   url 'http://thoughtbot.github.io/@PACKAGE@/@DIST_ARCHIVES@'
   sha256 '@DIST_SHA@'
