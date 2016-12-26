@@ -1,204 +1,88 @@
-require 'parslet'
-require 'gitsh/parser/character_class'
-require 'gitsh/transformer'
+require 'rltk'
+require 'gitsh/arguments/string_argument'
+require 'gitsh/arguments/composite_argument'
+require 'gitsh/arguments/variable_argument'
+require 'gitsh/arguments/subshell'
+require 'gitsh/commands/factory'
+require 'gitsh/commands/git_command'
+require 'gitsh/commands/internal_command'
+require 'gitsh/commands/shell_command'
+require 'gitsh/commands/noop'
+require 'gitsh/commands/tree'
 
 module Gitsh
-  class Parser < Parslet::Parser
-    UNQUOTED_STRING_TERMINATORS = CharacterClass.new([
-      ' ', "\t", "\r", "\n", "\f",  # Whitespace
-      "'", '"',                     # Quoted string delimiter
-      '&', '|', ';',                # Command separator
-      '#',                          # Comment prefix
-    ]).freeze
+  class Parser < RLTK::Parser
+    COMMAND_PREFIX_MATCHER = /^([:!])?(.+)$/
+    COMMAND_CLASS_BY_PREFIX = {
+      nil => Gitsh::Commands::GitCommand,
+      ':' => Gitsh::Commands::InternalCommand,
+      '!' => Gitsh::Commands::ShellCommand,
+    }.freeze
 
-    UNQUOTED_STRING_ESCAPABLES = UNQUOTED_STRING_TERMINATORS + CharacterClass.new([
-      '\\',                         # Escape character
-      '$',                          # Variable or sub-shell prefix
-    ]).freeze
+    class Environment < RLTK::Parser::Environment
+      attr_reader :gitsh_env
 
-    SOFT_STRING_ESCAPABLES = CharacterClass.new([
-      '\\',                         # Escape character
-      '$',                          # Variable or sub-shell prefix
-      '"',                          # String terminator
-    ]).freeze
-
-    HARD_STRING_ESCAPABLES = CharacterClass.new([
-      '\\',                         # Escape character
-      "'",                          # String terminator
-    ]).freeze
-
-    def initialize(options={})
-      super()
-      @env = options.fetch(:env)
-      @transformer_factory = options.fetch(:transformer_factory, Transformer)
-    end
-
-    def parse_and_transform(command)
-      transformer.apply(parse(command), env: env)
-    end
-
-    root(:program)
-
-    rule(:program) do
-      comment.as(:comment) | multi_command | blank_line
-    end
-
-    rule(:comment) do
-      match('#') >> any.repeat(0)
-    end
-
-    rule(:multi_command) do
-      (
-        or_operation.as(:left) >>
-        semicolon_operator >>
-        (multi_command | blank).as(:right)
-      ).as(:multi) | or_operation
-    end
-
-    rule(:blank) do
-      match('\s').repeat(0).as(:blank)
-    end
-
-    rule(:blank_line) do
-      (match('^') >> match('\s').repeat(0) >> match('$')).as(:blank)
-    end
-
-    rule(:or_operation) do
-      (
-        and_operation.as(:left) >>
-        or_operator >>
-        or_operation.as(:right)
-      ).as(:or) | and_operation
-    end
-
-    rule(:and_operation) do
-      (
-        command.as(:left) >>
-        and_operator >>
-        and_operation.as(:right)
-      ).as(:and) | command
-    end
-
-    rule(:command) do
-      space.maybe >> command_identifier >> argument_list.maybe >> space.maybe >>
-        comment.maybe
-    end
-
-    rule(:argument_list) do
-      (space >> argument).repeat(1).as(:args)
-    end
-
-    rule(:argument) do
-      (empty_string | soft_string | hard_string | unquoted_string).repeat(1).as(:arg)
-    end
-
-    rule(:unquoted_string) do
-      (
-        unquoted_string_escaped_literal |
-        variable |
-        subshell |
-        (UNQUOTED_STRING_TERMINATORS.parser_atom.absent? >> any).as(:literal)
-      ).repeat(1)
-    end
-
-    rule(:unquoted_string_escaped_literal) do
-      str('\\') >> UNQUOTED_STRING_ESCAPABLES.parser_atom.as(:literal)
-    end
-
-    rule(:empty_string) do
-      (str('""') | str("''")).as(:empty_string)
-    end
-
-    rule(:soft_string) do
-      str('"') >> (
-        soft_string_escaped_literal |
-        variable |
-        subshell |
-        (str('"').absent? >> any).as(:literal)
-      ).repeat(0) >> str('"')
-    end
-
-    rule(:soft_string_escaped_literal) do
-      str('\\') >> SOFT_STRING_ESCAPABLES.parser_atom.as(:literal)
-    end
-
-    rule(:hard_string) do
-      str("'") >> (
-        hard_string_escaped_literal |
-        (str("'").absent? >> any).as(:literal)
-      ).repeat(0) >> str("'")
-    end
-
-    rule(:hard_string_escaped_literal) do
-      str('\\') >> HARD_STRING_ESCAPABLES.parser_atom.as(:literal)
-    end
-
-    rule(:command_identifier) do
-      (str(':') >> identifier.as(:internal_cmd)) |
-      (str('!') >> identifier.as(:shell_cmd)) |
-      git_command_identifier
-    end
-
-    rule(:git_command_identifier) do
-      if autocorrect_enabled?
-        (str('git') >> space).maybe >> identifier.as(:git_cmd)
-      else
-        identifier.as(:git_cmd)
+      def initialize(gitsh_env = nil)
+        @gitsh_env = gitsh_env
+        super()
       end
     end
 
-    rule(:variable) do
-      str('$') >> (
-        str('{') >> variable_name.as(:var) >> str('}') |
-        variable_name.as(:var)
+    def initialize(gitsh_env)
+      @env = self.class::Environment.new(gitsh_env)
+    end
+
+    left :SEMICOLON
+    left :OR
+    left :AND
+
+    production(:program) do
+      clause('SPACE? .commands SEMICOLON? SPACE?') { |c| c }
+      clause('SPACE?') { |_| Commands::Noop.new }
+    end
+
+    production(:commands) do
+      clause('command') { |c| c }
+      clause('.commands SEMICOLON .commands') { |c1, c2| Commands::Tree::Multi.new(c1, c2) }
+      clause('.commands OR .commands') { |c1, c2| Commands::Tree::Or.new(c1, c2) }
+      clause('.commands AND .commands') { |c1, c2| Commands::Tree::And.new(c1, c2) }
+    end
+
+    production(:command, 'word argument_list?') do |word, args|
+      prefix, command = COMMAND_PREFIX_MATCHER.match(word).values_at(1, 2)
+
+      Commands::Factory.build(
+        COMMAND_CLASS_BY_PREFIX.fetch(prefix),
+        env: gitsh_env,
+        command: command,
+        args: (args || []),
       )
     end
 
-    rule(:variable_name) do
-      match('[A-Za-z_]') >> match('[A-Za-z0-9._\-]').repeat(0)
+    production(:argument_list) do
+      clause('SPACE .argument') { |arg| [arg] }
+      clause('.argument_list SPACE .argument') { |list, arg| list + [arg] }
     end
 
-    rule(:subshell) do
-      str('$(') >> (subshell_content).as(:subshell) >> str(')')
+    production(:argument) do
+      clause('argument_part') { |part| part }
+      clause('argument_part argument') do |part, argument|
+        Arguments::CompositeArgument.new([part, argument])
+      end
     end
 
-    rule(:subshell_content) do
-      (
-        (str('(') >> subshell_content >> str(')')) |
-        (str(')').absent? >> any)
-      ).repeat(0)
+    production(:argument_part) do
+      clause(:word) { |word| Arguments::StringArgument.new(word) }
+      clause(:VAR) { |var| Arguments::VariableArgument.new(var) }
+      clause(:subshell) { |subshell| Arguments::Subshell.new(subshell) }
     end
 
-    rule(:identifier) do
-      match('[A-Za-z./]') >> match('[A-Za-z0-9.\-/_]').repeat(0)
+    production(:word, 'WORD+') { |words| words.inject(:+) }
+
+    production(:subshell, 'SUBSHELL_START .SUBSHELL+ SUBSHELL_END') do |subshells|
+      subshells.inject(:+)
     end
 
-    rule(:space) do
-      match('\s').repeat(1)
-    end
-
-    rule(:and_operator) do
-      str('&&') >> space.maybe
-    end
-
-    rule(:or_operator)  do
-      str('||')  >> space.maybe
-    end
-
-    rule(:semicolon_operator)  do
-      str(';')  >> space.maybe
-    end
-
-    private
-
-    attr_reader :transformer_factory, :env
-
-    def transformer
-      @transformer ||= transformer_factory.new
-    end
-
-    def autocorrect_enabled?
-      env.fetch('help.autocorrect') { '0' } != '0'
-    end
+    finalize
   end
 end

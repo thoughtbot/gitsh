@@ -31,4 +31,13 @@ describe 'Subshell' do
       expect(gitsh).to output /nothing to commit/
     end
   end
+
+  it 'supports adjacent subshells' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type ':echo $(:echo foo)$(:echo bar)'
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output /\bfoo\nbar\b/
+    end
+  end
 end

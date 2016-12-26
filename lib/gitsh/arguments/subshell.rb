@@ -14,9 +14,15 @@ module Gitsh
         strip_whitespace(capturing_env.captured_output)
       end
 
-      private
+      def ==(other)
+        other.is_a?(self.class) && command == other.command
+      end
+
+      protected
 
       attr_reader :command
+
+      private
 
       def strip_whitespace(output)
         output.

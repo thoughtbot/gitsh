@@ -1,11 +1,11 @@
-require 'gitsh/parser'
+require 'gitsh/lexer'
 
 module Gitsh
   class CompletionEscaper
     ESCAPABLES = {
-      nil => Gitsh::Parser::UNQUOTED_STRING_ESCAPABLES,
-      '"' => Gitsh::Parser::SOFT_STRING_ESCAPABLES,
-      "'" => Gitsh::Parser::HARD_STRING_ESCAPABLES,
+      nil => Gitsh::Lexer::UNQUOTED_STRING_ESCAPABLES,
+      '"' => Gitsh::Lexer::SOFT_STRING_ESCAPABLES,
+      "'" => Gitsh::Lexer::HARD_STRING_ESCAPABLES,
     }.freeze
 
     def initialize(completer, options)

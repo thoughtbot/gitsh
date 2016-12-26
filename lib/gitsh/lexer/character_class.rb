@@ -1,7 +1,7 @@
-require 'parslet'
+require 'rltk'
 
 module Gitsh
-  class Parser < Parslet::Parser
+  class Lexer < RLTK::Lexer
     class CharacterClass
       attr_reader :characters
 
@@ -13,12 +13,12 @@ module Gitsh
         self.class.new(characters + other.characters)
       end
 
-      def parser_atom
-        Parslet.match(to_regexp)
-      end
-
       def to_regexp
         Regexp.new("[#{Regexp.escape(characters.join)}]")
+      end
+
+      def to_negative_regexp
+        Regexp.new("[^#{Regexp.escape(characters.join)}]")
       end
     end
   end

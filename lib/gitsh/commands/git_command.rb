@@ -23,7 +23,11 @@ module Gitsh
       attr_reader :env, :command, :args, :shell_command_runner
 
       def command_with_arguments
-        [git_command, config_arguments, command, arg_values].flatten
+        if autocorrect_enabled? && command == 'git'
+          [git_command, config_arguments, arg_values].flatten
+        else
+          [git_command, config_arguments, command, arg_values].flatten
+        end
       end
 
       def git_command
@@ -36,6 +40,10 @@ module Gitsh
 
       def arg_values
         args.values(env)
+      end
+
+      def autocorrect_enabled?
+        env.fetch('help.autocorrect') { '0' } != '0'
       end
     end
   end

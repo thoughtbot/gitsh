@@ -4,6 +4,10 @@ require 'gitsh/commands/error_handler'
 module Gitsh
   module Commands
     class Factory
+      def self.build(*args)
+        new(*args).build
+      end
+
       def initialize(command_class, context)
         @command_class = command_class
         @context = context

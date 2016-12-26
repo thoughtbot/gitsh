@@ -77,4 +77,19 @@ describe 'Chaining methods' do
       end
     end
   end
+
+  describe 'operator precedence' do
+    it 'evaluates AND before OR' do
+      GitshRunner.interactive do |gitsh|
+        gitsh.type(':echo $unset && :echo A || :echo B')
+        expect(gitsh).not_to output /A/
+        expect(gitsh).to output /B/
+
+        gitsh.type(':echo C || :echo D && :echo E')
+        expect(gitsh).to output /C/
+        expect(gitsh).not_to output /D/
+        expect(gitsh).not_to output /E/
+      end
+    end
+  end
 end

@@ -6,8 +6,16 @@ module Gitsh
       end
 
       def value(env)
-        env.fetch(@variable_name)
+        env.fetch(variable_name)
       end
+
+      def ==(other)
+        other.is_a?(self.class) && variable_name == other.variable_name
+      end
+
+      protected
+
+      attr_reader :variable_name
     end
   end
 end
