@@ -19,7 +19,7 @@ test-driver
 */.dirstamp
 
 # Make targets
-gitsh
+/gitsh
 src/gitsh.rb
 lib/gitsh/version.rb
 gitsh-*.tar.gz
