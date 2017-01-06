@@ -92,6 +92,11 @@ To run your cloned version of gitsh locally, simply run:
 
 gitsh is packaged and installed using GNU autotools.
 
+0. Make sure you're starting from a clean slate:
+
+        make distclean
+        git checkout master
+
 1. Update the version number in `configure.ac`.
 
 2. Update the `configure` script, `Makefile`, and other dependencies:
@@ -100,7 +105,11 @@ gitsh is packaged and installed using GNU autotools.
         ./configure
 
 3. Commit your changes to `configure.ac`, `INSTALL`, and any other files that
-   were modified by the version bump.
+   were modified by the version bump:
+
+        git add .
+        git commit -m "Bump version: X.Y.Z"
+        git push
 
 4. Build and publish the release:
 
