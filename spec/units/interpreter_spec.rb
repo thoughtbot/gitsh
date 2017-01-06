@@ -3,30 +3,53 @@ require 'gitsh/interpreter'
 require 'parslet'
 
 describe Gitsh::Interpreter do
-  describe '#execute' do
-    it 'transforms the command into an command object and executes it' do
+  describe '#run' do
+    it 'reads, parses, and executes each command from the input strategy' do
       env = double
-      parsed = spy(execute: nil)
-      parser = spy('Parser', parse_and_transform: parsed)
+      command = double(:command, execute: nil)
+      parser = double(:parser, parse_and_transform: command)
       parser_factory = spy(new: parser)
+      input_strategy = double(:input_strategy, setup: nil, teardown: nil)
+      allow(input_strategy).to receive(:read_command).and_return(
+        'first command',
+        'second command',
+        nil,
+      )
+      interpreter = described_class.new(
+        env: env,
+        parser_factory: parser_factory,
+        input_strategy: input_strategy,
+      )
 
-      interpreter = Gitsh::Interpreter.new(env, parser_factory: parser_factory)
-      interpreter.execute('add -p')
+      interpreter.run
 
-      expect(parser_factory).to have_received(:new).with(env: env)
-      expect(parser).to have_received(:parse_and_transform).with('add -p')
-      expect(parsed).to have_received(:execute)
+      expect(input_strategy).to have_received(:setup).ordered
+      expect(parser).to have_received(:parse_and_transform).
+        with('first command').ordered
+      expect(parser).to have_received(:parse_and_transform).
+        with('second command').ordered
+      expect(input_strategy).to have_received(:teardown).ordered
+      expect(command).to have_received(:execute).twice
     end
 
     it 'handles parse errors' do
-      env = spy('env', puts_error: nil)
-      parser = double('Parser')
+      env = double(:env, puts_error: nil)
+      parser = double(:parser)
       allow(parser).to receive(:parse_and_transform).
         and_raise(Parslet::ParseFailed, 'Parse failed')
       parser_factory = double('ParserFactory', new: parser)
+      input_strategy = double(:input_strategy, setup: nil, teardown: nil)
+      allow(input_strategy).to receive(:read_command).and_return(
+        'bad command',
+        nil,
+      )
+      interpreter = described_class.new(
+        env: env,
+        parser_factory: parser_factory,
+        input_strategy: input_strategy,
+      )
 
-      interpreter = Gitsh::Interpreter.new(env, parser_factory: parser_factory)
-      interpreter.execute('bad command')
+      interpreter.run
 
       expect(env).to have_received(:puts_error).with('gitsh: parse error')
     end

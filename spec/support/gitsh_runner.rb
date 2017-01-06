@@ -89,12 +89,12 @@ class GitshRunner
     Gitsh::CLI.new(
       args: options.fetch(:args, []),
       env: env,
-      interactive_runner: interactive_runner
+      interactive_input_strategy: interactive_input_strategy
     )
   end
 
-  def interactive_runner
-    Gitsh::InteractiveRunner.new(
+  def interactive_input_strategy
+    Gitsh::InputStrategies::Interactive.new(
       line_editor: line_editor,
       env: env
     )

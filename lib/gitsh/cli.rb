@@ -1,9 +1,10 @@
 require 'optparse'
 require 'gitsh/environment'
 require 'gitsh/exit_statuses'
-require 'gitsh/interactive_runner'
+require 'gitsh/input_strategies/file'
+require 'gitsh/input_strategies/interactive'
+require 'gitsh/interpreter'
 require 'gitsh/program_name'
-require 'gitsh/script_runner'
 require 'gitsh/version'
 
 module Gitsh
@@ -13,56 +14,59 @@ module Gitsh
 
       @env = opts.fetch(:env, Environment.new)
       @unparsed_args = opts.fetch(:args, ARGV).clone
-      @interactive_runner = opts.fetch(
-        :interactive_runner,
-        InteractiveRunner.new(env: @env)
-      )
-      @script_runner = opts.fetch(:script_runner) { ScriptRunner.new(env: @env) }
+      @interactive_input_strategy = opts.fetch(:interactive_input_strategy) do
+        InputStrategies::Interactive.new(env: @env)
+      end
     end
 
     def run
       parse_arguments
-      if unparsed_args.any?
-        exit_with_usage_message
-      end
       ensure_executable_git
-      if script_file
-        run_script
-      else
-        interactive_runner.run
-      end
+      interpreter.run
+    rescue NoInputError => error
+      env.puts_error("gitsh: #{error.message}")
+      exit EX_NOINPUT
     end
 
     private
 
     attr_reader :env, :unparsed_args, :script_file_argument,
-      :interactive_runner, :script_runner
+      :interactive_input_strategy
 
-    def run_script
-      script_runner.run(script_file)
-    rescue NoInputError => error
-      env.puts_error("gitsh: #{error.message}")
-      exit EX_NOINPUT
+    def interpreter
+      Interpreter.new(env: env, input_strategy: input_strategy)
+    end
+
+    def input_strategy
+      if script_file
+        InputStrategies::File.new(env: env, path: script_file)
+      else
+        interactive_input_strategy
+      end
     end
 
     def script_file
       if script_file_argument
         script_file_argument
       elsif !env.tty?
-        ScriptRunner::STDIN_PLACEHOLDER
+        InputStrategies::File::STDIN_PLACEHOLDER
       end
-    end
-
-    def exit_with_usage_message
-      env.puts_error option_parser.banner
-      exit EX_USAGE
     end
 
     def parse_arguments
       option_parser.parse!(unparsed_args)
       @script_file_argument = unparsed_args.pop
-    rescue OptionParser::InvalidOption => err
-      unparsed_args.concat(err.args)
+
+      if unparsed_args.any?
+        exit_with_usage_message
+      end
+    rescue OptionParser::InvalidOption
+      exit_with_usage_message
+    end
+
+    def exit_with_usage_message
+      env.puts_error option_parser.banner
+      exit EX_USAGE
     end
 
     def option_parser

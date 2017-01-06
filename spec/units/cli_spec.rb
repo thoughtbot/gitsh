@@ -4,72 +4,63 @@ require 'gitsh/cli'
 describe Gitsh::CLI do
   describe '#run' do
     context 'with valid arguments and no script file' do
-      it 'calls the interactive runner' do
-        interactive_runner = double('InteractiveRunner', run: nil)
-        cli = Gitsh::CLI.new(
-          args: [],
-          interactive_runner: interactive_runner
-        )
+      it 'uses the interactive input strategy' do
+        interpreter = stub_interpreter
+        interactive_input_strategy = stub_interactive_input_strategy
+        cli = Gitsh::CLI.new(args: [])
 
         cli.run
 
-        expect(interactive_runner).to have_received(:run)
+        expect(interpreter).to have_received(:run)
+        expect(Gitsh::Interpreter).to have_received(:new).
+          with(hash_including(input_strategy: interactive_input_strategy))
       end
     end
 
     context 'when STDIN is not a TTY' do
       it 'calls the script runner with -' do
-        script_runner = double('ScriptRunner', run: nil)
-        interactive_runner = double('InteractiveRunner', run: nil)
+        interpreter = stub_interpreter
+        file_input_strategy = stub_file_input_strategy
         env = double(
           'Environment',
           tty?: false,
           git_command: fake_git_path,
         )
-        cli = Gitsh::CLI.new(
-          args: [],
-          script_runner: script_runner,
-          interactive_runner: interactive_runner,
-          env: env,
-        )
+        cli = Gitsh::CLI.new(args: [], env: env)
 
         cli.run
 
-        expect(script_runner).to have_received(:run).with('-')
-        expect(interactive_runner).not_to have_received(:run)
+        expect(Gitsh::InputStrategies::File).to have_received(:new).
+          with(hash_including(path: '-'))
+        expect(Gitsh::Interpreter).to have_received(:new).
+          with(hash_including(input_strategy: file_input_strategy))
+        expect(interpreter).to have_received(:run)
       end
     end
 
     context 'with a script file' do
       it 'calls the script runner with the script file' do
-        script_runner = double('ScriptRunner', run: nil)
-        interactive_runner = double('InteractiveRunner', run: nil)
-        cli = Gitsh::CLI.new(
-          args: ['path/to/a/script'],
-          script_runner: script_runner,
-          interactive_runner: interactive_runner
-        )
+        interpreter = stub_interpreter
+        file_input_strategy = stub_file_input_strategy
+        cli = Gitsh::CLI.new(args: ['path/to/a/script'])
 
         cli.run
 
-        expect(script_runner).to have_received(:run).with('path/to/a/script')
-        expect(interactive_runner).not_to have_received(:run)
+        expect(Gitsh::InputStrategies::File).to have_received(:new).
+          with(hash_including(path: 'path/to/a/script'))
+        expect(Gitsh::Interpreter).to have_received(:new).
+          with(hash_including(input_strategy: file_input_strategy))
+        expect(interpreter).to have_received(:run)
       end
     end
 
     context 'with an unreadable script file' do
       it 'exits' do
         env = double('env', puts_error: nil, git_command: fake_git_path)
-        script_runner = double('ScriptRunner')
-        allow(script_runner).to receive(:run).
+        interpreter = stub_interpreter
+        allow(interpreter).to receive(:run).
           and_raise(Gitsh::NoInputError, 'Oh no!')
-        interactive_runner = double('InteractiveRunner')
-        cli = Gitsh::CLI.new(
-          env: env,
-          args: ['path/to/a/script'],
-          script_runner: script_runner,
-          interactive_runner: interactive_runner,
-        )
+        cli = Gitsh::CLI.new(env: env, args: ['path/to/a/script'])
 
         expect { cli.run }.to raise_exception(SystemExit)
         expect(env).to have_received(:puts_error).with('gitsh: Oh no!')
@@ -120,5 +111,25 @@ describe Gitsh::CLI do
         end
       end
     end
+  end
+
+  def stub_interpreter
+    interpreter = double('Interpreter', run: nil)
+    allow(Gitsh::Interpreter).to receive(:new).and_return(interpreter)
+    interpreter
+  end
+
+  def stub_interactive_input_strategy
+    input_strategy = double('InputStrategies::Interactive', run: nil)
+    allow(Gitsh::InputStrategies::Interactive).to receive(:new).
+      and_return(input_strategy)
+    input_strategy
+  end
+
+  def stub_file_input_strategy
+    input_strategy = double('InputStrategies::File', run: nil)
+    allow(Gitsh::InputStrategies::File).to receive(:new).
+      and_return(input_strategy)
+    input_strategy
   end
 end

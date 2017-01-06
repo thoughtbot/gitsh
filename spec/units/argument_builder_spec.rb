@@ -47,7 +47,7 @@ describe Gitsh::ArgumentBuilder do
 
       expect(built_argument).to be subshell
       expect(Gitsh::Arguments::Subshell).to have_received(:new).once.
-        with('!pwd', interpreter_factory: Gitsh::Interpreter)
+        with('!pwd')
     end
   end
 

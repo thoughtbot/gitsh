@@ -167,7 +167,7 @@ TXT
 
       def execute
         if valid_arguments?
-          Gitsh::ScriptRunner.new(env: env).run(path)
+          Gitsh::FileRunner.run(env: env, path: path)
           true
         else
           env.puts_error USAGE_MESSAGE

@@ -28,10 +28,7 @@ module Gitsh
 
     def add_subshell(command)
       collect_literals
-      arguments << Arguments::Subshell.new(
-        command,
-        interpreter_factory: Interpreter,
-      )
+      arguments << Arguments::Subshell.new(command)
     end
 
     def argument

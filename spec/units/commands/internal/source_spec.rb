@@ -6,16 +6,15 @@ describe Gitsh::Commands::InternalCommand::Source do
 
   describe "#execute" do
     context "with a valid file" do
-      it "executes the script_runner and returns true" do
+      it "calls the FileRunner and returns true" do
         env = double('env')
-        script_runner = spy('ScriptRunner', run: nil)
-        allow(Gitsh::ScriptRunner).to receive(:new).and_return(script_runner)
+        allow(Gitsh::FileRunner).to receive(:run)
         command = described_class.new(env, 'source', arguments('/path'))
 
         result = command.execute
 
-        expect(Gitsh::ScriptRunner).to have_received(:new).with(env: env)
-        expect(script_runner).to have_received(:run).with('/path')
+        expect(Gitsh::FileRunner).to have_received(:run).
+          with(env: env, path: '/path')
         expect(result).to eq true
       end
     end
