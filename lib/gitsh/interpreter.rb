@@ -1,4 +1,5 @@
 require 'rltk'
+require 'gitsh/commands/noop'
 require 'gitsh/error'
 require 'gitsh/lexer'
 require 'gitsh/parser'
@@ -27,12 +28,31 @@ module Gitsh
 
     def execute(input)
       build_command(input).execute(env)
-    rescue RLTK::LexingError, RLTK::NotInLanguage, RLTK::BadToken
+    rescue RLTK::LexingError, RLTK::NotInLanguage, RLTK::BadToken, EOFError
       input_strategy.handle_parse_error('parse error')
     end
 
     def build_command(input)
-      parser.parse(lexer.lex(input))
+      tokens = lexer.lex(input)
+
+      if incomplete_command?(tokens)
+        continuation = input_strategy.read_continuation
+        build_multi_line_command(input, continuation)
+      else
+        parser.parse(tokens)
+      end
+    end
+
+    def incomplete_command?(tokens)
+      tokens.reverse_each.detect { |token| token.type == :MISSING }
+    end
+
+    def build_multi_line_command(previous_lines, new_line)
+      if new_line.nil?
+        Commands::Noop.new
+      else
+        build_command([previous_lines, new_line].join("\n"))
+      end
     end
   end
 end

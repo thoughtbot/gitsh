@@ -8,8 +8,7 @@ describe Gitsh::Interpreter do
       env = double
       command = double(:command, execute: nil)
       parser = double(:parser, parse: command)
-      tokens = double(:tokens)
-      lexer = double('Lexer', lex: tokens)
+      lexer = double('Lexer', lex: tokens([:WORD, 'commit']))
       input_strategy = double(:input_strategy, setup: nil, teardown: nil)
       allow(input_strategy).to receive(:read_command).and_return(
         'first command',
@@ -37,7 +36,7 @@ describe Gitsh::Interpreter do
       parser = double(:parser)
       allow(parser).to receive(:parse).
         and_raise(RLTK::NotInLanguage.new([], double(:token), []))
-      lexer = double('Lexer', lex: double(:tokens))
+      lexer = double('Lexer', lex: tokens([:WORD, 'commit']))
       input_strategy = double(
         :input_strategy,
         setup: nil,
@@ -58,6 +57,72 @@ describe Gitsh::Interpreter do
 
       expect(input_strategy).
         to have_received(:handle_parse_error).with('parse error')
+    end
+
+    it 'handles incomplete input by requesting a completion' do
+      env = double
+      command = double(:command, execute: nil)
+      parser = double(:parser, parse: command)
+      lexer = double('Lexer')
+      allow(lexer).to receive(:lex).with('(commit').
+        and_return(tokens([:LEFT_PAREN], [:WORD, 'commit'], [:MISSING, ')']))
+      allow(lexer).to receive(:lex).with("(commit\n)").
+        and_return(tokens([:LEFT_PAREN], [:WORD, 'commit'], [:RIGHT_PAREN]))
+      input_strategy = double(
+        :input_strategy,
+        setup: nil,
+        teardown: nil,
+        read_continuation: ')',
+      )
+      allow(input_strategy).to receive(:read_command).and_return(
+        '(commit',
+        nil,
+      )
+      interpreter = described_class.new(
+        env: env,
+        parser: parser,
+        input_strategy: input_strategy,
+        lexer: lexer,
+      )
+
+      interpreter.run
+
+      expect(lexer).to have_received(:lex).
+        with('(commit').ordered
+      expect(lexer).to have_received(:lex).
+        with("(commit\n)").ordered
+      expect(parser).to have_received(:parse).once
+      expect(command).to have_received(:execute)
+    end
+
+    it 'drops the command if the completion is nil' do
+      env = double
+      parser = double(:parser, parse: nil)
+      lexer = double(
+        'Lexer',
+        lex: tokens([:LEFT_PAREN], [:WORD, 'commit'], [:MISSING, ')']),
+      )
+      input_strategy = double(
+        :input_strategy,
+        setup: nil,
+        teardown: nil,
+        read_continuation: nil,
+      )
+      allow(input_strategy).to receive(:read_command).and_return(
+        'first line',
+        nil,
+      )
+      interpreter = described_class.new(
+        env: env,
+        parser: parser,
+        input_strategy: input_strategy,
+        lexer: lexer,
+      )
+
+      interpreter.run
+
+      expect(lexer).to have_received(:lex).once
+      expect(parser).not_to have_received(:parse)
     end
   end
 end

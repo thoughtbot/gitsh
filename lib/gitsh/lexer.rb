@@ -54,15 +54,18 @@ module Gitsh
       right_paren_stack.pop || :RIGHT_PAREN
     end
 
-    rule(/\s+/) { :SPACE }
+    rule(/[ \t\f]+/) { :SPACE }
+    rule(/\s+/) { :EOL }
 
     rule(/#{UNQUOTED_STRING_ESCAPABLES.to_negative_regexp}+/) { |t| [:WORD, t] }
+    rule(/\\[\r\n]/) { |_| }
+    rule(/\\\z/) { |_| [:MISSING, :continuation] }
     rule(/\\#{UNQUOTED_STRING_ESCAPABLES.to_regexp}/) { |t| [:WORD, t[1]] }
     rule(/\\/) { |t| [:WORD, t] }
 
-    rule(/#/) { push_state :comment }
-    rule(/.*/, :comment) {}
-    rule(/$/, :comment) { pop_state }
+    rule(/\s*#/) { push_state :comment }
+    rule(/(?=[\r\n])/, :comment) { pop_state }
+    rule(/.*/, :comment)
 
     rule(/''/) { [:WORD, ''] }
     rule(/'/) { push_state :hard_string }
@@ -103,6 +106,10 @@ module Gitsh
 
       if env.right_paren_stack.any?
         tokens.insert(-2, RLTK::Token.new(:MISSING, ')'))
+      end
+
+      if tokens.length > 1 && [:AND, :OR].include?(tokens[-2].type)
+        tokens.insert(-2, RLTK::Token.new(:MISSING, 'command'))
       end
 
       tokens

@@ -25,9 +25,13 @@ module Gitsh
       end
 
       def read_command
-        file.readline
+        next_line
       rescue EOFError
         nil
+      end
+
+      def read_continuation
+        next_line
       end
 
       def handle_parse_error(message)
@@ -44,6 +48,10 @@ module Gitsh
         else
           ::File.open(path)
         end
+      end
+
+      def next_line
+        file.readline.chomp
       end
     end
   end

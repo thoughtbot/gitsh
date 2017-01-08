@@ -70,7 +70,7 @@ describe Gitsh::InputStrategies::Interactive do
       expect(input_strategy.read_command).to eq 'my default command'
     end
 
-    it 'handles a SIGINT' do
+    it 'handles a SIGINT by retrying' do
       input_strategy = build_input_strategy
       line_editor_results = StubbedMethodResult.new.
         raises(Interrupt).
@@ -104,6 +104,26 @@ describe Gitsh::InputStrategies::Interactive do
       input_strategy.setup
       expect { input_strategy.read_command }.not_to raise_exception
       expect(line_editor).not_to have_received(:set_screen_size)
+    end
+  end
+
+  describe '#read_continuation' do
+    it 'returns the user input' do
+      input_strategy = build_input_strategy
+      allow(line_editor).to receive(:readline).and_return('user input')
+      input_strategy.setup
+
+      expect(input_strategy.read_continuation).to eq 'user input'
+      expect(line_editor).to have_received(:readline).
+        with(described_class::CONTINUATION_PROMPT, true)
+    end
+
+    it 'handles a SIGINT by returning nil' do
+      input_strategy = build_input_strategy
+      allow(line_editor).to receive(:readline).and_raise(Interrupt)
+      input_strategy.setup
+
+      expect(input_strategy.read_continuation).to be_nil
     end
   end
 

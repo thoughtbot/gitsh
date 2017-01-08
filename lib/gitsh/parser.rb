@@ -19,6 +19,7 @@ module Gitsh
       '!' => Gitsh::Commands::ShellCommand,
     }.freeze
 
+    left :EOL
     left :SEMICOLON
     left :OR
     left :AND
@@ -31,6 +32,7 @@ module Gitsh
     production(:commands) do
       clause('command') { |c| c }
       clause('LEFT_PAREN .commands RIGHT_PAREN') { |c| c }
+      clause('.commands EOL .commands') { |c1, c2| Commands::Tree::Multi.new(c1, c2) }
       clause('.commands SEMICOLON .commands') { |c1, c2| Commands::Tree::Multi.new(c1, c2) }
       clause('.commands OR .commands') { |c1, c2| Commands::Tree::Or.new(c1, c2) }
       clause('.commands AND .commands') { |c1, c2| Commands::Tree::And.new(c1, c2) }

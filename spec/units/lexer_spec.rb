@@ -39,6 +39,13 @@ describe Gitsh::Lexer do
         to produce_tokens ['WORD(foo)', 'OR', 'WORD(bar)', 'EOS']
     end
 
+    it 'recognises newlines' do
+      expect("foo\nbar").
+        to produce_tokens ['WORD(foo)', 'EOL', 'WORD(bar)', 'EOS']
+      expect("foo   \n\t\fbar").
+        to produce_tokens ['WORD(foo)', 'EOL', 'WORD(bar)', 'EOS']
+    end
+
     it 'recognises parentheses' do
       expect('(foo)').
         to produce_tokens ['LEFT_PAREN', 'WORD(foo)', 'RIGHT_PAREN', 'EOS']
@@ -46,10 +53,17 @@ describe Gitsh::Lexer do
         to produce_tokens ['LEFT_PAREN', 'WORD(foo)', 'RIGHT_PAREN', 'EOS']
     end
 
-    [' ', "\t", "\r", "\n", "\f", '\'', '"', '\\', '$', '#', ';', '&', '|', '(', ')'].each do |char|
+    [' ', "\t", "\f", '\'', '"', '\\', '$', '#', ';', '&', '|', '(', ')'].each do |char|
       it "recognises unquoted words containing an escaped #{char.inspect}" do
         expect("foo\\#{char}bar").
           to produce_tokens ['WORD(foo)', "WORD(#{char})", 'WORD(bar)', 'EOS']
+      end
+    end
+
+    ["\r", "\n"].each do |char|
+      it "ignored escaped line breaks using #{char.inspect}" do
+        expect("foo\\#{char}bar").
+          to produce_tokens ['WORD(foo)', 'WORD(bar)', 'EOS']
       end
     end
 
@@ -169,9 +183,36 @@ describe Gitsh::Lexer do
       ]
     end
 
+    it 'adds an error token for trailing logical operators' do
+      expect(':echo first &&').to produce_tokens [
+        'WORD(:echo)', 'SPACE', 'WORD(first)', 'AND', 'MISSING(command)', 'EOS'
+      ]
+      expect(':echo first ||').to produce_tokens [
+        'WORD(:echo)', 'SPACE', 'WORD(first)', 'OR', 'MISSING(command)', 'EOS'
+      ]
+    end
+
+    it 'adds an error token for a trailing escape character' do
+      expect('foo\\').
+        to produce_tokens ['WORD(foo)', 'MISSING(continuation)', 'EOS']
+      expect('foo\\\\').
+        to produce_tokens ['WORD(foo)', 'WORD(\\)', 'EOS']
+      expect('foo\\\\\\').
+        to produce_tokens ['WORD(foo)', 'WORD(\\)', 'MISSING(continuation)', 'EOS']
+    end
+
     it 'ignores comments' do
       expect('# all one big comment').to produce_tokens ['EOS']
-      expect('pre #post').to produce_tokens ['WORD(pre)', 'SPACE', 'EOS']
+      expect('pre #post').to produce_tokens ['WORD(pre)', 'EOS']
+    end
+
+    it 'ignores comments in multi-line input' do
+      expect("(:echo 1 #comment\n:echo 2)").to produce_tokens [
+        'LEFT_PAREN',
+        'WORD(:echo)', 'SPACE', 'WORD(1)', 'EOL',
+        'WORD(:echo)', 'SPACE', 'WORD(2)',
+        'RIGHT_PAREN', 'EOS',
+      ]
     end
   end
 end

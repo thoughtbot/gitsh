@@ -58,8 +58,8 @@ describe Gitsh::InputStrategies::File do
       )
       input_strategy.setup
 
-      expect(input_strategy.read_command).to eq "commit -m 'Changes'\n"
-      expect(input_strategy.read_command).to eq "push -f\n"
+      expect(input_strategy.read_command).to eq 'commit -m \'Changes\''
+      expect(input_strategy.read_command).to eq 'push -f'
       expect(input_strategy.read_command).to be_nil
     end
 
@@ -73,9 +73,35 @@ describe Gitsh::InputStrategies::File do
         )
         input_strategy.setup
 
-        expect(input_strategy.read_command).to eq "push\n"
-        expect(input_strategy.read_command).to eq "pull\n"
+        expect(input_strategy.read_command).to eq 'push'
+        expect(input_strategy.read_command).to eq 'pull'
         expect(input_strategy.read_command).to be_nil
+      end
+    end
+  end
+
+  describe '#read_continuation' do
+    it 'returns the next line of the file' do
+      script = temp_file('script', "commit -m 'Changes'\npush -f")
+      input_strategy = described_class.new(
+        path: script.path,
+      )
+      input_strategy.setup
+      input_strategy.read_command
+
+      expect(input_strategy.read_continuation).to eq 'push -f'
+    end
+
+    context 'with no lines left to return' do
+      it 'raises' do
+        script = temp_file('script', 'commit -m \'Changes\'')
+        input_strategy = described_class.new(
+          path: script.path,
+        )
+        input_strategy.setup
+        input_strategy.read_command
+
+        expect { input_strategy.read_continuation }.to raise_exception(EOFError)
       end
     end
   end

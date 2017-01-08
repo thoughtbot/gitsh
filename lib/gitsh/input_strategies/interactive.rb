@@ -13,6 +13,7 @@ module Gitsh
   module InputStrategies
     class Interactive
       BLANK_LINE_REGEX = /^\s*$/
+      CONTINUATION_PROMPT = '> '.freeze
 
       def initialize(opts)
         @line_editor = opts.fetch(:line_editor) do
@@ -48,6 +49,19 @@ module Gitsh
         retry
       end
 
+      def read_continuation
+        input = begin
+          line_editor.readline(CONTINUATION_PROMPT, true)
+        rescue Interrupt
+          nil
+        end
+
+        if input.nil?
+          env.print "\n"
+        end
+
+        input
+      end
 
       def handle_parse_error(message)
         env.puts_error("gitsh: #{message}")

@@ -11,7 +11,7 @@ describe 'Handling errors' do
 
   it 'does not explode when given a badly formatted command' do
     GitshRunner.interactive do |gitsh|
-      gitsh.type('commit -m "Unclosed quote')
+      gitsh.type('add . && || commit')
 
       expect(gitsh).to output_error /gitsh: parse error/
     end

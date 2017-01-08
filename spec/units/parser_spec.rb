@@ -169,6 +169,15 @@ describe Gitsh::Parser do
       expect(result).to be_a(Gitsh::Commands::Tree::Multi)
     end
 
+    it 'parses two commands combined with newlines' do
+      result = parse(tokens(
+        [:WORD, 'add'], [:SPACE], [:WORD, '.'],
+        [:EOL], [:WORD, 'commit'], [:EOS],
+      ))
+
+      expect(result).to be_a(Gitsh::Commands::Tree::Multi)
+    end
+
     it 'parses a command with a trailing semicolon' do
       command = stub_command_factory
 
@@ -197,14 +206,6 @@ describe Gitsh::Parser do
 
   def parse(tokens)
     described_class.new.parse(tokens)
-  end
-
-  def tokens(*tokens)
-    tokens.map.with_index do |token, i|
-      type, value = token
-      pos = RLTK::StreamPosition.new(i, 1, i, 10, nil)
-      RLTK::Token.new(type, value, pos)
-    end
   end
 
   def stub_command_factory
