@@ -91,5 +91,20 @@ describe 'Chaining methods' do
         expect(gitsh).not_to output /E/
       end
     end
+
+    it 'can be overridden with parentheses' do
+      GitshRunner.interactive do |gitsh|
+        gitsh.type(':echo $unset && (:echo A || :echo B)')
+        expect(gitsh).not_to output_error /parse error/
+        expect(gitsh).not_to output /A/
+        expect(gitsh).not_to output /B/
+
+        gitsh.type('(:echo C || :echo D) && :echo E')
+        expect(gitsh).not_to output_error /parse error/
+        expect(gitsh).to output /C/
+        expect(gitsh).not_to output /D/
+        expect(gitsh).to output /E/
+      end
+    end
   end
 end

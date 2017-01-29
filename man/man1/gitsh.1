@@ -95,6 +95,20 @@ execute
 and then
 .Ic right .
 .El
+.Pp
+As in
+.Xr sh 1 ,
+and many other general-purpose languages,
+.Ic &&
+has greater precedence than
+.Ic || .
+That precedence can be overridden by surrounding a clause
+with parentheses.
+For example, the following two commands are not equivalent:
+.Bd -literal -offset indent
+@ :echo $first || :echo $second && :echo $third
+@ (:echo $first || :echo $second) && :echo $third
+.Ed
 .
 .Sh PROMPT
 The prompt changes based on the status of the repository. By default it consist
@@ -287,6 +301,8 @@ argument, the string delimiters
 .Pf ( Ic '" Ns ),
 the variable or sub-shell prefix
 .Pf ( Ic $ Ns ),
+parentheses
+.Pf ( Ic ( ) Ns ),
 and any character which would indicated the end of the argument
 (spaces,
 .Ic &|;# Ns )

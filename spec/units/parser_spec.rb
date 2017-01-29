@@ -126,6 +126,22 @@ describe Gitsh::Parser do
       )
     end
 
+    it 'parses commands surrounded by parentheses' do
+      command = stub_command_factory
+
+      result = parse(tokens(
+        [:LEFT_PAREN], [:WORD, 'commit'], [:RIGHT_PAREN], [:EOS],
+      ))
+
+      expect(result).to eq command
+      expect(Gitsh::Commands::Factory).to have_received(:build).with(
+        Gitsh::Commands::GitCommand,
+        env: env,
+        command: 'commit',
+        args: [],
+      )
+    end
+
     it 'parses two commands combined with &&' do
       result = parse(tokens(
         [:WORD, 'add'], [:SPACE], [:WORD, '.'],

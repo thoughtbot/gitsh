@@ -39,7 +39,14 @@ describe Gitsh::Lexer do
         to produce_tokens ['WORD(foo)', 'OR', 'WORD(bar)', 'EOS']
     end
 
-    [' ', "\t", "\r", "\n", "\f", '\'', '"', '\\', '$', '#', ';', '&', '|'].each do |char|
+    it 'recognises parentheses' do
+      expect('(foo)').
+        to produce_tokens ['LEFT_PAREN', 'WORD(foo)', 'RIGHT_PAREN', 'EOS']
+      expect(' ( foo ) ').
+        to produce_tokens ['LEFT_PAREN', 'WORD(foo)', 'RIGHT_PAREN', 'EOS']
+    end
+
+    [' ', "\t", "\r", "\n", "\f", '\'', '"', '\\', '$', '#', ';', '&', '|', '(', ')'].each do |char|
       it "recognises unquoted words containing an escaped #{char.inspect}" do
         expect("foo\\#{char}bar").
           to produce_tokens ['WORD(foo)', "WORD(#{char})", 'WORD(bar)', 'EOS']

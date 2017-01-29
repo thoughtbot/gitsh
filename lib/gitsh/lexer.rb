@@ -10,6 +10,7 @@ module Gitsh
       '#',                          # Comment prefix
       '\\',                         # Escape character
       '$',                          # Variable or sub-shell prefix
+      '(', ')',                     # Parentheses
     ]).freeze
 
     SOFT_STRING_ESCAPABLES = CharacterClass.new([
@@ -26,6 +27,8 @@ module Gitsh
     rule(/\s*;\s*/) { :SEMICOLON }
     rule(/\s*&&\s*/) { :AND }
     rule(/\s*\|\|\s*/) { :OR }
+    rule(/\s*\(\s*/) { :LEFT_PAREN }
+    rule(/\s*\)\s*/) { :RIGHT_PAREN }
 
     rule(/\s+/) { :SPACE }
 
