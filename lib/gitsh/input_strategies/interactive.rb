@@ -48,6 +48,11 @@ module Gitsh
         retry
       end
 
+
+      def handle_parse_error(message)
+        env.puts_error("gitsh: #{message}")
+      end
+
       private
 
       attr_reader :history, :line_editor, :env, :terminal
@@ -83,6 +88,8 @@ module Gitsh
 
       def load_gitshrc
         FileRunner.run(env: env, path: gitshrc_path)
+      rescue ParseError => e
+        env.puts_error "gitsh: #{e.message}"
       rescue NoInputError
       end
 

@@ -1,3 +1,5 @@
+require 'gitsh/error'
+
 module Gitsh::Commands
   module InternalCommand
     def self.new(command, args)
@@ -166,8 +168,7 @@ TXT
 
       def execute(env)
         if valid_arguments?
-          Gitsh::FileRunner.run(env: env, path: path(env))
-          true
+          run_script(env)
         else
           env.puts_error USAGE_MESSAGE
           false
@@ -175,6 +176,14 @@ TXT
       end
 
       private
+
+      def run_script(env)
+        Gitsh::FileRunner.run(env: env, path: path(env))
+        true
+      rescue Gitsh::ParseError => e
+        env.puts_error("gitsh: #{e.message}")
+        false
+      end
 
       def valid_arguments?
         args.length == 1

@@ -16,4 +16,14 @@ describe 'Handling errors' do
       expect(gitsh).to output_error /gitsh: parse error/
     end
   end
+
+  it 'does not explode when given a badly formatted script' do
+    in_a_temporary_directory do
+      write_file('bad.gitsh', ":echo 'foo")
+
+      expect("#{gitsh_path} bad.gitsh").
+        to execute.with_exit_status(1).
+        with_error_output_matching(/parse error/)
+    end
+  end
 end

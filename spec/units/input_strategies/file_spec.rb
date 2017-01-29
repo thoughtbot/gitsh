@@ -79,4 +79,13 @@ describe Gitsh::InputStrategies::File do
       end
     end
   end
+
+  describe '#handle_parse_error' do
+    it 'raises' do
+      input_strategy = described_class.new(path: double)
+
+      expect { input_strategy.handle_parse_error('my message') }.
+        to raise_exception(Gitsh::ParseError, 'my message')
+    end
+  end
 end

@@ -28,7 +28,7 @@ module Gitsh
     def execute(input)
       build_command(input).execute(env)
     rescue RLTK::LexingError, RLTK::NotInLanguage, RLTK::BadToken
-      env.puts_error('gitsh: parse error')
+      input_strategy.handle_parse_error('parse error')
     end
 
     def build_command(input)

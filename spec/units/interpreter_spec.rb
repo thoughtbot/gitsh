@@ -38,7 +38,12 @@ describe Gitsh::Interpreter do
       allow(parser).to receive(:parse).
         and_raise(RLTK::NotInLanguage.new([], double(:token), []))
       lexer = double('Lexer', lex: double(:tokens))
-      input_strategy = double(:input_strategy, setup: nil, teardown: nil)
+      input_strategy = double(
+        :input_strategy,
+        setup: nil,
+        teardown: nil,
+        handle_parse_error: nil,
+      )
       allow(input_strategy).to receive(:read_command).and_return(
         'bad command',
         nil,
@@ -51,7 +56,8 @@ describe Gitsh::Interpreter do
 
       interpreter.run
 
-      expect(env).to have_received(:puts_error).with('gitsh: parse error')
+      expect(input_strategy).
+        to have_received(:handle_parse_error).with('parse error')
     end
   end
 end

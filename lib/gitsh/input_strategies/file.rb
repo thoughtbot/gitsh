@@ -30,6 +30,10 @@ module Gitsh
         nil
       end
 
+      def handle_parse_error(message)
+        raise ParseError, message
+      end
+
       private
 
       attr_reader :env, :file, :path

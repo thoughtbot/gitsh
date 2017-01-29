@@ -30,5 +30,19 @@ describe Gitsh::Commands::InternalCommand::Source do
         expect(result).to eq false
       end
     end
+
+    context 'with a file that fails to parse' do
+      it 'prints an error message and returns false' do
+        env = spy('env', puts_error: nil)
+        command = described_class.new('source', arguments('/bad_script'))
+        allow(Gitsh::FileRunner).
+          to receive(:run).and_raise(Gitsh::ParseError, 'Oh no!')
+
+        result = command.execute(env)
+
+        expect(env).to have_received(:puts_error).with('gitsh: Oh no!')
+        expect(result).to eq false
+      end
+    end
   end
 end

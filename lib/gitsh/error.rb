@@ -7,4 +7,7 @@ module Gitsh
 
   class NoInputError < Error
   end
+
+  class ParseError < Error
+  end
 end

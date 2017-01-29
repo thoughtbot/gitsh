@@ -29,6 +29,16 @@ describe Gitsh::InputStrategies::Interactive do
       expect(Gitsh::FileRunner).to have_received(:run).
         with(hash_including(path: "#{ENV['HOME']}/.gitshrc"))
     end
+
+    it 'handles parse errors in the ~/.gitshrc file' do
+      input_strategy = build_input_strategy
+      allow(Gitsh::FileRunner).
+        to receive(:run).and_raise(Gitsh::ParseError, 'my message')
+
+      input_strategy.setup
+
+      expect(env).to have_received(:puts_error).with('gitsh: my message')
+    end
   end
 
   describe '#teardown' do
@@ -97,6 +107,17 @@ describe Gitsh::InputStrategies::Interactive do
     end
   end
 
+  describe '#handle_parse_error' do
+    it 'outputs the error' do
+      input_strategy = build_input_strategy
+      allow(env).to receive(:puts_error)
+
+      input_strategy.handle_parse_error('my message')
+
+      expect(env).to have_received(:puts_error).with('gitsh: my message')
+    end
+  end
+
   def build_input_strategy(options={})
     described_class.new(
       line_editor: options.fetch(:line_editor, line_editor),
@@ -126,6 +147,7 @@ describe Gitsh::InputStrategies::Interactive do
     @env ||= double('Environment', {
       print: nil,
       puts: nil,
+      puts_error: nil,
       repo_config_color: '',
       fetch: '',
       :[] => nil
