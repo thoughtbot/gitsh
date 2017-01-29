@@ -34,7 +34,7 @@ src/gitsh.rb: Makefile src/gitsh.rb.in
 lib/gitsh/version.rb: Makefile lib/gitsh/version.rb.in
 	$(substitute_values) $(srcdir)/$@.in > $@
 
-all-local: 
+all-local:
 	cd ext/gitsh && $(MAKE)
 
 clean-local:
@@ -120,6 +120,28 @@ release_push_arch:
 
 release_clean_arch:
 	rm -rf release-arch
+
+release_build_deb:
+	git clone --branch master git@github.com:thoughtbot/gitsh.git release-debian &&\
+	cd release-debian &&\
+	dch -v "$(PACKAGE_VERSION)-1" -U "New upstream release $(PACKAGE_VERSION)" && \
+	dch -r "" -D unstable && \
+	git commit -m "Debian package for version $(PACKAGE_VERSION)" -- debian/changelog && \
+	git tag debian-v$(PACKAGE_VERSION) && \
+	mkdir deb-build && \
+	cp ../${DIST_ARCHIVES} deb-build/${PACKAGE}_${PACKAGE_VERSION}.orig.tar.gz && \
+	tar -xf deb-build/${PACKAGE}_${PACKAGE_VERSION}.orig.tar.gz -C ./deb-build && \
+	cp -r ./debian deb-build/${PACKAGE}-${PACKAGE_VERSION} && \
+	cd deb-build/${PACKAGE}-${PACKAGE_VERSION} && \
+	debuild -F -us -uc
+
+release_push_deb:
+	cd release-debian &&\
+		git push --tags &&\
+		git push
+
+release_clean_deb:
+	rm -rf release-debian
 
 DIST_SHA: Makefile dist
 	$(eval DIST_SHA := $(shell shasum -a 256 $(srcdir)/$(DIST_ARCHIVES) | cut -d' ' -f1))

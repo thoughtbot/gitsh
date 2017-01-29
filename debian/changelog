@@ -1,5 +1,5 @@
-gitsh (0.10-1) UNRELEASED; urgency=medium
+gitsh (0.11.1-1) unstable; urgency=medium
 
   * Initial release.
 
- -- Adrian Heine <mail@adrianheine.de>  Thu, 2 Dec 2015 09:21:38 +0200
+ -- Eric Collins <eric@tabian>  Sun, 15 Jan 2017 09:58:55 -0500
