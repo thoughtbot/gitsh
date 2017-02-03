@@ -30,7 +30,7 @@ sh$</code></pre>
         gitsh% ⏎
         # On branch master
         nothing to commit, working directory clean
-        gitsh% 
+        gitsh%
 
 * Easily execute shell commands:
 
@@ -84,6 +84,13 @@ sh$</code></pre>
 * OpenBSD -current:
 
         sudo pkg_add gitsh
+
+* Debian Linux
+
+        wget -qO - https://apt.thoughtbot.com/thoughtbot.gpg.key | sudo apt-key add -
+        echo "deb http://apt.thoughtbot.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/thoughtbot.list
+        sudo apt-get update
+        sudo apt-get install gitsh
 
 See the [installation guide][INSTALL] for install instructions for other
 operating systems.
