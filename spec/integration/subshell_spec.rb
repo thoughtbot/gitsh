@@ -40,4 +40,13 @@ describe 'Subshell' do
       expect(gitsh).to output /\bfoo\nbar\b/
     end
   end
+
+  it 'is not confused by quoted parens in a subshell' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type ':echo $(:echo ")))")'
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output /\)\)\)/
+    end
+  end
 end

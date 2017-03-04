@@ -61,14 +61,12 @@ module Gitsh
     production(:argument_part) do
       clause(:word) { |word| Arguments::StringArgument.new(word) }
       clause(:VAR) { |var| Arguments::VariableArgument.new(var) }
-      clause(:subshell) { |subshell| Arguments::Subshell.new(subshell) }
+      clause(:subshell) { |program| Arguments::Subshell.new(program) }
     end
 
     production(:word, 'WORD+') { |words| words.inject(:+) }
 
-    production(:subshell, 'SUBSHELL_START .SUBSHELL+ SUBSHELL_END') do |subshells|
-      subshells.inject(:+)
-    end
+    production(:subshell, 'SUBSHELL_START .program SUBSHELL_END') { |p| p }
 
     finalize
   end

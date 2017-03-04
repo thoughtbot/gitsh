@@ -24,11 +24,35 @@ module Gitsh
       "'",                          # String terminator
     ]).freeze
 
+    class Environment < RLTK::Lexer::Environment
+      attr_reader :right_paren_stack
+
+      def initialize(*args)
+        super
+        @right_paren_stack = []
+      end
+    end
+
     rule(/\s*;\s*/) { :SEMICOLON }
     rule(/\s*&&\s*/) { :AND }
     rule(/\s*\|\|\s*/) { :OR }
-    rule(/\s*\(\s*/) { :LEFT_PAREN }
-    rule(/\s*\)\s*/) { :RIGHT_PAREN }
+
+    [:default, :soft_string].each do |state|
+      rule(/\$\(\s*/, state) do
+        push_state(:default)
+        right_paren_stack.push(:SUBSHELL_END)
+        :SUBSHELL_START
+      end
+    end
+    rule(/\s*\(\s*/) do
+      push_state(:default)
+      right_paren_stack.push(:RIGHT_PAREN)
+      :LEFT_PAREN
+    end
+    rule(/\s*\)\s*/) do
+      pop_state
+      right_paren_stack.pop || :RIGHT_PAREN
+    end
 
     rule(/\s+/) { :SPACE }
 
@@ -67,29 +91,7 @@ module Gitsh
       rule(/\$\{[a-z_][a-z0-9_.-]*\}/i, state) { |t| [:VAR, t[2..-2]] }
     end
 
-    [:default, :soft_string].each do |state|
-      rule(/\$\(/, state) do
-        @subshell_parens = 1
-        push_state :subshell
-        [:SUBSHELL_START]
-      end
-    end
-    rule(/[^()]+/, :subshell) { |t| [:SUBSHELL, t] }
-    rule(/\(/, :subshell) do
-      @subshell_parens += 1
-      [:SUBSHELL, '(']
-    end
-    rule(/\)/, :subshell) do
-      @subshell_parens -= 1
-      if @subshell_parens.zero?
-        pop_state
-        [:SUBSHELL_END]
-      else
-        [:SUBSHELL, ')']
-      end
-    end
-
-    def self.lex(string, file_name = nil, env = RLTK::Lexer::Environment.new(@start_state))
+    def self.lex(string, file_name = nil, env = self::Environment.new(@start_state))
       tokens = super
 
       case env.state
@@ -97,7 +99,9 @@ module Gitsh
         tokens.insert(-2, RLTK::Token.new(:MISSING, '\''))
       when :soft_string
         tokens.insert(-2, RLTK::Token.new(:MISSING, '"'))
-      when :subshell
+      end
+
+      if env.right_paren_stack.any?
         tokens.insert(-2, RLTK::Token.new(:MISSING, ')'))
       end
 

@@ -137,21 +137,21 @@ describe Gitsh::Lexer do
 
     it 'recognises subshells' do
       expect('$(foo)').to produce_tokens [
-        'SUBSHELL_START', 'SUBSHELL(foo)', 'SUBSHELL_END', 'EOS',
+        'SUBSHELL_START', 'WORD(foo)', 'SUBSHELL_END', 'EOS',
       ]
       expect('$(foo $(bar))').to produce_tokens [
-        'SUBSHELL_START', 'SUBSHELL(foo $)', 'SUBSHELL(()', 'SUBSHELL(bar)',
-        'SUBSHELL())', 'SUBSHELL_END', 'EOS',
+        'SUBSHELL_START', 'WORD(foo)', 'SPACE', 'SUBSHELL_START', 'WORD(bar)',
+        'SUBSHELL_END', 'SUBSHELL_END', 'EOS',
       ]
     end
 
     it 'recognises subshells in double-quoted strings' do
       expect('"$(foo)"').to produce_tokens [
-        'SUBSHELL_START', 'SUBSHELL(foo)', 'SUBSHELL_END', 'EOS',
+        'SUBSHELL_START', 'WORD(foo)', 'SUBSHELL_END', 'EOS',
       ]
       expect('"$(foo $(bar))"').to produce_tokens [
-        'SUBSHELL_START', 'SUBSHELL(foo $)', 'SUBSHELL(()', 'SUBSHELL(bar)',
-        'SUBSHELL())', 'SUBSHELL_END', 'EOS',
+        'SUBSHELL_START', 'WORD(foo)', 'SPACE', 'SUBSHELL_START', 'WORD(bar)',
+        'SUBSHELL_END', 'SUBSHELL_END', 'EOS',
       ]
     end
 
@@ -165,7 +165,7 @@ describe Gitsh::Lexer do
 
     it 'adds an error token for unclosed subshells' do
       expect('$(:echo Hello').to produce_tokens [
-        'SUBSHELL_START', 'SUBSHELL(:echo Hello)', 'MISSING())', 'EOS'
+        'SUBSHELL_START', 'WORD(:echo)', 'SPACE', 'WORD(Hello)', 'MISSING())', 'EOS'
       ]
     end
 

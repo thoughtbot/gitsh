@@ -1,5 +1,4 @@
 require 'gitsh/capturing_environment'
-require 'gitsh/string_runner'
 
 module Gitsh
   module Arguments
@@ -10,7 +9,7 @@ module Gitsh
 
       def value(env)
         capturing_env = CapturingEnvironment.new(env.clone)
-        StringRunner.run(env: capturing_env, command: command)
+        command.execute(capturing_env)
         strip_whitespace(capturing_env.captured_output)
       end
 

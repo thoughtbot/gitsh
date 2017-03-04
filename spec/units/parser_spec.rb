@@ -90,15 +90,20 @@ describe Gitsh::Parser do
 
       result = parse(tokens(
         [:WORD, 'commit'], [:SPACE], [:WORD, '-m'], [:SPACE],
-        [:SUBSHELL_START], [:SUBSHELL, ':echo $message'], [:SUBSHELL_END],
-        [:EOS],
+        [:SUBSHELL_START], [:WORD, ':echo'], [:SPACE], [:VAR, 'message'],
+        [:SUBSHELL_END], [:EOS],
       ))
 
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
+        Gitsh::Commands::InternalCommand,
+        command: 'echo',
+        args: [var('message')],
+      )
+      expect(Gitsh::Commands::Factory).to have_received(:build).with(
         Gitsh::Commands::GitCommand,
         command: 'commit',
-        args: [string('-m'), subshell(':echo $message')],
+        args: [string('-m'), subshell(command)],
       )
     end
 

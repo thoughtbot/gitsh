@@ -5,17 +5,14 @@ describe Gitsh::Arguments::Subshell do
   describe '#value' do
     it 'returns the result of executing the subshell' do
       capturing_environment = stub_capturing_environment('expected output')
-      allow(Gitsh::StringRunner).to receive(:run)
       env = double('env')
-      subshell = described_class.new('status')
+      wrapped_command = double(:command, execute: nil)
+      subshell = described_class.new(wrapped_command)
 
       output = subshell.value(env)
 
       expect(output).to eq 'expected output'
-      expect(Gitsh::StringRunner).to have_received(:run).with(
-        env: capturing_environment,
-        command: 'status',
-      )
+      expect(wrapped_command).to have_received(:execute).with(capturing_environment)
     end
   end
 
