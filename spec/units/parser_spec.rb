@@ -11,7 +11,7 @@ describe Gitsh::Parser do
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
         Gitsh::Commands::GitCommand,
-        env: env, command: 'commit', args: [],
+        command: 'commit', args: [],
       )
     end
 
@@ -23,7 +23,7 @@ describe Gitsh::Parser do
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
         Gitsh::Commands::InternalCommand,
-        env: env, command: 'echo', args: [],
+        command: 'echo', args: [],
       )
     end
 
@@ -35,7 +35,7 @@ describe Gitsh::Parser do
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
         Gitsh::Commands::ShellCommand,
-        env: env, command: 'ls', args: [],
+        command: 'ls', args: [],
       )
     end
 
@@ -49,7 +49,7 @@ describe Gitsh::Parser do
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
         Gitsh::Commands::GitCommand,
-        env: env, command: 'commit', args: [],
+        command: 'commit', args: [],
       )
     end
 
@@ -64,7 +64,6 @@ describe Gitsh::Parser do
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
         Gitsh::Commands::GitCommand,
-        env: env,
         command: 'commit',
         args: [string('-m'), string('WIP')],
       )
@@ -81,7 +80,6 @@ describe Gitsh::Parser do
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
         Gitsh::Commands::GitCommand,
-        env: env,
         command: 'commit',
         args: [string('-m'), var('message')],
       )
@@ -99,7 +97,6 @@ describe Gitsh::Parser do
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
         Gitsh::Commands::GitCommand,
-        env: env,
         command: 'commit',
         args: [string('-m'), subshell(':echo $message')],
       )
@@ -117,7 +114,6 @@ describe Gitsh::Parser do
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
         Gitsh::Commands::GitCommand,
-        env: env,
         command: 'commit',
         args: [
           string('-m'),
@@ -136,7 +132,6 @@ describe Gitsh::Parser do
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
         Gitsh::Commands::GitCommand,
-        env: env,
         command: 'commit',
         args: [],
       )
@@ -179,7 +174,7 @@ describe Gitsh::Parser do
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
         Gitsh::Commands::GitCommand,
-        env: env, command: 'commit', args: [],
+        command: 'commit', args: [],
       )
     end
 
@@ -196,7 +191,7 @@ describe Gitsh::Parser do
   end
 
   def parse(tokens)
-    described_class.new(env).parse(tokens)
+    described_class.new.parse(tokens)
   end
 
   def tokens(*tokens)
@@ -205,10 +200,6 @@ describe Gitsh::Parser do
       pos = RLTK::StreamPosition.new(i, 1, i, 10, nil)
       RLTK::Token.new(type, value, pos)
     end
-  end
-
-  def env
-    @env ||= instance_double(Gitsh::Environment)
   end
 
   def stub_command_factory

@@ -11,10 +11,10 @@ module Gitsh
       def initialize(command_class, context)
         @command_class = command_class
         @context = context
-      end 
+      end
 
       def build
-        ErrorHandler.new(command_instance, env)
+        ErrorHandler.new(command_instance)
       end
 
       private
@@ -22,15 +22,11 @@ module Gitsh
       attr_reader :command_class, :context
 
       def command_instance
-        command_class.new(env, command, argument_list)
+        command_class.new(command, argument_list)
       end
 
       def argument_list
         ArgumentList.new(args)
-      end
-
-      def env
-        context[:env]
       end
 
       def command

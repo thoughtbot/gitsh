@@ -1,6 +1,6 @@
 module Gitsh::Commands
   class Noop
-    def execute
+    def execute(_env)
     end
   end
 end

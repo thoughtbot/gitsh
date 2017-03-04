@@ -8,9 +8,10 @@ describe Gitsh::Commands::ErrorHandler do
         env = double('env')
         successful_execution = double('successful_execution')
         command_instance = double('command_instance', execute: successful_execution)
-        handler = Gitsh::Commands::ErrorHandler.new(command_instance, env)
+        handler = Gitsh::Commands::ErrorHandler.new(command_instance)
 
-        expect(handler.execute).to be command_instance.execute
+        expect(handler.execute(env)).to be command_instance.execute
+        expect(command_instance).to have_received(:execute).with(env)
       end
     end
 
@@ -20,9 +21,9 @@ describe Gitsh::Commands::ErrorHandler do
         command_instance = double('command_instance')
         allow(command_instance).to receive(:execute).
           and_raise(Gitsh::Error, 'Oh noes!')
-        handler = Gitsh::Commands::ErrorHandler.new(command_instance, env)
+        handler = Gitsh::Commands::ErrorHandler.new(command_instance)
 
-        expect(handler.execute).to eq false
+        expect(handler.execute(env)).to eq false
         expect(env).to have_received(:puts_error).with('gitsh: Oh noes!')
       end
     end

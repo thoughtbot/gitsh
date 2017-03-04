@@ -12,21 +12,21 @@ module Gitsh::Commands
     end
 
     class Multi < Branch
-      def execute
-        left.execute
-        right.execute
+      def execute(env)
+        left.execute(env)
+        right.execute(env)
       end
     end
 
     class Or < Branch
-      def execute
-        left.execute || right.execute
+      def execute(env)
+        left.execute(env) || right.execute(env)
       end
     end
 
     class And < Branch
-      def execute
-        left.execute && right.execute
+      def execute(env)
+        left.execute(env) && right.execute(env)
       end
     end
   end

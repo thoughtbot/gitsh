@@ -7,16 +7,16 @@ describe Gitsh::Commands::InternalCommand::Chdir do
   describe '#execute' do
     it 'returns true for correct directories' do
       env = double('Environment', :[]= => true, puts_error: true)
-      command = described_class.new(env, 'cd', arguments('./'))
+      command = described_class.new('cd', arguments('./'))
 
-      expect(command.execute).to be_truthy
+      expect(command.execute(env)).to be_truthy
     end
 
     it 'returns false with invalid arguments' do
       env = double('Environment', :[]= => true, puts_error: true)
-      command = described_class.new(env, 'cd', arguments('foo'))
+      command = described_class.new('cd', arguments('foo'))
 
-      expect(command.execute).to be_falsey
+      expect(command.execute(env)).to be_falsey
     end
   end
 end

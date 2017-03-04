@@ -1,7 +1,7 @@
 module Gitsh::Commands
   module InternalCommand
-    def self.new(env, command, args)
-      command_class(command).new(env, command, args)
+    def self.new(command, args)
+      command_class(command).new(command, args)
     end
 
     def self.commands
@@ -13,8 +13,7 @@ module Gitsh::Commands
     end
 
     class Base
-      def initialize(env, command, args)
-        @env = env
+      def initialize(command, args)
         @command = command
         @args = args
       end
@@ -31,9 +30,9 @@ module Gitsh::Commands
 
       private
 
-      attr_reader :env, :command, :args
+      attr_reader :command, :args
 
-      def arg_values
+      def arg_values(env)
         @arg_values ||= args.values(env)
       end
     end
@@ -48,9 +47,9 @@ dollar prefix.
 TXT
       end
 
-      def execute
+      def execute(env)
         if valid_arguments?
-          key, value = arg_values
+          key, value = arg_values(env)
           env[key] = value
           true
         else
@@ -76,8 +75,8 @@ of a variable.
 TXT
       end
 
-      def execute
-        env.puts arg_values.join(' ')
+      def execute(env)
+        env.puts arg_values(env).join(' ')
         true
       end
     end
@@ -90,9 +89,9 @@ Changes directory to the given path.
 TXT
       end
 
-      def execute
+      def execute(env)
         if valid_arguments?
-          change_directory
+          change_directory(env)
         else
           env.puts_error 'usage: :cd path'
           false
@@ -105,8 +104,8 @@ TXT
         args.length == 1
       end
 
-      def change_directory
-        Dir.chdir(path)
+      def change_directory(env)
+        Dir.chdir(path(env))
       rescue Errno::ENOENT
         env.puts_error 'gitsh: cd: No such directory'
         false
@@ -115,8 +114,8 @@ TXT
         false
       end
 
-      def path
-        File.expand_path(arg_values.first)
+      def path(env)
+        File.expand_path(arg_values(env).first)
       end
     end
 
@@ -129,7 +128,7 @@ pressing ctrl+d.
 TXT
       end
 
-      def execute
+      def execute(_env)
         exit
       end
     end
@@ -143,15 +142,15 @@ commands.
 TXT
       end
 
-      def execute
-        env.puts InternalCommand.command_class(subject).help_message
+      def execute(env)
+        env.puts InternalCommand.command_class(subject(env)).help_message
         true
       end
 
       private
 
-      def subject
-        arg_values.first.to_s.sub(/^:/, '')
+      def subject(env)
+        arg_values(env).first.to_s.sub(/^:/, '')
       end
     end
 
@@ -165,9 +164,9 @@ Runs the commands in the given file.
 TXT
       end
 
-      def execute
+      def execute(env)
         if valid_arguments?
-          Gitsh::FileRunner.run(env: env, path: path)
+          Gitsh::FileRunner.run(env: env, path: path(env))
           true
         else
           env.puts_error USAGE_MESSAGE
@@ -178,16 +177,16 @@ TXT
       private
 
       def valid_arguments?
-        arg_values.length == 1
+        args.length == 1
       end
 
-      def path
-        File.expand_path(arg_values.first)
+      def path(env)
+        File.expand_path(arg_values(env).first)
       end
     end
 
     class Unknown < Base
-      def execute
+      def execute(env)
         env.puts_error("gitsh: #{command}: command not found")
         false
       end

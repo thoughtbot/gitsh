@@ -14,12 +14,11 @@ describe Gitsh::Commands::GitCommand do
       mock_runner = double(:shell_command_runner, run: expected_result)
 
       command = described_class.new(
-        env,
         "commit",
         arguments("-m", "Some stuff"),
         shell_command_runner: mock_runner,
       )
-      result = command.execute
+      result = command.execute(env)
 
       expect(mock_runner).to have_received(:run).with(
         ["/usr/bin/env", "git", "commit", "-m", "Some stuff"],
@@ -40,13 +39,12 @@ describe Gitsh::Commands::GitCommand do
         fetch: nil,
       )
       command = described_class.new(
-        env,
         'commit',
         arguments('-m', 'A test commit'),
         shell_command_runner: mock_runner,
       )
 
-      command.execute
+      command.execute(env)
 
       expect(mock_runner).to have_received(:run).with(
         [
@@ -71,12 +69,11 @@ describe Gitsh::Commands::GitCommand do
         allow(env).to receive(:fetch).with('help.autocorrect').and_return('1')
 
         command = described_class.new(
-          env,
           "git",
           arguments("commit", "-m", "Some stuff"),
           shell_command_runner: mock_runner,
         )
-        result = command.execute
+        result = command.execute(env)
 
         expect(mock_runner).to have_received(:run).with(
           ["/usr/bin/env", "git", "-c", "foo=1", "commit", "-m", "Some stuff"],
@@ -96,12 +93,11 @@ describe Gitsh::Commands::GitCommand do
         allow(env).to receive(:fetch).with('help.autocorrect').and_return('0')
 
         command = described_class.new(
-          env,
           "git",
           arguments("commit", "-m", "Some stuff"),
           shell_command_runner: mock_runner,
         )
-        result = command.execute
+        result = command.execute(env)
 
         expect(mock_runner).to have_received(:run).with(
           ["/usr/bin/env", "git", "git", "commit", "-m", "Some stuff"],

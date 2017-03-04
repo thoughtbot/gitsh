@@ -9,9 +9,9 @@ describe Gitsh::Commands::InternalCommand::Source do
       it "calls the FileRunner and returns true" do
         env = double('env')
         allow(Gitsh::FileRunner).to receive(:run)
-        command = described_class.new(env, 'source', arguments('/path'))
+        command = described_class.new('source', arguments('/path'))
 
-        result = command.execute
+        result = command.execute(env)
 
         expect(Gitsh::FileRunner).to have_received(:run).
           with(env: env, path: '/path')
@@ -22,9 +22,9 @@ describe Gitsh::Commands::InternalCommand::Source do
     context "with no file argument" do
       it "prints a usage message and returns false" do
         env = spy('env', puts_error: nil)
-        command = described_class.new(env, 'source', arguments())
+        command = described_class.new('source', arguments())
 
-        result = command.execute
+        result = command.execute(env)
 
         expect(env).to have_received(:puts_error).with('usage: :source path')
         expect(result).to eq false

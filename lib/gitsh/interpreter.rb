@@ -8,7 +8,7 @@ module Gitsh
     def initialize(options)
       @env = options.fetch(:env)
       @lexer = options.fetch(:lexer, Lexer)
-      @parser_factory = options.fetch(:parser_factory, Parser)
+      @parser = options.fetch(:parser, Parser)
       @input_strategy = options.fetch(:input_strategy)
     end
 
@@ -23,20 +23,16 @@ module Gitsh
 
     private
 
-    attr_reader :env, :parser_factory, :lexer, :input_strategy
+    attr_reader :env, :parser, :lexer, :input_strategy
 
     def execute(input)
-      build_command(input).execute
+      build_command(input).execute(env)
     rescue RLTK::LexingError, RLTK::NotInLanguage, RLTK::BadToken
       env.puts_error('gitsh: parse error')
     end
 
     def build_command(input)
       parser.parse(lexer.lex(input))
-    end
-
-    def parser
-      parser_factory.new(env)
     end
   end
 end

@@ -7,25 +7,25 @@ describe Gitsh::Commands::InternalCommand::Set do
   describe '#execute' do
     it 'sets a variable on the environment' do
       env = spy('env')
-      command = described_class.new(env, 'set', arguments('foo', 'bar'))
+      command = described_class.new('set', arguments('foo', 'bar'))
 
-      command.execute
+      command.execute(env)
 
       expect(env).to have_received(:[]=).with('foo', 'bar')
     end
 
     it 'returns true with correct arguments' do
       env = double('Environment', :[]= => true, puts_error: true)
-      command = described_class.new(env, 'set', arguments('foo', 'bar'))
+      command = described_class.new('set', arguments('foo', 'bar'))
 
-      expect(command.execute).to be_truthy
+      expect(command.execute(env)).to be_truthy
     end
 
     it 'returns false with invalid arguments' do
       env = double('Environment', :[]= => true, puts_error: true)
-      command = described_class.new(env, 'set', arguments('foo'))
+      command = described_class.new('set', arguments('foo'))
 
-      expect(command.execute).to be_falsey
+      expect(command.execute(env)).to be_falsey
     end
   end
 end

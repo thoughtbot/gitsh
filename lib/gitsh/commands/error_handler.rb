@@ -1,13 +1,12 @@
 module Gitsh
   module Commands
     class ErrorHandler
-      def initialize(command, env)
+      def initialize(command)
         @command = command
-        @env = env
       end
 
-      def execute
-        command.execute
+      def execute(env)
+        command.execute(env)
       rescue Gitsh::Error => error
         env.puts_error("gitsh: #{error.message}")
         false
@@ -15,7 +14,7 @@ module Gitsh
 
       private
 
-      attr_reader :command, :env
+      attr_reader :command
     end
   end
 end
