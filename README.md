@@ -117,7 +117,7 @@ free software, and may be redistributed under the terms specified in the
 
 ## About thoughtbot
 
-![thoughtbot](https://thoughtbot.com/logo.png)
+![thoughtbot](http://presskit.thoughtbot.com/images/thoughtbot-logo-for-readmes.svg)
 
 gitsh was created by thoughtbot's
 [Stockholm software development team][team]
