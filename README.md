@@ -1,4 +1,4 @@
-# <img src="http://thoughtbot.github.io/gitsh/images/gitsh-logo.png" alt="gitsh" width="150" height="178">
+# <img src="https://images.thoughtbot.com/gitsh/gitsh-logo.png" alt="gitsh" width="187" height="211">
 
 The `gitsh` program is an interactive shell for git. From within `gitsh` you can
 issue any git command, even using your local aliases and configuration.
@@ -30,7 +30,7 @@ sh$</code></pre>
         gitsh% ⏎
         # On branch master
         nothing to commit, working directory clean
-        gitsh% 
+        gitsh%
 
 * Easily execute shell commands:
 
