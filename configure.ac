@@ -61,9 +61,9 @@ cd "$current_dir"
 rubydir=$datadir/$PACKAGE/ruby
 rubylibdir=$rubydir/lib
 pkgrubylibdir=$rubylibdir/gitsh
-libfiles="$(echo $(find "$(dirname "$0")/lib/gitsh" -name \*.rb | cut -c 3-))"
-vendorfiles="$(echo $(find "$(dirname "$0")/vendor/gems" -type f))"
-testfiles="$(echo $(find "$(dirname "$0")/spec/integration" "$(dirname "$0")/spec/units" -type f -name \*rb))"
+libfiles="$(echo $(find "$srcdir/lib/gitsh" -name \*.rb))"
+vendorfiles="$(echo $(find "$srcdir/vendor/gems" -type f))"
+testfiles="$(echo $(find "$srcdir/spec/integration" "$srcdir/spec/units" -type f -name \*rb))"
 gemsetuppath=$datadir/$PACKAGE/vendor/gems/setup.rb
 
 AC_SUBST([RUBY])
