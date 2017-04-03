@@ -53,6 +53,15 @@ you might use:
           LDFLAGS="-L/usr/local/opt/readline/lib" \
           ./configure
 
+If your system uses a different name for Readline, you can set the
+$READLINE_LIB environment variable. For example, on OpenBSD where the Readline
+library is named ereadline, you might use:
+
+        READLINE_LIB="ereadline" \
+          CPPFLAGS="-I/usr/local/include/ereadline" \
+          LDFLAGS="-L/usr/local/lib" \
+          ./configure
+
 
 Installation
 ------------

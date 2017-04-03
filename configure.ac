@@ -6,6 +6,10 @@ AC_INIT(gitsh, 0.11.1, hello@thoughtbot.com)
 AM_INIT_AUTOMAKE([subdir-objects])
 
 AC_ARG_VAR([RUBY],[The path of the Ruby binary to use])
+AC_ARG_VAR(
+  [READLINE_LIB],
+  [The name of the readline library on your system, e.g. ereadline on OpenBSD]
+)
 
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -34,10 +38,12 @@ if test "$newer" == "$srcdir/Gemfile.lock"; then
     $srcdir/vendor/vendorize $VENDOR_DIRECTORY || AC_MSG_ERROR([Vendorizing gems failed])
 fi
 
+AS_IF([test "x$READLINE_LIB" = x], [READLINE_LIB="readline"])
 current_dir="$PWD"
 cd "$srcdir/ext/gitsh"
 AS_IF(
-    [$RUBY extconf.rb --with-ldflags="$LDFLAGS" --with-cppflags="$CPPFLAGS"],
+    [$RUBY extconf.rb --with-ldflags="$LDFLAGS" --with-cppflags="$CPPFLAGS" \
+      --with-readlinelib="$READLINE_LIB"],
     [],
     AC_MSG_ERROR(Failed to configure Ruby extension)
 )
