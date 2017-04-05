@@ -15,13 +15,14 @@ For a quick introduction to `gitsh`, watch [our video on Upcase][].
 * Git commands tend to come in groups. Avoid typing `git` over and over and over
   by running them in a dedicated git shell:
 
-    <pre><code>sh$ gitsh
+<pre><code>sh$ gitsh
 gitsh% status
 gitsh% add .
 gitsh% commit -m "Ship it!"
 gitsh% push
 gitsh% <kbd>ctrl</kbd>-<kbd>d</kbd>
-sh$</code></pre>
+sh$
+</code></pre>
 
 * Hit <kbd>return</kbd> with no command to run `git status` (change this
   command by setting `gitsh.defaultCommand` via `git config`; remember it will
