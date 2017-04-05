@@ -119,12 +119,10 @@ free software, and may be redistributed under the terms specified in the
 
 ![thoughtbot](http://presskit.thoughtbot.com/images/thoughtbot-logo-for-readmes.svg)
 
-gitsh was created by thoughtbot's
-[Stockholm software development team][team]
-and continues to be maintained and funded by thoughtbot.
+Created, maintained and funded by [thoughtbot][team].
 The names and logos for thoughtbot are trademarks of thoughtbot, inc.
 
-[team]: https://thoughtbot.com/stockholm?utm_source=github
+[team]: https://thoughtbot.com?utm_source=github
 
 We love open source software!
 See [our other projects][community].
