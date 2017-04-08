@@ -10,6 +10,10 @@ AC_ARG_VAR(
   [READLINE_LIB],
   [The name of the readline library on your system, e.g. ereadline on OpenBSD]
 )
+AC_ARG_VAR(
+  [READLINE_ARCH],
+  [The architecture of the readline library on your system, e.g. x86_64]
+)
 
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -39,11 +43,16 @@ if test "$newer" == "$srcdir/Gemfile.lock"; then
 fi
 
 AS_IF([test "x$READLINE_LIB" = x], [READLINE_LIB="readline"])
+AS_IF(
+    [test "x$READLINE_ARCH" = x],
+    [readline_arch_arg=""],
+    [readline_arch_arg="--with-arch-flag=\"-arch $READLINE_ARCH\""]
+)
 current_dir="$PWD"
 cd "$srcdir/ext/gitsh"
 AS_IF(
     [$RUBY extconf.rb --with-ldflags="$LDFLAGS" --with-cppflags="$CPPFLAGS" \
-      --with-readlinelib="$READLINE_LIB"],
+      --with-readlinelib="$READLINE_LIB" "$readline_arch_arg"],
     [],
     AC_MSG_ERROR(Failed to configure Ruby extension)
 )
