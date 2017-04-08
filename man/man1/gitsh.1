@@ -196,8 +196,9 @@ Or for a mix of variables and arbitrary strings:
 .Bd -literal -offset indent
 @ :echo "This is ${user.name}'s work"
 .Ed
-.It Ic :cd path
-changes directory to the given path.
+.It Ic :cd [path]
+changes directory to the given path. Without an argument it changes directory
+to the repository's root.
 .It Ic :help [command]
 displays help about the given built-in command. Without an argument it outputs
 a list of all built-in commands. When given the name of a command, it outputs a

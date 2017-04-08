@@ -86,8 +86,9 @@ TXT
     class Chdir < Base
       def self.help_message
         <<-TXT
-usage: :cd path
-Changes directory to the given path.
+usage: :cd [path]
+Changes directory to the given path. Run with no arguments to change to the
+repository's root directory.
 TXT
       end
 
@@ -103,7 +104,7 @@ TXT
       private
 
       def valid_arguments?
-        args.length == 1
+        args.length == 0 || args.length == 1
       end
 
       def change_directory(env)
@@ -117,7 +118,13 @@ TXT
       end
 
       def path(env)
-        File.expand_path(arg_values(env).first)
+        values = arg_values(env)
+
+        if values.empty?
+          env.fetch(:_root)
+        else
+          File.expand_path(values.first)
+        end
       end
     end
 
