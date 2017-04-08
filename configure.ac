@@ -14,8 +14,8 @@ AC_ARG_VAR(
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_PROG_CC
-AC_PATH_PROGS([RUBY], [ruby ruby20 ruby21], [], $(getconf PATH))
-AC_PATH_PROGS([RUBY], [ruby ruby20 ruby21])
+AC_PATH_PROGS([RUBY], [ruby ruby20 ruby21 ruby22 ruby23 ruby24], [], $(getconf PATH))
+AC_PATH_PROGS([RUBY], [ruby ruby20 ruby21 ruby22 ruby23 ruby24])
 
 if test -n $RUBY; then
   case $RUBY in $HOME/*)
