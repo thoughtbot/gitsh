@@ -94,6 +94,26 @@ describe Gitsh::MagicVariables do
           end
         end
       end
+
+      context 'with _root' do
+        it 'returns the root directory of the repository' do
+          repo = double('GitRepository', root_dir: '/tmp/example')
+          magic_variables = described_class.new(repo)
+
+          expect(magic_variables.fetch(:_root)).to eq '/tmp/example'
+        end
+
+        context 'when used outside a repository' do
+          it 'raises an exception' do
+            repo = double('GitRepository', root_dir: '')
+            magic_variables = described_class.new(repo)
+
+            expect { magic_variables.fetch(:_root) }.to raise_exception(
+              Gitsh::UnsetVariableError,
+            )
+          end
+        end
+      end
     end
   end
 end

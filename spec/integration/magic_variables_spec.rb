@@ -77,6 +77,21 @@ describe 'Magic variables' do
     end
   end
 
+  context '$_root' do
+    it 'evaluates to the root path of the repository' do
+      GitshRunner.interactive do |gitsh|
+        root_dir = Dir.pwd
+        make_directory('child')
+        Dir.chdir('child')
+        gitsh.type('init')
+        gitsh.type(':echo $_root')
+
+        expect(gitsh).to output_no_errors
+        expect(gitsh).to output(/#{root_dir}/)
+      end
+    end
+  end
+
   def in_a_repository_with_conflicting_branches
     GitshRunner.interactive do |gitsh|
       gitsh.type('init')

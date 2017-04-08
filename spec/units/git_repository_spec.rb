@@ -18,6 +18,37 @@ describe Gitsh::GitRepository do
     end
   end
 
+  describe '#root_dir' do
+    it 'returns the path to the working directory' do
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          root_dir = Dir.pwd
+          repo = Gitsh::GitRepository.new(env)
+          run 'git init'
+
+          expect(repo.root_dir).to eq(root_dir)
+
+          run 'mkdir subdir'
+          Dir.chdir('./subdir')
+
+          expect(repo.root_dir).to eq(root_dir)
+        end
+      end
+    end
+
+    context 'when called outside of a git repository' do
+      it 'returns the empty string' do
+        with_a_temporary_home_directory do
+          in_a_temporary_directory do
+            repo = Gitsh::GitRepository.new(env)
+
+            expect(repo.root_dir).to eq('')
+          end
+        end
+      end
+    end
+  end
+
   describe '#current_head' do
     it 'returns the name of the current git branch' do
       with_a_temporary_home_directory do

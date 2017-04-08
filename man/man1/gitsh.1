@@ -265,6 +265,10 @@ which we are rebasing, for example after running
 this variable would evaluate to the hash of the commit at the head of the
 .Ic master
 branch.
+.It Ic $_root
+The absolute path to the current repository's root directory. This is
+equivalent to the output of
+.Ic git-rev-parse --show-toplevel .
 .El
 .El
 .Pp
@@ -272,6 +276,11 @@ Attempting to use an unset variable will cause a command to fail. This is
 different to
 .Xr sh 1 ,
 which will ignore unset variable arguments.
+.Pp
+Magic variables will behave like unset variables when used in a context
+where they don't make sense, e.g. using
+.Ic $_root
+outside of a Git repository.
 .Sh SUB-SHELLS
 .Pp
 Sub-shells can be used to pass the output of any command--including Git

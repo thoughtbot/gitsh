@@ -39,6 +39,14 @@ module Gitsh
         raise(UnsetVariableError, 'No rebase in progress')
     end
 
+    def _root
+      repo.root_dir.tap do |root_dir|
+        if root_dir.empty?
+          raise(UnsetVariableError, 'Not a Git repository')
+        end
+      end
+    end
+
     def read_file(path_components)
       File.read(File.join(repo.git_dir, *path_components)).chomp
     rescue Errno::ENOENT

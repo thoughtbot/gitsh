@@ -13,6 +13,10 @@ module Gitsh
       git_output('rev-parse --git-dir')
     end
 
+    def root_dir
+      git_output('rev-parse --show-toplevel')
+    end
+
     def current_head
       current_branch_name || current_tag_name || abbreviated_sha
     end
