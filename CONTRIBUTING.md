@@ -122,4 +122,39 @@ gitsh is packaged and installed using GNU autotools.
 
         make release
 
+## Building the dpkg package
+
+You first need to set up a working directory for your build with a copy of
+gitsh (preferably obtained via git):
+
+    mkdir build_gitsh && cd build_gitsh/
+    git clone https://github.com/thoughtbot/gitsh.git gitsh-0.10
+
+If you already have a checkout of gitsh.git with which you want to work, you
+can just reuse it:
+
+    cd ..
+    mv gitsh gitsh-0.10/
+
+or
+
+    ln -s gitsh gitsh-0.10
+
+Next, create the orig tarball:
+
+    tar hczf gitsh_0.10.orig.tar.gz gitsh-0.10/
+    cd gitsh-0.10/
+
+Now you need to install the build-dependencies and then run the build process:
+
+    sudo aptitude install devscripts dh-autoreconf ruby-rspec ruby-bourne pry ruby-parslet
+    debuild -us -uc
+
+There are some common errors you might get when running `debuild`:
+
+  * Vendorizing gems failed
+    * Just re-run debuild
+  * Aborting due to unexpected upstream changes (often config.log)
+    * Delete config.log or update the orig tarball
+
 [style-guide]: https://github.com/thoughtbot/guides/tree/master/style#ruby
