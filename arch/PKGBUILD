@@ -8,7 +8,7 @@ url="http://thoughtbot.github.io/gitsh/"
 license=('custom')
 depends=('ruby>=2.0.0' 'readline')
 source=("http://thoughtbot.github.io/gitsh/gitsh-0.11.2.tar.gz")
-sha256sums=('5f01e7057b3b420209a26261eff49bba492b3cce8cd86a6f52a3b00292e15e8d')
+sha256sums=('d3ef8f88417ff9bef7fd95bcd1d9011d9adaed2213094a2d056266169da1bcec')
 
 build() {
   cd "$srcdir/$pkgname-$pkgver"
