@@ -42,7 +42,6 @@ end
 
 describe '--git' do
   it 'uses the requested git binary' do
-    fake_git_path = File.expand_path('../../fixtures/fake_git', __FILE__)
     GitshRunner.interactive(args: ['--git', fake_git_path]) do |gitsh|
       gitsh.type('init')
 
