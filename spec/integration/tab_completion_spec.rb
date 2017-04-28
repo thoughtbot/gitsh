@@ -54,6 +54,26 @@ describe 'Completing things with tab' do
     end
   end
 
+  it 'completes commands after operators' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type("init && :ec\t Hello")
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output(/Hello/)
+    end
+  end
+
+  it 'completes commands in subshells' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type('init')
+      gitsh.type('commit --allow-empty -m "First"')
+      gitsh.type(":echo $(bran\t)")
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output(/\bmaster\b/)
+    end
+  end
+
   it 'completes branch names' do
     GitshRunner.interactive do |gitsh|
       gitsh.type('init')

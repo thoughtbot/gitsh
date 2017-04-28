@@ -1,5 +1,3 @@
-require 'gitsh/completer'
-require 'gitsh/completion_escaper'
 require 'gitsh/error'
 require 'gitsh/file_runner'
 require 'gitsh/history'
@@ -7,6 +5,7 @@ require 'gitsh/line_editor'
 require 'gitsh/line_editor_history_filter'
 require 'gitsh/prompter'
 require 'gitsh/quote_detector'
+require 'gitsh/tab_completion/facade'
 require 'gitsh/terminal'
 
 module Gitsh
@@ -72,12 +71,9 @@ module Gitsh
       attr_reader :history, :line_editor, :env, :terminal
 
       def setup_line_editor
-        line_editor.completion_proc = CompletionEscaper.new(
-          Completer.new(line_editor, env),
-          line_editor: line_editor,
-        )
+        line_editor.completion_proc = TabCompletion::Facade.new(line_editor, env)
         line_editor.completer_quote_characters = %('")
-        line_editor.completer_word_break_characters = ' &|;'
+        line_editor.completer_word_break_characters = ' &|;('
         line_editor.quoting_detection_proc = QuoteDetector.new
       end
 
