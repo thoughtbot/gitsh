@@ -200,6 +200,20 @@ describe Gitsh::GitRepository do
     end
   end
 
+  describe '#available_config_variables' do
+    it 'returns a list of all Git configuration variables' do
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = described_class.new(env)
+          run 'git init'
+          run 'git config --local user.name "Grace Hopper"'
+
+          expect(repo.available_config_variables).to include(:'user.name')
+        end
+      end
+    end
+  end
+
   context '#config_color' do
     context 'when the config variable is set' do
       it 'returns a color code for the color described by the setting' do

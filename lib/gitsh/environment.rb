@@ -50,6 +50,14 @@ module Gitsh
       raise Gitsh::UnsetVariableError, "Variable '#{key}' is not set"
     end
 
+    def available_variables
+      (
+        magic_variables.available_variables +
+        variables.keys +
+        repo.available_config_variables
+      ).uniq.sort
+    end
+
     def config_variables
       Hash[variables.select { |key, value| key.to_s.include?('.') }]
     end

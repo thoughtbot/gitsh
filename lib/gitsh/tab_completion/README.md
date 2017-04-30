@@ -10,6 +10,9 @@ has typed so far.
 The basis of gitsh's tab completion system is a slightly extended
 Non-deterministic Finite Automaton (NFA).
 
+Completing variable names doesn't use the NFA, but all other types of completion
+do.
+
 ### Finite Automata
 
 In a typical NFA, the automaton consists of a set of states joined by
@@ -104,10 +107,12 @@ so we'd offer file paths from the current directory as completions.
 - `Gitsh::TabCompletion::Facade` provides a single interface to the rest of
   gitsh. It's the only class inside the `TabCompletion` module that should be
   referenced elsewhere. Its `#call` method is the entry point for generating
-  completions.
+  completions. It also decides if the `CommandCompleter` or `VariableCompleter`
+  should be invoked.
 
 - `Gitsh::TabCompletion::Context` uses the `Gitsh::Lexer` to break up the user's
-  input into a series of words, so we know what to pass to the automaton.
+  input into a series of words, so we know what to pass to the automaton, or if
+  the input ends with a variable name.
 
 - `Gitsh::TabCompletion::Automaton` implements the Non-deterministic Finite
   Automaton (NFA).
@@ -123,3 +128,7 @@ so we'd offer file paths from the current directory as completions.
 
 - `Gitsh::TabCompletion::CommandCompleter` orchestrates the interaction of the
   various other parts.
+
+- `Gitsh::TabCompletion::VariableCompleter` provides an alternative to
+  `CommandCompleter`. This doesn't use the automaton, and only completes
+  variable names.

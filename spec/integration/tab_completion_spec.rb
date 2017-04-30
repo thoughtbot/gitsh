@@ -124,6 +124,16 @@ describe 'Completing things with tab' do
     end
   end
 
+  it 'completes variables' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type(':set greeting "Hello, world"')
+      gitsh.type(":echo $gre\t")
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output(/Hello, world/)
+    end
+  end
+
   it 'completes after punctuation' do
     GitshRunner.interactive do |gitsh|
       gitsh.type('init')

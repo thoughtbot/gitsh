@@ -2,6 +2,7 @@ require 'gitsh/tab_completion/automaton_factory'
 require 'gitsh/tab_completion/command_completer'
 require 'gitsh/tab_completion/context'
 require 'gitsh/tab_completion/escaper'
+require 'gitsh/tab_completion/variable_completer'
 
 module Gitsh
   module TabCompletion
@@ -13,7 +14,11 @@ module Gitsh
 
       def call(input)
         context = Context.new(line_editor.line_buffer)
-        command_completions(context, input)
+        if context.completing_variable?
+          variable_completions(input)
+        else
+          command_completions(context, input)
+        end
       end
 
       private
@@ -28,6 +33,10 @@ module Gitsh
           automaton,
           escaper,
         ).call
+      end
+
+      def variable_completions(input)
+        VariableCompleter.new(line_editor, input, env).call
       end
 
       def automaton

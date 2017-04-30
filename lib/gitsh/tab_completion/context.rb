@@ -6,6 +6,7 @@ module Gitsh
       COMMAND_SEPARATORS = [
         :AND, :OR, :SEMICOLON, :LEFT_PAREN, :SUBSHELL_START, :EOL,
       ].freeze
+      NOT_MEANINGFUL = [:EOS, :INCOMPLETE].freeze
 
       def initialize(input)
         @input = input
@@ -13,6 +14,10 @@ module Gitsh
 
       def prior_words
         words[0...-1]
+      end
+
+      def completing_variable?
+        [:VAR, :MISSING].include?(last_meaningful_token.type)
       end
 
       private
@@ -28,6 +33,8 @@ module Gitsh
           tokens.inject("") do |result, token|
             if token.type == :WORD
               result + token.value
+            elsif token.type == :VAR
+              result + "${#{token.value}}"
             else
               result
             end
@@ -53,7 +60,16 @@ module Gitsh
           reverse
       end
 
+      def last_meaningful_token
+        tokens.reverse_each.
+          detect { |token| !NOT_MEANINGFUL.include?(token.type) }
+      end
+
       def tokens
+        @_tokens ||= lex
+      end
+
+      def lex
         Lexer.lex(input)
       rescue RLTK::LexingError
         []

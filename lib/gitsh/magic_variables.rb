@@ -12,13 +12,13 @@ module Gitsh
       end
     end
 
-    private
-
-    attr_reader :repo
-
     def available_variables
       private_methods(false).grep(/^_/)
     end
+
+    private
+
+    attr_reader :repo
 
     def _prior
       repo.revision_name('@{-1}') ||

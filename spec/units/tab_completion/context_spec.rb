@@ -8,6 +8,11 @@ describe Gitsh::TabCompletion::Context do
       expect(context.prior_words).to eq %w(stash drop)
     end
 
+    it 'includes variables' do
+      context = described_class.new(':echo "name=$user.name" "email=')
+      expect(context.prior_words).to eq [':echo', 'name=${user.name}']
+    end
+
     it 'only considers the current command' do
       context = described_class.new('stash apply my-stash && stash drop my-')
       expect(context.prior_words).to eq %w(stash drop)
@@ -40,6 +45,23 @@ describe Gitsh::TabCompletion::Context do
 
         expect(described_class.new('bad input').prior_words).to eq []
       end
+    end
+  end
+
+  describe '#completing_variable?' do
+    it 'returns true when the command ends with a variable' do
+      expect(described_class.new(':echo $my_va')).to be_completing_variable
+      expect(described_class.new(':echo "$my_va')).to be_completing_variable
+      expect(described_class.new(':echo ${my_va')).to be_completing_variable
+      expect(described_class.new(':echo $')).to be_completing_variable
+      expect(described_class.new(':echo ${')).to be_completing_variable
+    end
+
+    it 'returns false when the command does not end with a variable' do
+      expect(described_class.new(':echo hello')).not_to be_completing_variable
+      expect(described_class.new(':echo $my_var ')).not_to be_completing_variable
+      expect(described_class.new(':echo \'$varish')).not_to be_completing_variable
+      expect(described_class.new(':echo \'$')).not_to be_completing_variable
     end
   end
 end

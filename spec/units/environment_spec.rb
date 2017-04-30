@@ -67,6 +67,30 @@ describe Gitsh::Environment do
     end
   end
 
+  describe '#available_variables' do
+    it 'returns the names of all available variables' do
+      repository = double('GitRepository')
+      allow(repository).to receive(:available_config_variables).
+        and_return([:'user.name'])
+      factory = double('RepositoryFactory', new: repository)
+      magic_variables = double('MagicVariables')
+      allow(magic_variables).to receive(:available_variables).
+        and_return([:_prior])
+      env = described_class.new(
+        magic_variables: magic_variables,
+        repository_factory: factory,
+      )
+      env[:foo] = 'bar'
+      env['user.name'] = 'Config Override'
+
+      expect(env.available_variables).to eq [
+        :_prior,
+        :foo,
+        :'user.name',
+      ]
+    end
+  end
+
   describe '#clone' do
     it 'creates a copy with an isolated set of variables' do
       original = described_class.new
