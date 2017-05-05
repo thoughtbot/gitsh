@@ -1,4 +1,12 @@
 require 'rltk'
+require 'gitsh/tab_completion/dsl/rule_set_factory'
+require 'gitsh/tab_completion/dsl/rule_factory'
+require 'gitsh/tab_completion/dsl/concatenation_factory'
+require 'gitsh/tab_completion/dsl/text_transition_factory'
+require 'gitsh/tab_completion/dsl/star_operation_factory'
+require 'gitsh/tab_completion/dsl/plus_operation_factory'
+require 'gitsh/tab_completion/dsl/maybe_operation_factory'
+require 'gitsh/tab_completion/dsl/variable_transition_factory'
 
 module Gitsh
   module TabCompletion
@@ -73,75 +81,11 @@ module Gitsh
         production(:atom) do
           clause('WORD') { |word| TextTransitionFactory.new(word) }
           clause('VAR') { |var_name| VariableTransitionFactory.new(var_name) }
+          #FIXME: Replace VariableTransitionFactory with VARIABLES.fetch(var_name).new
           clause('OPTION') { |opt_name| TextTransitionFactory.new(opt_name) }
         end
 
         finalize
-      end
-
-      class RuleSetFactory
-        attr_reader :rules
-
-        def initialize(rules)
-          @rules = rules
-        end
-      end
-
-      class RuleFactory
-        attr_reader :root, :options
-
-        def initialize(root, options)
-          @root = root
-          @options = options
-        end
-      end
-
-      class TextTransitionFactory
-        attr_reader :word
-
-        def initialize(word)
-          @word = word
-        end
-      end
-
-      class VariableTransitionFactory
-        attr_reader :name
-
-        def initialize(name)
-          @name = name
-        end
-      end
-
-      class ConcatenationFactory
-        attr_reader :parts
-
-        def initialize(parts)
-          @parts = parts
-        end
-      end
-
-      class StarOperationFactory
-        attr_reader :child
-
-        def initialize(child)
-          @child = child
-        end
-      end
-
-      class PlusOperationFactory
-        attr_reader :child
-
-        def initialize(child)
-          @child = child
-        end
-      end
-
-      class MaybeOperationFactory
-        attr_reader :child
-
-        def initialize(child)
-          @child = child
-        end
       end
 
       class ChoiceFactory
@@ -150,6 +94,9 @@ module Gitsh
         def initialize(choices)
           @choices = choices
         end
+
+        #FIXME: Move out of this file
+        #FIXME: Add a #build method
       end
 
       class Option
@@ -159,6 +106,9 @@ module Gitsh
           @name = name
           @argument_factory = argument_factory
         end
+
+        #FIXME: Move out of this file
+        #FIXME: Some way of working with the argument
 
         private
 
