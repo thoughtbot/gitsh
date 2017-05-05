@@ -7,12 +7,30 @@ require 'gitsh/tab_completion/dsl/star_operation_factory'
 require 'gitsh/tab_completion/dsl/plus_operation_factory'
 require 'gitsh/tab_completion/dsl/maybe_operation_factory'
 require 'gitsh/tab_completion/dsl/variable_transition_factory'
+require 'gitsh/tab_completion/dsl/option_transition_factory'
+require 'gitsh/tab_completion/dsl/option'
+require 'gitsh/tab_completion/dsl/choice_factory'
+require 'gitsh/tab_completion/matchers/path_matcher'
+require 'gitsh/tab_completion/matchers/revision_matcher'
+require 'gitsh/tab_completion/matchers/remote_matcher'
 
 module Gitsh
   module TabCompletion
     module DSL
       class Parser < RLTK::Parser
+        OPTION_VARIABLE = 'opt'.freeze
+        MATCHER_CLASSES = {
+          'path' => Matchers::PathMatcher,
+          'revision' => Matchers::RevisionMatcher,
+          'remote' => Matchers::RemoteMatcher,
+        }.freeze
+
         class Environment < RLTK::Parser::Environment
+          def initialize(gitsh_env = nil)
+            @gitsh_env = gitsh_env
+            super()
+          end
+
           def maybe_concatenate(factories)
             if factories.length > 1
               ConcatenationFactory.new(factories)
@@ -20,6 +38,26 @@ module Gitsh
               factories.first
             end
           end
+
+          def matcher_for_variable(var_name)
+            @_matchers ||= {}
+            @_matchers[var_name] ||= build_matcher(var_name)
+          end
+
+          private
+
+          attr_reader :gitsh_env
+
+          def build_matcher(var_name)
+            MATCHER_CLASSES.fetch(var_name).new(gitsh_env)
+          end
+        end
+
+        def self.parse(tokens, opts = {})
+          super(
+            tokens,
+            opts.merge(env: Environment.new(opts.fetch(:gitsh_env))),
+          )
         end
 
         production(:rule_set) do
@@ -80,39 +118,17 @@ module Gitsh
 
         production(:atom) do
           clause('WORD') { |word| TextTransitionFactory.new(word) }
-          clause('VAR') { |var_name| VariableTransitionFactory.new(var_name) }
-          #FIXME: Replace VariableTransitionFactory with VARIABLES.fetch(var_name).new
           clause('OPTION') { |opt_name| TextTransitionFactory.new(opt_name) }
+          clause('VAR') do |var_name|
+            if var_name == OPTION_VARIABLE
+              OptionTransitionFactory.new
+            else
+              VariableTransitionFactory.new(matcher_for_variable(var_name))
+            end
+          end
         end
 
         finalize
-      end
-
-      class ChoiceFactory
-        attr_reader :choices
-
-        def initialize(choices)
-          @choices = choices
-        end
-
-        #FIXME: Move out of this file
-        #FIXME: Add a #build method
-      end
-
-      class Option
-        attr_reader :name
-
-        def initialize(name, argument_factory = nil)
-          @name = name
-          @argument_factory = argument_factory
-        end
-
-        #FIXME: Move out of this file
-        #FIXME: Some way of working with the argument
-
-        private
-
-        attr_reader :argument_factory
       end
     end
   end

@@ -4,7 +4,7 @@ require 'gitsh/tab_completion/matchers/path_matcher'
 describe Gitsh::TabCompletion::Matchers::PathMatcher do
   describe '#match?' do
     it 'always returns true' do
-      matcher = described_class.new
+      matcher = described_class.new(double(:env))
 
       expect(matcher.match?('foo')).to be_truthy
       expect(matcher.match?('')).to be_truthy
@@ -19,7 +19,7 @@ describe Gitsh::TabCompletion::Matchers::PathMatcher do
         write_file('foo/second.txt')
         write_file('first.txt')
         write_file('second.txt')
-        matcher = described_class.new
+        matcher = described_class.new(double(:env))
 
         expect(matcher.completions('')).
           to match_array ['foo/', 'first.txt', 'second.txt']

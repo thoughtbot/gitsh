@@ -12,6 +12,14 @@ module Gitsh
         def build(start_state)
           root.build(start_state, context: self)
         end
+
+        def options_with_arguments
+          options.select(&:has_argument?)
+        end
+
+        def options_without_arguments
+          options.reject(&:has_argument?)
+        end
       end
     end
   end

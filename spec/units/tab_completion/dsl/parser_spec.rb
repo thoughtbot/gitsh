@@ -11,10 +11,16 @@ describe Gitsh::TabCompletion::DSL::Parser do
     end
 
     it 'parses single variables' do
-      result = parse_single_rule(tokens([:VAR, 'alias'], [:EOS]))
+      result = parse_single_rule(tokens([:VAR, 'revision'], [:EOS]))
 
       expect(result).to be_a_variable_transition
-      expect(result.name).to eq('alias')
+      expect(result.matcher).to be_a_revision_matcher
+    end
+
+    it 'parses the special "$opt" variable' do
+      result = parse_single_rule(tokens([:VAR, 'opt'], [:EOS]))
+
+      expect(result).to be_an_option_transition
     end
 
     it 'parses single options' do
@@ -68,7 +74,7 @@ describe Gitsh::TabCompletion::DSL::Parser do
     it 'parses rules with the pipe operator' do
       result = parse_single_rule(tokens(
         [:LEFT_PAREN], [:WORD, 'commit'], [:OR],
-        [:WORD, 'add'], [:OR], [:VAR, 'alias'], [:RIGHT_PAREN], [:EOS]
+        [:WORD, 'add'], [:OR], [:VAR, 'path'], [:RIGHT_PAREN], [:EOS]
       ))
 
       expect(result).to be_a_choice
@@ -76,7 +82,7 @@ describe Gitsh::TabCompletion::DSL::Parser do
       expect(result.choices.first).to be_a_text_transition
       expect(result.choices.first.word).to eq('commit')
       expect(result.choices.last).to be_a_variable_transition
-      expect(result.choices.last.name).to eq('alias')
+      expect(result.choices.last.matcher).to be_a_path_matcher
     end
 
     it 'parses rules with the pipe operator and multiple words' do
@@ -109,7 +115,7 @@ describe Gitsh::TabCompletion::DSL::Parser do
         [:INDENT], [:OPTION, '--force'],
         [:INDENT], [:OPTION, '--force-with-lease'], [:VAR, 'revision'],
         [:EOS],
-      ))
+      ), gitsh_env: double(:env))
 
       rule_factory = result.rules.first
       expect(rule_factory.root).to be_a_text_transition
@@ -124,7 +130,7 @@ describe Gitsh::TabCompletion::DSL::Parser do
         [:WORD, 'push'], [:BLANK],
         [:WORD, 'pull'], [:BLANK],
         [:WORD, 'fetch'], [:EOS],
-      ))
+      ), gitsh_env: double(:env))
 
       expect(result).to be_a_rule_set_factory
       expect(result.rules.length).to eq(3)
@@ -133,7 +139,8 @@ describe Gitsh::TabCompletion::DSL::Parser do
     end
 
     def parse_single_rule(tokens)
-      result = described_class.parse(tokens)
+      env = double(:env)
+      result = described_class.parse(tokens, gitsh_env: env)
       expect(result).to be_a_rule_set_factory
       result.rules.first.root
     end
@@ -162,6 +169,10 @@ describe Gitsh::TabCompletion::DSL::Parser do
       be_a Gitsh::TabCompletion::DSL::VariableTransitionFactory
     end
 
+    def be_an_option_transition
+      be_a Gitsh::TabCompletion::DSL::OptionTransitionFactory
+    end
+
     def be_a_concatenation
       be_a Gitsh::TabCompletion::DSL::ConcatenationFactory
     end
@@ -180,6 +191,14 @@ describe Gitsh::TabCompletion::DSL::Parser do
 
     def be_a_choice
       be_a Gitsh::TabCompletion::DSL::ChoiceFactory
+    end
+
+    def be_a_revision_matcher
+      be_a Gitsh::TabCompletion::Matchers::RevisionMatcher
+    end
+
+    def be_a_path_matcher
+      be_a Gitsh::TabCompletion::Matchers::PathMatcher
     end
   end
 end

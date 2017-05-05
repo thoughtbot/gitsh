@@ -38,7 +38,7 @@ module Gitsh
           command_state,
         )
         command_state.add_transition(
-          Matchers::PathMatcher.new,
+          Matchers::PathMatcher.new(env),
           command_state,
         )
         command_state.add_transition(

@@ -4,6 +4,9 @@ module Gitsh
   module TabCompletion
     module Matchers
       class PathMatcher < BaseMatcher
+        def initialize(_env)
+        end
+
         def completions(token)
           prefix = normalize_path(token)
           paths(prefix).map { |option| option.sub(prefix, token) }
