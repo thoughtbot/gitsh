@@ -128,7 +128,7 @@ describe Gitsh::TabCompletion::DSL::Parser do
     it 'parses multiple rules in the same input' do
       result = described_class.parse(tokens(
         [:WORD, 'push'], [:BLANK],
-        [:WORD, 'pull'], [:BLANK],
+        [:WORD, 'pull'], [:BLANK], [:BLANK],
         [:WORD, 'fetch'], [:EOS],
       ), gitsh_env: double(:env))
 

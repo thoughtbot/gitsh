@@ -14,109 +14,6 @@ add $opt* --? $path+
   --update
   --verbose
 
-am $opt* --? $path+
-  --3way
-  --committer-date-is-author-date
-  --ignore-date
-  --ignore-space-change
-  --ignore-whitespace
-  --interactive
-  --keep
-  --keep-cr
-  --no-3way
-  --no-keep-cr
-  --no-scissors
-  --no-utf8
-  --quiet
-  --reject
-  --scissors
-  --signoff
-  --utf8
-  --directory $dir_path
-  --exclude $path
-  --include $path
-  --patch-format (mbox|stgit|stgig-series|hg)
-  --whitespace (nowarn|warn|fix|error|error-all)
-
-am $opt                   # Only when a patch failure occurs
-  --continue
-  --skip
-  --abort
-
-annotate $opt* $path $revision?
-  --root
-  --show-stats
-  --reverse
-  --porcelain
-  --line-porcelain
-  --incremental
-  --progress
-  --no-progress
-  --encoding $anyting
-  --contents $path
-  --date $date_format
-
-apply $opt* --? $path+
-  --3way
-  --allow-binary-replacement
-  --apply
-  --binary
-  --cached
-  --check
-  --ignore-space-change
-  --ignore-whitespace
-  --inaccurate-eof
-  --index
-  --no-add
-  --numstat
-  --recount
-  --reject
-  --reverse
-  --stat
-  --summary
-  --unsafe-paths
-  --verbose
-  --build-fake-ancestor $path
-  --directory $dir_path
-  --exclude $path
-  --include $path
-  --whitespace (nowarn|warn|fix|error|error-all)
-
-archive $opt* $treeish? --? $path
-  --list
-  --worktree-attributes
-  --format (tar|zip)
-  --prefix $anything
-  --output $path
-  --remote $remote
-  --exec $anything
-  -o $path
-
-bisect start $opt* $revision? $revision? --? $path*
-  --no-checkout
-  --term-old $anything
-  --term-good $anything
-  --term-new $anything
-  --term-bad $anything
-
-bisect (bad|new) $revision?
-bisect (good|old) $revision*
-
-bisect terms $opt
-  --term-old
-  --term-good
-  --term-new
-  --term-bad
-
-bisect skip ($revision|$range)*
-bisect reset $revision?
-bisect visualize
-bisect view
-bisect replay $path
-bisect log
-bisect run $anything
-bisect help
-
 blame $opt* $revision? --? $path
   --incremental
   --line-porcelain
@@ -131,8 +28,8 @@ blame $opt* $revision? --? $path
   --show-stats
   --abbrev $anything
   --contents $path
-  --date $date_format
-  --encoding $anyting
+  --date $anything
+  --encoding $anything
   --reverse $revision
   --since $anything
   -S $path
@@ -148,12 +45,12 @@ branch $opt* $branch*
   --verbose
   --color (always|never|auto)
   --abbrev $anything
-  --column $column
+  --column $anything
   --merged $revision
   --no-merged $revision
   --contains $revision
-  --sort ????
-  --points-at ????
+  --sort $anything
+  --points-at $anything
 
 # Creating
 branch $opt* $branch $revision?
@@ -236,7 +133,7 @@ commit $opt* --? $path*
   --signoff
   --status
   --verbose
-  --author $author
+  --author $anything
   --cleanup (strip|whitespace|verbatim|scissors|default)
   --date $anything
   --file $path
@@ -309,7 +206,115 @@ diff $opt* ($revision|$revision $revision|$range)? --? $path*
   --stat $anything?
   --submodule $anything   # Maybe there should be a list here?
   --unified $anything
-  --unified $anything
   --word-diff (color|plain|porcelain|none)?
   --word-diff-regex $anything
   --ws-error-highlight {old,new,context}
+
+log $opt* $range? --? $path*
+  --follow
+  --no-deocrate
+  --decorate (short|full|auto|no)
+  --source
+  --use-mailmap
+  --full-diff
+  --log-size
+  --skip $anything
+  --since $anything
+  --after $anything
+  --until $anything
+  --before $anything
+  --author $anything
+  --committer $anything
+  --grep-reflog $anything
+  --grep $anything
+  --all-match
+  --invert-grep
+  --regexp-ignore-case
+  --basic-regexp
+  --extended-regexp
+  --fixed-strings
+  --perl-regexp
+  --remove-empty
+  --merges
+  --no-merges
+  --min-parents $anything
+  --max-parents $anything
+  --no-min-parents
+  --no-max-parents
+  --first-parent
+  --not
+  --all
+  --branches $branch?
+  --tags $anything?
+  --remotes $remote?
+  --glob $anything
+  --exclude $anything
+  --reflog
+  --ignore-missing
+  --bisect
+  --stdin
+  --cherry-mark
+  --cherry-pick
+  --left-only
+  --right-only
+  --cherry
+  --walk-reflogs
+  --merge
+  --boundary
+  --simplify-by-decoration
+  --full-history
+  --dense
+  --sparse
+  --simplify-merges
+  --ancestry-path
+  --date-order
+  --author-date-order
+  --topo-order
+  --reverse
+  --no-walk (sorted|unsorted)?
+  --do-walk
+  --pretty (oneline|short|medium|full|fuller|email|raw|format:)?
+  --format (oneline|short|medium|full|fuller|email|raw|format:)
+  --abbrev-commit
+  --no-abbrev-commit
+  --oneline
+  --encoding $anything
+  --expand-tabs $anything?
+  --no-expand-tabs
+  --notes $treeish?
+  --no-notes
+  --show-notes $treeish?
+  --standard-notes
+  --no-standard-notes
+  --show-signature
+  --relative-date
+  --date $anything
+  --parents
+  --children
+  --left-right
+  --graph
+  --show-linear-break $anything?
+  -L $anything
+  -n $anything
+
+
+# gitsh internal commands
+# =======================
+
+:set
+
+:cd $dir_path
+
+:exit
+
+:echo
+
+:help (:set|:cd|:exit|:echo|:help|:source)
+
+:source $path
+
+
+# aliases
+# =======
+
+$alias

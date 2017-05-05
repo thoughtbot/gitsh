@@ -11,8 +11,12 @@ describe Gitsh::TabCompletion::DSL::Lexer do
       expect('add $opt').to produce_tokens ['WORD(add)', 'VAR(opt)', 'EOS']
     end
 
-    it 'recognises options' do
+    it 'recognises long options' do
       expect('--foo').to produce_tokens ['OPTION(--foo)', 'EOS']
+    end
+
+    it 'recognises short options' do
+      expect('-S').to produce_tokens ['OPTION(-S)', 'EOS']
     end
 
     it 'recognises the asterisk operator' do
@@ -54,6 +58,15 @@ describe Gitsh::TabCompletion::DSL::Lexer do
         to produce_tokens ['WORD(push)', 'BLANK', 'WORD(pull)', 'EOS']
       expect("push  \n  \npull").
         to produce_tokens ['WORD(push)', 'BLANK', 'WORD(pull)', 'EOS']
+    end
+
+    it 'ignores comments' do
+      expect('# comment').to produce_tokens ['EOS']
+      expect("# comment\npush").to produce_tokens ['WORD(push)', 'EOS']
+      expect("push\n\n# comment\npull").
+        to produce_tokens ['WORD(push)', 'BLANK', 'WORD(pull)', 'EOS']
+      expect("push\n  --force   # caution!\n  --force-with-lease").
+        to produce_tokens ['WORD(push)', 'INDENT', 'OPTION(--force)', 'INDENT', 'OPTION(--force-with-lease)', 'EOS']
     end
   end
 end

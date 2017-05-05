@@ -31,6 +31,12 @@ module Gitsh
         map { |line| line.chomp }
     end
 
+    def branches
+      git_output(%{for-each-ref --format='%(refname:short)' refs/heads refs/remotes}).
+        lines.
+        map { |line| line.chomp }
+    end
+
     def commands
       git_output('help -a').
         lines.

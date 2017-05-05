@@ -11,18 +11,28 @@ require 'gitsh/tab_completion/dsl/option_transition_factory'
 require 'gitsh/tab_completion/dsl/option'
 require 'gitsh/tab_completion/dsl/choice_factory'
 require 'gitsh/tab_completion/matchers/path_matcher'
+require 'gitsh/tab_completion/matchers/directory_path_matcher'
 require 'gitsh/tab_completion/matchers/revision_matcher'
 require 'gitsh/tab_completion/matchers/remote_matcher'
+require 'gitsh/tab_completion/matchers/anything_matcher'
+require 'gitsh/tab_completion/matchers/branch_matcher'
+require 'gitsh/tab_completion/matchers/alias_matcher'
 
 module Gitsh
   module TabCompletion
     module DSL
       class Parser < RLTK::Parser
         OPTION_VARIABLE = 'opt'.freeze
-        MATCHER_CLASSES = {
+        VARIABLE_TO_MATCHER_CLASS = {
           'path' => Matchers::PathMatcher,
+          'dir_path' => Matchers::DirectoryPathMatcher,
           'revision' => Matchers::RevisionMatcher,
+          'treeish' => Matchers::RevisionMatcher, #FIXME
+          'range' => Matchers::RevisionMatcher, #FIXME
           'remote' => Matchers::RemoteMatcher,
+          'anything' => Matchers::AnythingMatcher,
+          'branch' => Matchers::BranchMatcher,
+          'alias' => Matchers::AliasMatcher,
         }.freeze
 
         class Environment < RLTK::Parser::Environment
@@ -49,7 +59,7 @@ module Gitsh
           attr_reader :gitsh_env
 
           def build_matcher(var_name)
-            MATCHER_CLASSES.fetch(var_name).new(gitsh_env)
+            VARIABLE_TO_MATCHER_CLASS.fetch(var_name).new(gitsh_env)
           end
         end
 
@@ -70,8 +80,8 @@ module Gitsh
         end
 
         production(:rules) do
-          clause('.rule BLANK .rule') { |rule1, rule2| [rule1, rule2] }
-          clause('.rules BLANK .rule') { |rules, rule| rules + [rule] }
+          clause('.rule BLANK+ .rule') { |rule1, rule2| [rule1, rule2] }
+          clause('.rules BLANK+ .rule') { |rules, rule| rules + [rule] }
         end
 
         production(:rule) do

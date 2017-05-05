@@ -245,6 +245,12 @@ describe Gitsh::Environment do
       end
     end
 
+    describe '#repo_branches' do
+      it 'is delegated to the GitRepository' do
+        expect(env).to delegate(:repo_branches).to(repo, :branches)
+      end
+    end
+
     describe '#repo_current_head' do
       it 'is delegated to the GitRepository' do
         expect(env).to delegate(:repo_current_head).to(repo, :current_head)

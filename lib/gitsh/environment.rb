@@ -86,6 +86,10 @@ module Gitsh
       repo.heads
     end
 
+    def repo_branches
+      repo.branches
+    end
+
     def repo_current_head
       repo.current_head
     end
