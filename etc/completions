@@ -1,0 +1,315 @@
+add $opt* --? $path+
+  --all
+  --dry-run
+  --edit
+  --force
+  --ignore-errors
+  --ignore-missing
+  --ignore-removal
+  --intent-to-add
+  --interactive
+  --no-all
+  --no-ignore-removal
+  --refresh
+  --update
+  --verbose
+
+am $opt* --? $path+
+  --3way
+  --committer-date-is-author-date
+  --ignore-date
+  --ignore-space-change
+  --ignore-whitespace
+  --interactive
+  --keep
+  --keep-cr
+  --no-3way
+  --no-keep-cr
+  --no-scissors
+  --no-utf8
+  --quiet
+  --reject
+  --scissors
+  --signoff
+  --utf8
+  --directory $dir_path
+  --exclude $path
+  --include $path
+  --patch-format (mbox|stgit|stgig-series|hg)
+  --whitespace (nowarn|warn|fix|error|error-all)
+
+am $opt                   # Only when a patch failure occurs
+  --continue
+  --skip
+  --abort
+
+annotate $opt* $path $revision?
+  --root
+  --show-stats
+  --reverse
+  --porcelain
+  --line-porcelain
+  --incremental
+  --progress
+  --no-progress
+  --encoding $anyting
+  --contents $path
+  --date $date_format
+
+apply $opt* --? $path+
+  --3way
+  --allow-binary-replacement
+  --apply
+  --binary
+  --cached
+  --check
+  --ignore-space-change
+  --ignore-whitespace
+  --inaccurate-eof
+  --index
+  --no-add
+  --numstat
+  --recount
+  --reject
+  --reverse
+  --stat
+  --summary
+  --unsafe-paths
+  --verbose
+  --build-fake-ancestor $path
+  --directory $dir_path
+  --exclude $path
+  --include $path
+  --whitespace (nowarn|warn|fix|error|error-all)
+
+archive $opt* $treeish? --? $path
+  --list
+  --worktree-attributes
+  --format (tar|zip)
+  --prefix $anything
+  --output $path
+  --remote $remote
+  --exec $anything
+  -o $path
+
+bisect start $opt* $revision? $revision? --? $path*
+  --no-checkout
+  --term-old $anything
+  --term-good $anything
+  --term-new $anything
+  --term-bad $anything
+
+bisect (bad|new) $revision?
+bisect (good|old) $revision*
+
+bisect terms $opt
+  --term-old
+  --term-good
+  --term-new
+  --term-bad
+
+bisect skip ($revision|$range)*
+bisect reset $revision?
+bisect visualize
+bisect view
+bisect replay $path
+bisect log
+bisect run $anything
+bisect help
+
+blame $opt* $revision? --? $path
+  --incremental
+  --line-porcelain
+  --no-progress
+  --porcelain
+  --progress
+  --root
+  --score-debug
+  --show-email
+  --show-name
+  --show-number
+  --show-stats
+  --abbrev $anything
+  --contents $path
+  --date $date_format
+  --encoding $anyting
+  --reverse $revision
+  --since $anything
+  -S $path
+
+# Listing
+branch $opt* $branch*
+  --no-color
+  --no-abbrev
+  --no-column
+  --list
+  --remotes
+  --all
+  --verbose
+  --color (always|never|auto)
+  --abbrev $anything
+  --column $column
+  --merged $revision
+  --no-merged $revision
+  --contains $revision
+  --sort ????
+  --points-at ????
+
+# Creating
+branch $opt* $branch $revision?
+  --set-upstream
+  --track
+  --no-track
+  --force
+  --create-reflog
+  --quiet
+
+# Modifying
+branch $opt $branch?
+  --edit-description
+  --set-upstream-to $branch
+  -u $branch
+
+# Renaming
+branch $opt+ $branch? $anything
+  --force
+  --move
+  -M
+  -m
+
+# Deleting
+branch $opt* $branch+
+  --delete
+  --force
+  --remotes
+  --quiet
+  -d
+  -D
+
+bundle create $path                   # followed by git-rev-list-arguments
+bundle verify $path
+bundle list-heads $path $revision*
+bundle unbundle $path $revision*
+
+checkout $opt* $revision
+  --quiet
+  --force
+  --merge
+  --detach
+
+checkout $opt* $revision?
+  --quiet
+  --force
+  --merge
+  --track
+  --no-track
+  --orphan $anything
+  -b $anything
+  -B $anything
+  -t
+
+checkout $opt? $treeish? --? $path+
+  --force
+  --theirs
+  --ours
+  --merge
+  --confict (merge|diff3)
+
+checkout $opt $treeish? --? $path*
+  --patch
+  -p
+
+commit $opt* --? $path*
+  --all
+  --allow-empty
+  --allow-empty-message
+  --amend
+  --dry-run
+  --edit
+  --include
+  --interactive
+  --no-status
+  --no-verify
+  --only
+  --patch
+  --reset-author
+  --signoff
+  --status
+  --verbose
+  --author $author
+  --cleanup (strip|whitespace|verbatim|scissors|default)
+  --date $anything
+  --file $path
+  --fixup $revision
+  --gpg-sign $anything
+  --message $anything
+  --reedit-message $revision
+  --reuse-message $revision
+  --squash $revision
+  --untracked-files (no|normal|all)?
+  -C $revision
+  -F $path
+  -c $revision
+  -m $anything
+
+diff $opt* ($revision|$revision $revision|$range)? --? $path*
+  --binary
+  --cached
+  --check
+  --compaction-heuristic
+  --exit-code
+  --ext-diff
+  --find-copies-harder
+  --full-index
+  --function-context
+  --histogram
+  --ignore-all-space
+  --ignore-blank-lines
+  --ignore-space-at-eol
+  --ignore-space-change
+  --irreversible-delete
+  --minimal
+  --name-only
+  --name-status
+  --no-color
+  --no-compaction-heuristic
+  --no-ext-diff
+  --no-index
+  --no-patch
+  --no-prefix
+  --no-renames
+  --no-textconv
+  --numstat
+  --patch
+  --patch-with-raw
+  --patch-with-stat
+  --patience
+  --pickaxe-all
+  --pickaxe-regex
+  --quiet
+  --raw
+  --shortstat
+  --summary
+  --text
+  --textconv
+  --abbrev $anything?
+  --break-rewrites $anything?
+  --color (always|never|auto)
+  --color-words $anything?
+  --diff-algorithm (default|patient|minimal|histogram|myers)
+  --diff-filter $anything?
+  --dirstat {changes,lines,files,cumulative}?
+  --dst-prefix $anything
+  --find-copies $anything?
+  --find-renames $anything?
+  --ignore-submodules (none|untracked|dirty|all)?
+  --inter-hunk-context $anything
+  --relative $path?
+  --src-prefix $anything
+  --stat $anything?
+  --submodule $anything   # Maybe there should be a list here?
+  --unified $anything
+  --unified $anything
+  --word-diff (color|plain|porcelain|none)?
+  --word-diff-regex $anything
+  --ws-error-highlight {old,new,context}

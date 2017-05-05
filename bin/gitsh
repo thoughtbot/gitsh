@@ -11,4 +11,6 @@ end
 
 require 'gitsh/cli'
 
+GITSH_CONFIG_DIRECTORY = File.expand_path('../../etc', __FILE__)
+
 Gitsh::CLI.new.run

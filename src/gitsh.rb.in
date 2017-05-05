@@ -5,6 +5,8 @@ $LOAD_PATH.unshift('@rubylibdir@')
 require '@gemsetuppath@'
 require 'gitsh/cli'
 
+GITSH_CONFIG_DIRECTORY = '@pkgsysconfdir@'
+
 begin
   Gitsh::CLI.new.run
 rescue => e
