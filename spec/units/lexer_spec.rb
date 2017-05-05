@@ -1,16 +1,6 @@
 require 'spec_helper'
 require 'gitsh/lexer'
 
-RSpec::Matchers.define(:produce_tokens) do |expected|
-  match do |actual|
-    @expected = expected.join("\n")
-    @actual = Gitsh::Lexer.lex(actual).map(&:to_s).join("\n")
-    values_match? @expected, @actual
-  end
-
-  diffable
-end
-
 describe Gitsh::Lexer do
   describe '.lex' do
     it 'recognises space separated words' do
