@@ -16,10 +16,11 @@ module Gitsh
         private
 
         def normalize_path(token)
-          if token.end_with?('/')
-            File.expand_path(token) + '/'
+          path = File.expand_path(token)
+          if token.end_with?('/') || token == ''
+            path + '/'
           else
-            File.expand_path(token)
+            path
           end
         end
 

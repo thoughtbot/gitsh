@@ -18,8 +18,11 @@ describe Gitsh::TabCompletion::Matchers::PathMatcher do
         write_file('foo/first.txt')
         write_file('foo/second.txt')
         write_file('first.txt')
+        write_file('second.txt')
         matcher = described_class.new
 
+        expect(matcher.completions('')).
+          to match_array ['foo/', 'first.txt', 'second.txt']
         expect(matcher.completions('f')).to match_array ['foo/', 'first.txt']
         expect(matcher.completions('foo')).to match_array ['foo/']
         expect(matcher.completions('foo/')).
