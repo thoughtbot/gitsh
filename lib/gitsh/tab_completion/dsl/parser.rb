@@ -17,6 +17,7 @@ require 'gitsh/tab_completion/matchers/remote_matcher'
 require 'gitsh/tab_completion/matchers/anything_matcher'
 require 'gitsh/tab_completion/matchers/branch_matcher'
 require 'gitsh/tab_completion/matchers/alias_matcher'
+require 'gitsh/tab_completion/matchers/command_matcher'
 
 module Gitsh
   module TabCompletion
@@ -24,15 +25,16 @@ module Gitsh
       class Parser < RLTK::Parser
         OPTION_VARIABLE = 'opt'.freeze
         VARIABLE_TO_MATCHER_CLASS = {
-          'path' => Matchers::PathMatcher,
-          'dir_path' => Matchers::DirectoryPathMatcher,
-          'revision' => Matchers::RevisionMatcher,
-          'treeish' => Matchers::RevisionMatcher, #FIXME
-          'range' => Matchers::RevisionMatcher, #FIXME
-          'remote' => Matchers::RemoteMatcher,
+          'alias' => Matchers::AliasMatcher,
           'anything' => Matchers::AnythingMatcher,
           'branch' => Matchers::BranchMatcher,
-          'alias' => Matchers::AliasMatcher,
+          'command' => Matchers::CommandMatcher,
+          'dir_path' => Matchers::DirectoryPathMatcher,
+          'path' => Matchers::PathMatcher,
+          'range' => Matchers::RevisionMatcher, #FIXME
+          'remote' => Matchers::RemoteMatcher,
+          'revision' => Matchers::RevisionMatcher,
+          'treeish' => Matchers::RevisionMatcher, #FIXME
         }.freeze
 
         class Environment < RLTK::Parser::Environment
