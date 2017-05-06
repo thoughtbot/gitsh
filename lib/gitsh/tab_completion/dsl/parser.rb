@@ -31,7 +31,6 @@ module Gitsh
           'command' => Matchers::CommandMatcher,
           'dir_path' => Matchers::DirectoryPathMatcher,
           'path' => Matchers::PathMatcher,
-          'range' => Matchers::RevisionMatcher, #FIXME
           'remote' => Matchers::RemoteMatcher,
           'revision' => Matchers::RevisionMatcher,
           'treeish' => Matchers::RevisionMatcher, #FIXME

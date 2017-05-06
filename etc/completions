@@ -160,7 +160,7 @@ commit $opt* --? $path*
 
 config
 
-diff $opt* ($revision|$revision $revision|$range)? --? $path*
+diff $opt* ($revision|$revision $revision)? --? $path*
   --binary
   --cached
   --check
@@ -307,7 +307,7 @@ init $opt* $dir_path?
   --separate-git-dir $dir_path
   --shared (false|true|umask|group|all|world|everybody)?
 
-log $opt* $range? --? $path*
+log $opt* $revision? --? $path*
   --follow
   --no-deocrate
   --decorate (short|full|auto|no)
