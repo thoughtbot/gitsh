@@ -188,7 +188,7 @@ diff $opt* ($revision|$revision $revision|$range)? --? $path*
   --color-words $anything?
   --diff-algorithm (default|patient|minimal|histogram|myers)
   --diff-filter $anything?
-  --dirstat {changes,lines,files,cumulative}?
+  --dirstat (changes|lines|files|cumulative)?
   --dst-prefix $anything
   --find-copies $anything?
   --find-renames $anything?
@@ -201,7 +201,7 @@ diff $opt* ($revision|$revision $revision|$range)? --? $path*
   --unified $anything
   --word-diff (color|plain|porcelain|none)?
   --word-diff-regex $anything
-  --ws-error-highlight {old,new,context}
+  --ws-error-highlight (old|new|context)
 
 log $opt* $range? --? $path*
   --follow
