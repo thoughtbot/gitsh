@@ -31,12 +31,26 @@ describe Gitsh::TabCompletion::Matchers::OptionMatcher do
   end
 
   describe '#completions' do
-    it 'returns the completions passed to the constructor' do
-      completions = ['--force', '--force-with-lease']
-      completions_with_args = ['--color']
-      matcher = described_class.new(completions, completions_with_args)
+    context 'when the input starts with "-"' do
+      it 'returns the completions passed to the constructor' do
+        completions = ['--force', '--force-with-lease']
+        completions_with_args = ['--color']
+        matcher = described_class.new(completions, completions_with_args)
 
-      expect(matcher.completions('--')).to eq(completions)
+        expect(matcher.completions('--')).to eq(completions)
+        expect(matcher.completions('-')).to eq(completions)
+      end
+    end
+
+    context 'when the input does not start with "-"' do
+      it 'returns nothing' do
+        completions = ['--force', '--force-with-lease']
+        completions_with_args = ['--color']
+        matcher = described_class.new(completions, completions_with_args)
+
+        expect(matcher.completions('')).to eq([])
+        expect(matcher.completions('foo')).to eq([])
+      end
     end
   end
 end

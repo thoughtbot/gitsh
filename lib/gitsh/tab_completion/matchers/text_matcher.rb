@@ -18,6 +18,14 @@ module Gitsh
           word == match_word
         end
 
+        def completions(token)
+          if word.start_with?('-') ^ token.start_with?('-')
+            []
+          else
+            super
+          end
+        end
+
         def eql?(other)
           super(other) && other.word == word
         end

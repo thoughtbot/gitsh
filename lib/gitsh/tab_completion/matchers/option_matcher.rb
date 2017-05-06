@@ -15,8 +15,12 @@ module Gitsh
           word =~ /\A--?[^-]+\Z/ && !options_with_args.include?(word)
         end
 
-        def completions(_)
-          options_without_args
+        def completions(token)
+          if token.start_with?('-')
+            options_without_args
+          else
+            []
+          end
         end
 
         private

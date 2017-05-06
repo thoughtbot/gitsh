@@ -20,6 +20,22 @@ describe Gitsh::TabCompletion::Matchers::TextMatcher do
       expect(matcher.completions('')).to eq ['commit']
       expect(matcher.completions('commit')).to eq ['commit']
     end
+
+    context 'when the word starts with "--"' do
+      it 'only returns the word when the input starts with a "-"' do
+        matcher = described_class.new('--')
+
+        expect(matcher.completions('foo')).to eq []
+        expect(matcher.completions('')).to eq []
+        expect(matcher.completions('-')).to eq ['--']
+
+        matcher = described_class.new('--force')
+
+        expect(matcher.completions('foo')).to eq []
+        expect(matcher.completions('')).to eq []
+        expect(matcher.completions('-')).to eq ['--force']
+      end
+    end
   end
 
   describe '#eql?' do

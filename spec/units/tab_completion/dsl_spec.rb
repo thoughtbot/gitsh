@@ -32,15 +32,21 @@ describe Gitsh::TabCompletion::DSL do
           expect(automaton.completions(['stash'], '')).
             to match_array ['apply', 'drop', 'pop', 'show']
           expect(automaton.completions(['add'], '')).
-            to match_array ['--', '--all', '--edit', 'example.txt']
+            to match_array ['example.txt']
           expect(automaton.completions(['add', '--all'], '')).
-            to match_array ['--', '--all', '--edit', 'example.txt']
+            to match_array ['example.txt']
           expect(automaton.completions(['add', '--'], '')).
             to match_array ['example.txt']
+          expect(automaton.completions(['add'], '-')).
+            to match_array ['--', '--all', '--edit']
+          expect(automaton.completions(['add', '--all'], '-')).
+            to match_array ['--', '--all', '--edit']
           expect(automaton.completions(['log', '--color'], '')).
             to match_array ['always', 'never', 'auto']
           expect(automaton.completions(['log', '--color', 'auto'], '')).
             to match_array ['master']
+          expect(automaton.completions(['unknown'], '')).
+            to match_array []
         end
       end
     end
