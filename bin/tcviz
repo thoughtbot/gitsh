@@ -5,6 +5,8 @@ require 'bundler/setup'
   $LOAD_PATH.unshift(File.expand_path("../../#{directory}", __FILE__))
 end
 
+GITSH_CONFIG_DIRECTORY = File.expand_path('../../etc', __FILE__)
+
 require 'gitsh/environment'
 require 'gitsh/tab_completion/automaton_factory'
 require 'gitsh/tab_completion/visualization'
