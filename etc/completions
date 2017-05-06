@@ -83,11 +83,6 @@ branch $opt* $branch+
   -d
   -D
 
-bundle create $path                   # followed by git-rev-list-arguments
-bundle verify $path
-bundle list-heads $path $revision*
-bundle unbundle $path $revision*
-
 checkout $opt* $revision
   --quiet
   --force
