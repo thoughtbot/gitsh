@@ -342,7 +342,7 @@ log $opt* $revision? --? $path*
   --not
   --all
   --branches $branch?
-  --tags $anything?
+  --tags $tag?
   --remotes $remote?
   --glob $anything
   --exclude $anything
