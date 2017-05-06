@@ -1,4 +1,4 @@
-add $opt* --? $path+
+(add|stage) $opt* --? $path+
   --all
   --dry-run
   --edit
@@ -109,6 +109,22 @@ checkout $opt? $treeish? --? $path+
 checkout $opt $treeish? --? $path*
   --patch
 
+cherry-pick $opt* $revision+
+  --edit
+  --ff
+  --allow-empty
+  --allow-empty-message
+  --keep-redundant-commits
+  --strategy (resolve|recursive|octopus|ours|subtree)
+  --strategy-option (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
+  -X (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
+  -m $anything
+
+cherry-pick $opt
+  --continue
+  --quit
+  --abort
+
 commit $opt* --? $path*
   --all
   --allow-empty
@@ -141,6 +157,8 @@ commit $opt* --? $path*
   -F $path
   -c $revision
   -m $anything
+
+config
 
 diff $opt* ($revision|$revision $revision|$range)? --? $path*
   --binary
@@ -202,6 +220,92 @@ diff $opt* ($revision|$revision $revision|$range)? --? $path*
   --word-diff (color|plain|porcelain|none)?
   --word-diff-regex $anything
   --ws-error-highlight (old|new|context)
+
+fetch $opt* $remote $revision
+  --all
+  --append
+  --depth $anything
+  --unshallow
+  --update-shallow
+  --dry-run
+  --force
+  --keep
+  --multiple
+  --prune
+  --no-tags
+  --refmap $anything
+  --tags
+  --recurse-submodules (yes|on-demand|no)?
+  --jobs $anything
+  --no-recurse-submodules
+  --submodule-prefix $path
+  --recurse-submodules-default (yes|on-demand)?
+  --update-head-ok
+  --upload-pack $anything
+  --quiet
+  --verbose
+  --progress
+  --ipv4
+  --ipv6
+
+grep $opt* $anything $revision* --? $path+
+  --cached
+  --no-index
+  --untracked
+  --no-exclude-standard
+  --exclude-standard
+  --text
+  --textconv
+  --no-textconv
+  --ignore-case
+  --max-depth $anything
+  --word-regexp
+  --invert-match
+  --full-name
+  --extended-regexp
+  --basic-regexp
+  --perl-regexp
+  --fixed-strings
+  --line-number
+  --files-with-matches
+  --name-only
+  --files-without-match
+  --open-files-in-pager $anything?
+  --null
+  --count
+  --color (always|never|auto)
+  --no-color
+  --break
+  --heading
+  --show-function
+  --context $anything
+  --after-context $anything
+  --before-context $anything
+  --function-context
+  --threads
+  --and $anything
+  --or $anything
+  --not $anything
+  --all-match
+  --quiet
+  -f $path
+  -C $anything
+  -A $anything
+  -B $anything
+
+help $opt* ($command|attributes|everyday|glossary|ignore|modules|revisions|tutorial|workflows)
+  --all
+  --guides
+  --info
+  --man
+  --web
+
+init $opt* $dir_path?
+  --quiet
+  --bare
+  --template $dir_path
+  --separate-git-dir $dir_path
+  --shared (false|true|umask|group|all|world|everybody)?
 
 log $opt* $range? --? $path*
   --follow
@@ -290,6 +394,101 @@ log $opt* $range? --? $path*
   -L $anything
   -n $anything
 
+merge $opt* $revision*
+  --commit
+  --no-commit
+  --edit
+  --no-edit
+  --ff
+  --no-ff
+  --ff-only
+  --log $anything?
+  --no-log
+  --stat
+  --no-stat
+  --squash
+  --no-squash
+  --strategy (resolve|recursive|octopus|ours|subtree)
+  --strategy-option (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
+  --verify-signatures
+  --no-verify-signatures
+  --quiet
+  --verbose
+  --progress
+  --no-progress
+  --allow-unrelated-histories
+  --gpg-sign $anything
+  --rerere-autoupdate
+  --no-rerere-autoupdate
+  -m $anything
+
+merge --abort
+
+mv $opt* $path+
+  --force
+  --dry-run
+  --verbose
+
+pull
+
+push
+
+rebase
+
+remote
+
+reset
+
+revert
+
+rm $opt* --? $path+
+  --force
+  --dry-run
+  --cached
+  --ignore-unmatch
+  --quiet
+
+show
+
+show-branch $opt* $revision+
+  --all
+  --remotes
+  --topo-order
+  --date-order
+  --current
+  --color (always|never|auto)
+  --no-color
+  --sparse
+  --more $anything
+  --list
+  --independent
+  --merge-base
+  --no-name
+  --sha1-name
+  --topics
+
+show-branch $opt* $revision
+  --reflog $anything?
+  --list
+
+stash
+
+status $opt* --? $path*
+  --short
+  --branch
+  --porcelain
+  --long
+  --verbose
+  --untracked-files (no|normal|all)?
+  --ignore-submodules (none|untracked|dirty|all)?
+  --ignored
+  --column $anything
+  --no-column
+
+submodule
+
+tag
+
 
 # gitsh internal commands
 # =======================
@@ -307,7 +506,9 @@ log $opt* $range? --? $path*
 :source $path
 
 
-# aliases
-# =======
+# fallbacks
+# =========
 
 $alias
+
+$command
