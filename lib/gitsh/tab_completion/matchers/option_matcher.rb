@@ -7,6 +7,10 @@ module Gitsh
           @options_with_args = options_with_args
         end
 
+        def name
+          'opt'
+        end
+
         def match?(word)
           word =~ /\A--?[^-]+\Z/ && !options_with_args.include?(word)
         end

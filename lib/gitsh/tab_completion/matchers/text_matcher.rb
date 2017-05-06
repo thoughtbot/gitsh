@@ -10,6 +10,10 @@ module Gitsh
           @word = word
         end
 
+        def name
+          'text'
+        end
+
         def match?(match_word)
           word == match_word
         end

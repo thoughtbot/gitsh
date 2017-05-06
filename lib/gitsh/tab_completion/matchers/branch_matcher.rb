@@ -8,6 +8,10 @@ module Gitsh
           @env = env
         end
 
+        def name
+          'branch'
+        end
+
         def match?(_word)
           true
         end

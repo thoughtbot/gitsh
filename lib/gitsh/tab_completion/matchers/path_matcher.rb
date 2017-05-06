@@ -7,6 +7,10 @@ module Gitsh
         def initialize(_env)
         end
 
+        def name
+          'path'
+        end
+
         def completions(token)
           prefix = normalize_path(token)
           paths(prefix).map { |option| option.sub(prefix, token) }

@@ -4,7 +4,7 @@ require 'gitsh/tab_completion/dsl/variable_transition_factory'
 describe Gitsh::TabCompletion::DSL::VariableTransitionFactory do
   describe '#build' do
     it 'adds a transition to the start state and returns the end state' do
-      matcher = double(:matcher)
+      matcher = double(:matcher, name: 'my-matcher')
       start_state = double(:start_state, add_transition: nil)
       factory = described_class.new(matcher)
 
@@ -17,7 +17,7 @@ describe Gitsh::TabCompletion::DSL::VariableTransitionFactory do
 
     context 'given an end state' do
       it 'adds a transition between the start and end states' do
-        matcher = double(:matcher)
+        matcher = double(:matcher, name: 'my-matcher')
         start_state = double(:start_state, add_transition: nil)
         end_state = double(:end_state)
         factory = described_class.new(matcher)

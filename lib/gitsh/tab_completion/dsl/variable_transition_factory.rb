@@ -9,7 +9,9 @@ module Gitsh
         end
 
         def build(start_state, options = {})
-          end_state = options.fetch(:end_state) { Automaton::State.new('var') }
+          end_state = options.fetch(:end_state) do
+            Automaton::State.new(matcher.name)
+          end
           start_state.add_transition(matcher, end_state)
           end_state
         end

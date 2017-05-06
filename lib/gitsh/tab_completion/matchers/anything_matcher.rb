@@ -5,6 +5,10 @@ module Gitsh
         def initialize(_env)
         end
 
+        def name
+          'anything'
+        end
+
         def match?(_word)
           true
         end
