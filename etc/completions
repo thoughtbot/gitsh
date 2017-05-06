@@ -103,7 +103,6 @@ checkout $opt* $revision?
   --orphan $anything
   -b $anything
   -B $anything
-  -t
 
 checkout $opt? $treeish? --? $path+
   --force
@@ -114,7 +113,6 @@ checkout $opt? $treeish? --? $path+
 
 checkout $opt $treeish? --? $path*
   --patch
-  -p
 
 commit $opt* --? $path*
   --all
