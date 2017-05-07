@@ -105,8 +105,6 @@ checkout $opt? $treeish? --? $path+
   --ours
   --merge
   --confict (merge|diff3)
-
-checkout $opt $treeish? --? $path*
   --patch
 
 cherry-pick $opt* $revision+
