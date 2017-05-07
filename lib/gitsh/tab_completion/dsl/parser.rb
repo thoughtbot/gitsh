@@ -33,6 +33,7 @@ module Gitsh
           'path' => Matchers::PathMatcher,
           'remote' => Matchers::RemoteMatcher,
           'revision' => Matchers::RevisionMatcher,
+          'stash' => Matchers::AnythingMatcher, #FIXME
           'tag' => Matchers::AnythingMatcher, #FIXME
           'treeish' => Matchers::RevisionMatcher, #FIXME
         }.freeze

@@ -158,7 +158,36 @@ commit $opt* --? $path*
   -c $revision
   -m $anything
 
-config
+config $opt*
+  --system
+  --global
+  --local
+  --file $path
+  --int
+  --bool
+  --bool-or-int
+  --replace-all
+  --add
+  --get
+  --get-all
+  --get-regexp
+  --get-urlmatch $anything
+  --blob $treeish
+  --remove-section
+  --rename-section
+  --unset
+  --unset-all
+  --list
+  --path
+  --null
+  --name-only
+  --show-origin
+  --get-colorbool $anything
+  --get-color $anything
+  --edit
+  --includes
+  --no-includes
+  -f $path
 
 diff $opt* ($revision|$revision $revision)? --? $path*
   --binary
@@ -429,17 +458,184 @@ mv $opt* $path+
   --dry-run
   --verbose
 
-pull
+pull $opt* $remote $revision*
+  --quiet
+  --verbose
+  --recurse-submodules (yes|on-demand|no)?
+  --no-recurse-submodules
+  --commit
+  --no-commit
+  --edit
+  --no-edit
+  --ff
+  --no-ff
+  --ff-only
+  --log $anything?
+  --no-log
+  --stat
+  --no-stat
+  --squash
+  --no-squash
+  --strategy (resolve|recursive|octopus|ours|subtree)
+  --strategy-option (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
+  --verify-signatures
+  --no-verify-signatures
+  --summary
+  --no-summary
+  --allow-unrelated-histories
+  --rebase (false|true|preserve|interactive)?
+  --no-rebase
+  --autostash
+  --no-autostash
+  --all
+  --append
+  --depth $anything
+  --unshallow
+  --update-shallow
+  --force
+  --keep
+  --no-tags
+  --update-head-ok
+  --upload-pack $anything
+  --progress
+  --ipv4
+  --ipv6
+  -s (resolve|recursive|octopus|ours|subtree)
+  -X (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
 
-push
+push $opt* $remote $revision*
+  --all
+  --prune
+  --mirror
+  --dry-run
+  --porcelain
+  --delete
+  --tags
+  --follow-tags
+  --no-signed
+  --signed
+  --sign (true|false|if-asked)
+  --atomic
+  --no-atomic
+  --receive-pack $anything
+  --exec $anything
+  --force-with-lease $anything?
+  --no-force-with-lease
+  --force
+  --repo $remote
+  --set-upstream
+  --thin
+  --no-thin
+  --quiet
+  --verbose
+  --progress
+  --recurse-submodules (yes|on-demand|no)?
+  --no-recurse-submodules
+  --verify
+  --no-verify
+  --ipv4
+  --ipv6
 
-rebase
+rebase $opt* $revision $branch
+  --onto $revision
+  --continue
+  --abort
+  --keep-empty
+  --skip
+  --edit-todo
+  --merge
+  --strategy (resolve|recursive|octopus|ours|subtree)
+  --strategy-option (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
+  --gpg-sign $anything
+  --quiet
+  --verbose
+  --stat
+  --no-stat
+  --verify
+  --no-verify
+  --force-rebase
+  --fork-point
+  --no-fork-point
+  --ignore-whitespace
+  --whitespace (nowarn|warn|fix|error|error-all)
+  --committer-date-is-author-date
+  --ignore-date
+  --interactive
+  --preserve-merges
+  --exec $anything
+  --autosquash
+  --no-autosquash
+  --autostash
+  --no-autostash
+  --no-ff
+  -s (resolve|recursive|octopus|ours|subtree)
+  -X (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
+  -x $anything
 
-remote
+remote --verbose
 
-reset
+remote add $opt* $anything $anything
+  --tags
+  --no-tags
+  --mirror (fetch|push)
+  -t $branch
+  -m ($branch|$tag)
 
-revert
+remote rename $remote $anything
+
+remote remove $remote
+
+remote set-head $opt* $branch
+  --auto
+  --delete
+
+remote set-branches $opt* $remote $branch+
+  --add
+
+remote get-url $opt* $remote
+  --push
+  --all
+
+remote set-url $opt* $remote $anything
+  --push
+  --add
+  --delete
+
+remote (--verbose|-v)? show $opt* $remote+
+
+remote prune $opt* $remote+
+  --dry-run
+
+remote (--verbose|-v)? update $opt* $remote+
+  --prune
+
+reset $opt* $treeish --? $path*
+  --patch
+  --quiet
+
+reset $opt* $revision
+  --soft
+  --mixed
+  --hard
+  --merge
+  --keep
+  --quiet
+
+revert $opt* $revision+
+  --edit
+  --no-edit
+  --mainline $anything
+  --no-commit
+  --gpg-sign $anything
+  --signoff
+  --strategy (resolve|recursive|octopus|ours|subtree)
+  --strategy-option (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
+  --continue
+  --quit
+  --abort
+  -m $anything
+  -s (resolve|recursive|octopus|ours|subtree)
+  -X (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
 
 rm $opt* --? $path+
   --force
@@ -448,7 +644,18 @@ rm $opt* --? $path+
   --ignore-unmatch
   --quiet
 
-show
+show $opt* $treeish
+  --pretty (oneline|short|medium|full|fuller|email|raw|format:)?
+  --format (oneline|short|medium|full|fuller|email|raw|format:)
+  --abbrev-commit
+  --no-abbrev-commit
+  --oneline
+  --encoding $anything
+  --expand-tabs $anything?
+  --no-expand-tabs
+  --notes $treeish?
+  --no-notes
+  --show-signature
 
 show-branch $opt* $revision+
   --all
@@ -471,7 +678,35 @@ show-branch $opt* $revision
   --reflog $anything?
   --list
 
-stash
+stash list
+
+stash show $stash
+
+stash drop $opt* $stash
+  --quiet
+
+stash (pop|apply) $opt* $stash
+  --index
+  --quiet
+
+stash branch $branch $stash
+
+stash save? $opt*
+  --patch
+  --keep-index
+  --no-keep-index
+  --quiet
+  --include-untracked
+  --all
+
+stash clear
+
+stash create
+
+stash store $opt* $revision
+  --message $anything
+  --quiet
+  -m $anything
 
 status $opt* --? $path*
   --short
@@ -485,9 +720,63 @@ status $opt* --? $path*
   --column $anything
   --no-column
 
-submodule
+submodule --quiet? add $opt* --? $remote $dir_path
+  --branch $branch
+  --force
+  --name $anything
+  --reference $remote
+  --depth $anything
 
-tag
+submodule --quiet? status $opt* --? $dir_path+
+  --cached
+  --recursive
+
+submodule --quiet? init --? $dir_path+
+
+submodule --quiet? deinit $opt* --? $dir_path+
+  --force
+  --all
+
+submodule --quiet? update $opt* --? $dir_path+
+  --init
+  --remote
+  --no-fetch
+  --force
+  --rebase
+  --merge
+  --reference $remote
+  --depth $anything
+  --recursive
+  --jobs $anything
+
+submodule --quiet? foreach $opt* $anything
+  --recursive
+
+submodule --quiet? sync $opt* --? $dir_path+
+  --recursive
+
+tag $opt* $tag $revision
+  --annotate
+  --sign
+  --local-user $anything
+  --force
+  --delete
+  --verify
+  --list $tag
+  --sort $anything
+  --column $anything
+  --no-column
+  --contains $revision
+  --points-at $revision
+  --message $anything
+  --file $path
+  --cleanup (strip|whitespace|verbatim)
+  --create-reflog
+  --merged $revision?
+  --no-merged
+  -l $tag
+  -m $anything
+  -F $path
 
 
 # gitsh internal commands
