@@ -1,4 +1,4 @@
-.Dd November 19, 2013
+.Dd May 7, 2017
 .Dt GITSH 1
 .Os
 .Sh NAME
@@ -17,15 +17,15 @@
 is a language for interacting with a
 .Xr git 1
 repository. It supports all git subcommands, custom aliases, and custom
-commands for interacting with the shell itself. Commands, path names,
-branch names, and tag names can all be completed using tab completion.
+commands for interacting with the shell itself. Commands and many of their
+options and arguments can be completed using tab completion.
 .Pp
 Running gitsh with no arguments will start an interactive session. Quit by
 either typing
 .Ic :exit
 or
-.Ic :q
-or sending an EOF character.
+.Ic :q ,
+or by sending an EOF character.
 .Pp
 Passing the path to a file containing a series of commands or sending a series
 of commands to gitsh's standard input will run each of those commands in
@@ -70,7 +70,7 @@ for a list of supported commands.
 .It Ic #comment
 any input after a
 .Ic #
-character will be treated as comments and ignored.
+character will be treated as a comment and ignored.
 .El
 .Pp
 Commands can be combined using the following operators, which have similar
@@ -406,6 +406,17 @@ The
 .Pa .gitshrc
 file will not be loaded for non-interactive sessions, e.g. when gitsh is
 invoked with the path to a script file.
+.It Pa $(prefix)/etc/gitsh/completions
+System-wide tab completions file, which defines the tab completion options
+for popular gitsh commands.
+.It Pa $HOME/.gitsh_completions
+User specific tab completions file, which can be used to extend the system-wide
+completions, e.g. by defining the completions that should be available for
+aliases and custom Git commands.
+.Pp
+See
+.Xr gitsh_completions 5
+for details on the format of this file.
 .El
 .Sh ENVIRONMENT
 .Bl -tag -width Ds
@@ -426,6 +437,7 @@ rebase master
 .Ed
 .
 .Sh SEE ALSO
+.Xr gitsh_completions 5
 .Xr git 1
 .Xr gittutorial 7
 .

@@ -13,7 +13,7 @@ bin_PROGRAMS = gitsh
 gitsh_SOURCES = src/gitsh.c
 AM_CPPFLAGS = -DGITSH_RB_PATH="\"$(rubydir)/$(PACKAGE).rb\""
 
-dist_man_MANS = man/man1/gitsh.1
+dist_man_MANS = man/man1/gitsh.1 man/man5/gitsh_completions.5
 nobase_dist_pkgdata_DATA = $(vendorfiles)
 nobase_dist_ruby_DATA = $(libfiles)
 pkgrubylib_DATA = lib/gitsh/version.rb
