@@ -122,6 +122,23 @@ describe 'Completing things with tab' do
     end
   end
 
+  it 'completes combinations of revisions and paths (treeish)' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type('init')
+      write_file('example.txt', 'Old content')
+      gitsh.type('add example.txt')
+      gitsh.type('commit -m Initial')
+      write_file('example.txt', 'Modified content')
+      gitsh.type('add example.txt')
+      gitsh.type('commit -m Update')
+
+      gitsh.type("show master^:ex\t")
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output(/Old content/)
+    end
+  end
+
   it 'completes stash sub-commands and names' do
     GitshRunner.interactive do |gitsh|
       gitsh.type('init')

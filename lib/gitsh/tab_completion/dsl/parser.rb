@@ -20,6 +20,7 @@ require 'gitsh/tab_completion/matchers/alias_matcher'
 require 'gitsh/tab_completion/matchers/command_matcher'
 require 'gitsh/tab_completion/matchers/stash_matcher'
 require 'gitsh/tab_completion/matchers/tag_matcher'
+require 'gitsh/tab_completion/matchers/treeish_matcher'
 
 module Gitsh
   module TabCompletion
@@ -37,7 +38,7 @@ module Gitsh
           'revision' => Matchers::RevisionMatcher,
           'stash' => Matchers::StashMatcher,
           'tag' => Matchers::TagMatcher,
-          'treeish' => Matchers::RevisionMatcher, #FIXME
+          'treeish' => Matchers::TreeishMatcher,
         }.freeze
 
         class Environment < RLTK::Parser::Environment
