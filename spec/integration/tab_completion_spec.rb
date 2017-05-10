@@ -86,6 +86,21 @@ describe 'Completing things with tab' do
     end
   end
 
+  it 'completed tag names' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type('init')
+      gitsh.type('commit --allow-empty -m "Some commit"')
+      gitsh.type('tag my-tag')
+      gitsh.type("tag --del\t my\t")
+
+      expect(gitsh).to output_no_errors
+
+      gitsh.type('tag')
+
+      expect(gitsh).not_to output(/my-tag/)
+    end
+  end
+
   it 'completes paths' do
     GitshRunner.interactive do |gitsh|
       gitsh.type('init')

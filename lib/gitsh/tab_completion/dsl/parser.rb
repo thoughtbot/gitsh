@@ -19,6 +19,7 @@ require 'gitsh/tab_completion/matchers/branch_matcher'
 require 'gitsh/tab_completion/matchers/alias_matcher'
 require 'gitsh/tab_completion/matchers/command_matcher'
 require 'gitsh/tab_completion/matchers/stash_matcher'
+require 'gitsh/tab_completion/matchers/tag_matcher'
 
 module Gitsh
   module TabCompletion
@@ -35,7 +36,7 @@ module Gitsh
           'remote' => Matchers::RemoteMatcher,
           'revision' => Matchers::RevisionMatcher,
           'stash' => Matchers::StashMatcher,
-          'tag' => Matchers::AnythingMatcher, #FIXME
+          'tag' => Matchers::TagMatcher,
           'treeish' => Matchers::RevisionMatcher, #FIXME
         }.freeze
 

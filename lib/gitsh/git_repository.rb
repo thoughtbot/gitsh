@@ -37,6 +37,10 @@ module Gitsh
         map { |line| line.chomp }
     end
 
+    def tags
+      git_output(%{tag}).lines.map(&:chomp)
+    end
+
     def stashes
       git_output(%{log --format="%gd" -g --first-parent -m refs/stash --}).
         lines.

@@ -90,6 +90,10 @@ module Gitsh
       repo.branches
     end
 
+    def repo_tags
+      repo.tags
+    end
+
     def repo_current_head
       repo.current_head
     end

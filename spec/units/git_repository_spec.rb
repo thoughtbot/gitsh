@@ -142,6 +142,25 @@ describe Gitsh::GitRepository do
     end
   end
 
+  context '#tags' do
+    it 'produces all the tags' do
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          run 'git init'
+          run 'git commit --allow-empty -m "Something swell"'
+
+          expect(repo.tags).to be_empty
+
+          run 'git tag awesome-sauce'
+          run 'git tag v2.0'
+
+          expect(repo.tags).to match_array %w( awesome-sauce v2.0 )
+        end
+      end
+    end
+  end
+
   context '#stashes' do
     it 'produces all the stashes' do
       with_a_temporary_home_directory do
