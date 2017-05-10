@@ -37,6 +37,12 @@ module Gitsh
         map { |line| line.chomp }
     end
 
+    def stashes
+      git_output(%{log --format="%gd" -g --first-parent -m refs/stash --}).
+        lines.
+        map(&:chomp)
+    end
+
     def commands
       git_output('help -a').
         lines.

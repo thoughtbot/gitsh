@@ -142,6 +142,29 @@ describe Gitsh::GitRepository do
     end
   end
 
+  context '#stashes' do
+    it 'produces all the stashes' do
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          run 'git init'
+          write_file('file.txt', 'Initial')
+          run 'git add file.txt'
+          run 'git commit -m Initial'
+          write_file('file.txt', 'First edit')
+          run 'git stash'
+
+          expect(repo.stashes).to match_array ['stash@{0}']
+
+          write_file('file.txt', 'Second edit')
+          run 'git stash'
+
+          expect(repo.stashes).to match_array ['stash@{0}', 'stash@{1}']
+        end
+      end
+    end
+  end
+
   context '#commands' do
     it 'produces the list of porcelain commands' do
       repo = Gitsh::GitRepository.new(env)
@@ -328,7 +351,12 @@ describe Gitsh::GitRepository do
   end
 
   def run(command)
-    Open3.capture3(command)
+    if ENV['DEBUG']
+      $stdout.puts("> #{command}")
+      system(command)
+    else
+      Open3.capture3(command)
+    end
   end
 
   def env

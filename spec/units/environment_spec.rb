@@ -257,6 +257,12 @@ describe Gitsh::Environment do
       end
     end
 
+    describe '#repo_stashes' do
+      it 'is delegated to the GitRepository' do
+        expect(env).to delegate(:repo_stashes).to(repo, :stashes)
+      end
+    end
+
     describe '#repo_status' do
       it 'is delegated to the GitRepository' do
         expect(env).to delegate(:repo_status).to(repo, :status)

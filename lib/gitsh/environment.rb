@@ -94,6 +94,10 @@ module Gitsh
       repo.current_head
     end
 
+    def repo_stashes
+      repo.stashes
+    end
+
     def repo_status
       repo.status
     end
