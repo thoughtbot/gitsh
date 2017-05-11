@@ -60,9 +60,16 @@ For a quick introduction to `gitsh`, watch [our video on Upcase][].
         gitsh% checkout $_rebase_base -- db/schema
         gitsh% !rake db:schema:load db:migrate
 
-* Tab completion for git commands, aliases, and branches without modifying your
-  shell settings, and without any extra setup for aliases and third party
-  git commands.
+* Tab completion for Git commands, aliases, branches, remotes, command options,
+  etc. without modifying your shell settings.
+
+* Powerful custom tab completion definitions for aliases and third party Git
+  commands.
+
+  <pre><code>$ echo 'browse $revision? $path' > ~/.gitsh_completions
+  $ gitsh
+  gitsh% browse mas<kbd>tab</kbd> READM<kbd>tab</kbd>
+  </code></pre>
 
 * Information about the state of your git repository in the prompt, without
   modifying your shell settings. This includes the name of the current HEAD, and
