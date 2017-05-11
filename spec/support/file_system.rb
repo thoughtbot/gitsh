@@ -52,7 +52,7 @@ module FileSystemHelper
       ENV['HOME'] = path
       write_file("#{path}/.inputrc", DEFAULT_READLINE_CONFIG)
       write_file("#{path}/.gitconfig", DEFAULT_GIT_CONFIG)
-      block.call
+      block.call(path)
     end
   ensure
     ENV['HOME'] = original_home

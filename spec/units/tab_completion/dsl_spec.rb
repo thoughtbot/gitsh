@@ -50,6 +50,17 @@ describe Gitsh::TabCompletion::DSL do
         end
       end
     end
+
+    context 'with a path to a file that does not exist' do
+      it 'does not explode' do
+        path = '/not/a/real/path'
+        start_state = Gitsh::TabCompletion::Automaton::State.new('start')
+        env = Gitsh::Environment.new
+
+        expect { described_class.load(path, start_state, env) }.
+          not_to raise_exception
+      end
+    end
   end
 
   def write_temp_completions_files(completions)

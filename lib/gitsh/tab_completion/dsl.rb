@@ -9,6 +9,7 @@ module Gitsh
         tokens = Lexer.lex(source)
         factory = Parser.parse(tokens, gitsh_env: env)
         factory.build(start_state)
+      rescue Errno::ENOENT
       end
     end
   end
