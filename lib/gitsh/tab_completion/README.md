@@ -10,6 +10,9 @@ has typed so far.
 The basis of gitsh's tab completion system is a slightly extended
 Non-deterministic Finite Automaton (NFA).
 
+The NFA's state graph is loaded from configuration files that use a
+Domain-Specific Language (DSL) similar to regular expressions.
+
 Completing variable names doesn't use the NFA, but all other types of completion
 do.
 
@@ -102,9 +105,20 @@ then hit <kbd>tab</kbd>. In this case, we'd pass `add` to the automaton and move
 from state `0` to state `4`. From state `4` the next thing we expect is a path,
 so we'd offer file paths from the current directory as completions.
 
-### Building the state graph
+### Loading the state graph
 
-The state graph is built by the `Gitsh::TabCompletion::AutomatonFactory` class.
+As you might imagine, the state graph for tab completing Git commands is fairly
+large. Instead of hard-coding this graph, we load it from configuration files
+written in a custom DSL.
+
+A global configuration file (in this repository's `etc` directory, and installed
+to `$(prefix)/etc/gitsh/completions`) provides standard completions for Git
+commands, and a user-specific configuration file (`$HOME/.gitsh_completions`)
+can optionally be added for custom completions, e.g. for a user's own Git
+aliases.
+
+Details of the DSL can be found in the gitsh\_completions(5) manual page in this
+repository's `man` directory.
 
 To help debug the state graph, the repository includes a visualisation tool.
 Running `bin/tcviz` will output the graph in [Graphviz's dot language][1].
@@ -144,3 +158,7 @@ Running this through Graphviz's dot(1) program produces an image file, e.g.
 - `Gitsh::TabCompletion::VariableCompleter` provides an alternative to
   `CommandCompleter`. This doesn't use the automaton, and only completes
   variable names.
+
+- `Gitsh::TabCompletion::DSL` contains various classes for loading the
+  automaton's state graph from configuration files. The `DSL` module acts as a
+  facade for the configuration loading system.
