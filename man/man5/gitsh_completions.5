@@ -5,9 +5,6 @@
 .Nm gitsh_completions
 .Nd Defines options for tab completion
 .
-.Sh SYNOPSIS
-$(prefix)/etc/gitsh/completions, $HOME/.gitsh_completions
-.
 .Sh DESCRIPTION
 .Nm gitsh_completions
 files define the tab completions options that are available in interactive
@@ -133,8 +130,7 @@ commit $opt*
 .Sh OPERATORS
 The following operators are supported. They have similar semantics to regular
 expressions, except that they operate on an entire word instead of a single
-character. For a detailed introduction to regular expressions, see
-.Xr re_format 7 .
+character.
 .Bl -tag -width Ds
 .It Ic word?
 Indicates that
@@ -164,7 +160,7 @@ required, and this is the only context in which parentheses may be used.
 .El
 .Pp
 The various post-fix operators may be applied to a list of options, but the
-options inside the list must be literals or variables. For examples, various
+options inside the list must be literals or variables. For example, various
 commands take a
 .Ic --recurse-submodules
 option with an optional argument:
@@ -205,13 +201,16 @@ for the
 variable.
 .Pp
 The role of the tab completion system is to understand the structure of
-commands and present useful options, it can leave the validation of the user's
+commands and present useful options; it can leave the validation of the user's
 input to Git.
 .Pp
 The following variables are supported:
 .Bl -tag -width Ds
 .It Ic $alias
-Produces the user's Git aliases.
+Produces the user's Git aliases as completion options. This is useful as a
+rule on its own, to allow aliases to be tab completed. It's also useful for
+commands which can  take the name of an alias as an argument, for example
+.Xr git-help 1 .
 .It Ic $anything
 Produces no completion options, but matches any user input. This is useful
 for situations where we know Git requires an argument, but we're unable to
@@ -273,6 +272,17 @@ and only produce completions like
 .Ic master:main.c .
 .El
 .
+.Sh FILES
+.Bl -tag -width Ds
+.It Pa $(prefix)/etc/gitsh/completions
+System-wide tab completions file, which defines the tab completion options
+for popular Git commands.
+.It Pa $HOME/.gitsh_completions
+User specific tab completions file, which can be used to extend the system-wide
+completions, e.g. by defining the completions that should be available for
+aliases and custom Git commands.
+.El
+.
 .Sh EXAMPLES
 The
 .Xr git-add 1
@@ -304,3 +314,7 @@ browse $revision? $path
 .
 .Sh SEE ALSO
 .Xr gitsh 1
+.
+.Sh AUTHORS
+.An George Brocklehurst Aq george@thoughtbot.com
+.An thoughtbot Aq hello@thoughtbot.com
