@@ -320,7 +320,7 @@ grep $opt* $anything $revision* --? $path+
   -A $anything
   -B $anything
 
-help $opt* ($command|attributes|everyday|glossary|ignore|modules|revisions|tutorial|workflows)
+help $opt* ($command|$alias|attributes|everyday|glossary|ignore|modules|revisions|tutorial|workflows)
   --all
   --guides
   --info
