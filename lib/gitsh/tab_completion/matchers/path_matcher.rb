@@ -11,6 +11,10 @@ module Gitsh
           'path'
         end
 
+        def match?(word)
+          !word.start_with?('-')
+        end
+
         def completions(token)
           prefix = normalize_path(token)
           paths(prefix).map { |option| option.sub(prefix, token) }

@@ -13,8 +13,8 @@ module Gitsh
           'treeish'
         end
 
-        def match?(_word)
-          true
+        def match?(word)
+          !word.start_with?('-')
         end
 
         def completions(token)

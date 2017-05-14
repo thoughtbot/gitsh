@@ -14,6 +14,10 @@ module Gitsh
           'revision'
         end
 
+        def match?(word)
+          !word.start_with?('-')
+        end
+
         def completions(token)
           prefix, partial_name = split(token)
           env.repo_heads.

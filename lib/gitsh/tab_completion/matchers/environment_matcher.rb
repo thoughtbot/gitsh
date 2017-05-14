@@ -12,6 +12,10 @@ module Gitsh
           @block = block
         end
 
+        def match?(word)
+          !word.start_with?('-')
+        end
+
         def eql?(other)
           super && name == other.name
         end

@@ -91,7 +91,7 @@ describe 'Completing things with tab' do
       gitsh.type('init')
       gitsh.type('commit --allow-empty -m "Some commit"')
       gitsh.type('tag my-tag')
-      gitsh.type("tag --del\t my\t")
+      gitsh.type("tag --del\t m\t")
 
       expect(gitsh).to output_no_errors
 

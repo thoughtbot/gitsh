@@ -11,11 +11,19 @@ describe Gitsh::TabCompletion::Matchers::EnvironmentMatcher do
   end
 
   describe '#match?' do
-    it 'always returns true' do
+    it 'returns true when the input does not begin with "-"' do
       matcher = described_class.new(double(:env), 'something', &:something)
 
       expect(matcher.match?('foo')).to be_truthy
       expect(matcher.match?('')).to be_truthy
+    end
+
+    it 'returns false when the input begins with "-"' do
+      matcher = described_class.new(double(:env), 'something', &:something)
+
+      expect(matcher.match?('-a')).to be_falsey
+      expect(matcher.match?('--')).to be_falsey
+      expect(matcher.match?('--force')).to be_falsey
     end
   end
 
