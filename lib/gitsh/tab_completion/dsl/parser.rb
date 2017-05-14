@@ -13,14 +13,9 @@ require 'gitsh/tab_completion/dsl/choice_factory'
 require 'gitsh/tab_completion/matchers/path_matcher'
 require 'gitsh/tab_completion/matchers/directory_path_matcher'
 require 'gitsh/tab_completion/matchers/revision_matcher'
-require 'gitsh/tab_completion/matchers/remote_matcher'
 require 'gitsh/tab_completion/matchers/anything_matcher'
-require 'gitsh/tab_completion/matchers/branch_matcher'
-require 'gitsh/tab_completion/matchers/alias_matcher'
-require 'gitsh/tab_completion/matchers/command_matcher'
-require 'gitsh/tab_completion/matchers/stash_matcher'
-require 'gitsh/tab_completion/matchers/tag_matcher'
 require 'gitsh/tab_completion/matchers/treeish_matcher'
+require 'gitsh/tab_completion/matchers/environment_matcher'
 
 module Gitsh
   module TabCompletion
@@ -28,17 +23,19 @@ module Gitsh
       class Parser < RLTK::Parser
         OPTION_VARIABLE = 'opt'.freeze
         VARIABLE_TO_MATCHER_CLASS = {
-          'alias' => Matchers::AliasMatcher,
           'anything' => Matchers::AnythingMatcher,
-          'branch' => Matchers::BranchMatcher,
-          'command' => Matchers::CommandMatcher,
           'dir_path' => Matchers::DirectoryPathMatcher,
           'path' => Matchers::PathMatcher,
-          'remote' => Matchers::RemoteMatcher,
           'revision' => Matchers::RevisionMatcher,
-          'stash' => Matchers::StashMatcher,
-          'tag' => Matchers::TagMatcher,
           'treeish' => Matchers::TreeishMatcher,
+        }.freeze
+        VARIABLE_TO_PROC = {
+          'alias' => :git_aliases,
+          'branch' => :repo_branches,
+          'command' => :git_commands,
+          'remote' => :repo_remotes,
+          'stash' => :repo_stashes,
+          'tag' => :repo_tags,
         }.freeze
 
         class Environment < RLTK::Parser::Environment
@@ -66,6 +63,9 @@ module Gitsh
 
           def build_matcher(var_name)
             VARIABLE_TO_MATCHER_CLASS.fetch(var_name).new(gitsh_env)
+          rescue KeyError
+            proc = VARIABLE_TO_PROC.fetch(var_name)
+            Matchers::EnvironmentMatcher.new(gitsh_env, var_name, &proc)
           end
         end
 
