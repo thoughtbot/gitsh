@@ -32,7 +32,7 @@ module Gitsh
     end
 
     def history_file_path
-      env.fetch('gitsh.historyFile') { DEFAULT_HISTORY_FILE }
+      File.expand_path(env.fetch('gitsh.historyFile') { DEFAULT_HISTORY_FILE })
     end
 
     def history_size
