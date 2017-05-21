@@ -12,6 +12,7 @@ module Gitsh
     def run
       pid = Process.spawn(
         *command_with_arguments,
+        in: env.input_stream.to_i,
         out: env.output_stream.to_i,
         err: env.error_stream.to_i
       )

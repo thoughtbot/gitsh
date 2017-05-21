@@ -36,6 +36,7 @@ module Gitsh
     rule(/\s*;\s*/) { :SEMICOLON }
     rule(/\s*&&\s*/) { :AND }
     rule(/\s*\|\|\s*/) { :OR }
+    rule(/\s*\|\s*/) { :PIPE }
 
     [:default, :soft_string].each do |state|
       rule(/\$\(\s*/, state) do

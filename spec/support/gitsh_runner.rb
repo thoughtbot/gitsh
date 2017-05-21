@@ -17,7 +17,7 @@ class GitshRunner
   end
 
   def initialize(options)
-    @input_stream = RSpec::Mocks::Double.new('STDIN', tty?: true)
+    @input_stream = RSpec::Mocks::Double.new('STDIN', tty?: true, to_i: 0)
     @output_stream = Tempfile.new('stdout')
     @error_stream = Tempfile.new('stderr')
     @line_editor = Gitsh::LineEditorHistoryFilter.new(FakeLineEditor.new)
@@ -27,29 +27,46 @@ class GitshRunner
   end
 
   def run_interactive
-    runner = nil
+    @runner = nil
     with_a_temporary_home_directory do
       in_a_temporary_directory do
         setup_unix_env
-        runner = start_runner_thread
+        @runner = start_runner_thread
         wait_for_prompt
 
         yield(self)
 
         line_editor.type(':exit')
-        runner.join
+        @runner.join
+        @runner = nil
       end
     end
   rescue RSpec::Expectations::ExpectationNotMetError
-    runner.kill
-    runner.join
+    @runner.kill
+    @runner.join
+    @runner = nil
     raise
   end
 
   def type(string)
+    type_without_waiting(string)
+    wait_for_prompt
+  end
+
+  def type_without_waiting(string)
     @error_position_before_command = error_stream.pos
     @position_before_command = output_stream.pos
     line_editor.type(string)
+  end
+
+  def wait_for_output
+    while output_stream.pos == @position_before_command
+      sleep 0.001
+    end
+  end
+
+  def send_sigint
+    @runner.raise(Interrupt)
     wait_for_prompt
   end
 
