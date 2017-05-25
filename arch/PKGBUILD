@@ -1,14 +1,14 @@
 # Maintainer: Pat Brisbin <pbrisbin@gmail.com>
 pkgname='gitsh'
-pkgver=0.11.2
+pkgver=0.12
 pkgrel=1
 pkgdesc='An interactive shell for git'
 arch=('any')
 url="http://thoughtbot.github.io/gitsh/"
 license=('custom')
 depends=('ruby>=2.0.0' 'readline')
-source=("http://thoughtbot.github.io/gitsh/gitsh-0.11.2.tar.gz")
-sha256sums=('d3ef8f88417ff9bef7fd95bcd1d9011d9adaed2213094a2d056266169da1bcec')
+source=("http://thoughtbot.github.io/gitsh/gitsh-0.12.tar.gz")
+sha256sums=('73d8251f66f43b0e2c1ebcc8047f30d405d245f53fa35ca9ed96cfe0bead9510')
 
 build() {
   cd "$srcdir/$pkgname-$pkgver"
