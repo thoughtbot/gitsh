@@ -76,9 +76,9 @@ Installation
 
 1. Download and extract the latest release:
 
-        curl -OL https://github.com/thoughtbot/gitsh/releases/download/v0.11.2/gitsh-0.11.2.tar.gz
-        tar -zxvf gitsh-0.11.2.tar.gz
-        cd gitsh-0.11.2
+        curl -OL https://github.com/thoughtbot/gitsh/releases/download/v0.12/gitsh-0.12.tar.gz
+        tar -zxvf gitsh-0.12.tar.gz
+        cd gitsh-0.12
 
 2. Configure the distribution. This step will determine which version of Ruby
    should be used, which has important implications; see the notes on "gitsh and
