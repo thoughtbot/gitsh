@@ -5,7 +5,7 @@ describe 'Handling errors' do
     GitshRunner.interactive do |gitsh|
       gitsh.type(':foobar')
 
-      expect(gitsh).to output_error /gitsh: foobar: command not found/
+      expect(gitsh).to output_error(/gitsh: foobar: command not found/)
     end
   end
 
@@ -13,7 +13,7 @@ describe 'Handling errors' do
     GitshRunner.interactive do |gitsh|
       gitsh.type('add . && || commit')
 
-      expect(gitsh).to output_error /gitsh: parse error/
+      expect(gitsh).to output_error(/gitsh: parse error/)
     end
   end
 

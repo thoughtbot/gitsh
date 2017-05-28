@@ -8,7 +8,7 @@ describe 'A .gitshrc file in the home directory' do
         GitshRunner.interactive do |gitsh|
           gitsh.type ':echo $gitshrc_loaded'
 
-          expect(gitsh).to output /Config loaded/
+          expect(gitsh).to output(/Config loaded/)
           expect(gitsh).to output_no_errors
         end
       end

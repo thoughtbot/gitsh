@@ -6,7 +6,7 @@ describe 'Entering no command' do
       gitsh.type('init')
       gitsh.type('')
 
-      expect(gitsh).to output /nothing to commit/
+      expect(gitsh).to output(/nothing to commit/)
     end
   end
 
@@ -15,7 +15,7 @@ describe 'Entering no command' do
       gitsh.type('init')
       gitsh.type('    ')
 
-      expect(gitsh).to output /nothing to commit/
+      expect(gitsh).to output(/nothing to commit/)
     end
   end
 
@@ -26,12 +26,12 @@ describe 'Entering no command' do
       gitsh.type('commit --allow-empty -m First')
       gitsh.type('')
 
-      expect(gitsh).to output /First/
+      expect(gitsh).to output(/First/)
 
       gitsh.type('commit --allow-empty -m Second')
       gitsh.type('')
 
-      expect(gitsh).to output /Second/
+      expect(gitsh).to output(/Second/)
     end
   end
 end

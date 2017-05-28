@@ -8,7 +8,7 @@ describe 'Creating a repository' do
 
       gitsh.type('init')
 
-      expect(gitsh).to output /^Initialized empty Git repository/
+      expect(gitsh).to output(/^Initialized empty Git repository/)
       expect(gitsh).to output_no_errors
       expect(gitsh).to prompt_with "#{cwd_basename} master@ "
     end

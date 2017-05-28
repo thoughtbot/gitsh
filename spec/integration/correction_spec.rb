@@ -19,7 +19,7 @@ describe 'Correcting input' do
         gitsh.type ':set help.autocorrect 0'
         gitsh.type 'git init'
 
-        expect(gitsh).to output_error /not a git command/
+        expect(gitsh).to output_error(/not a git command/)
         expect(gitsh).to prompt_with "#{cwd_basename} uninitialized!! "
       end
     end

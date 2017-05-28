@@ -97,7 +97,7 @@ describe Gitsh::GitRepository do
           run 'git commit --allow-empty -m "Second"'
           run 'git checkout HEAD^'
 
-          expect(repo.current_head).to match /^[a-f0-9]{7}...$/
+          expect(repo.current_head).to match(/^[a-f0-9]{7}...$/)
         end
       end
     end

@@ -19,7 +19,7 @@ describe 'Comments' do
 
       gitsh.type 'show HEAD'
 
-      expect(gitsh).not_to output /Comment/
+      expect(gitsh).not_to output(/Comment/)
     end
   end
 end

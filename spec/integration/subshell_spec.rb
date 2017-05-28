@@ -7,7 +7,7 @@ describe 'Subshell' do
       gitsh.type ':echo prefix $(status) suffix'
 
       expect(gitsh).to output_no_errors
-      expect(gitsh).to output /prefix.*nothing to commit.*suffix/
+      expect(gitsh).to output(/prefix.*nothing to commit.*suffix/)
     end
   end
 
@@ -18,7 +18,7 @@ describe 'Subshell' do
       gitsh.type ':echo $x'
 
       expect(gitsh).to output_no_errors
-      expect(gitsh).to output /x in parent shell/
+      expect(gitsh).to output(/x in parent shell/)
     end
   end
 
@@ -28,7 +28,7 @@ describe 'Subshell' do
       gitsh.type ':echo $(:echo $(status))'
 
       expect(gitsh).to output_no_errors
-      expect(gitsh).to output /nothing to commit/
+      expect(gitsh).to output(/nothing to commit/)
     end
   end
 
@@ -37,7 +37,7 @@ describe 'Subshell' do
       gitsh.type ':echo $(:echo foo)$(:echo bar)'
 
       expect(gitsh).to output_no_errors
-      expect(gitsh).to output /\bfoo\nbar\b/
+      expect(gitsh).to output(/\bfoo\nbar\b/)
     end
   end
 
@@ -46,7 +46,7 @@ describe 'Subshell' do
       gitsh.type ':echo $(:echo ")))")'
 
       expect(gitsh).to output_no_errors
-      expect(gitsh).to output /\)\)\)/
+      expect(gitsh).to output(/\)\)\)/)
     end
   end
 end

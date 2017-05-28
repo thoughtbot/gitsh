@@ -19,7 +19,7 @@ describe 'Gitsh variables' do
       gitsh.type('log --format="%ae - %s"')
 
       expect(gitsh).to output_no_errors
-      expect(gitsh).to output /^john@example\.com - An initial commit$/
+      expect(gitsh).to output(/^john@example\.com - An initial commit$/)
     end
   end
 
@@ -32,7 +32,7 @@ describe 'Gitsh variables' do
       gitsh.type('config --get test.example')
 
       expect(gitsh).to output_no_errors
-      expect(gitsh).to output /This is a test/
+      expect(gitsh).to output(/This is a test/)
     end
   end
 
@@ -47,7 +47,7 @@ describe 'Gitsh variables' do
       gitsh.type('log --format="%s" -n 1')
 
       expect(gitsh).to output_no_errors
-      expect(gitsh).to output /test\.example: A configuration variable/
+      expect(gitsh).to output(/test\.example: A configuration variable/)
     end
   end
 
@@ -55,7 +55,7 @@ describe 'Gitsh variables' do
     GitshRunner.interactive do |gitsh|
       gitsh.type(':set')
 
-      expect(gitsh).to output_error /usage: :set variable value/
+      expect(gitsh).to output_error(/usage: :set variable value/)
     end
   end
 
@@ -65,7 +65,7 @@ describe 'Gitsh variables' do
       gitsh.type(':echo $greeting')
 
       expect(gitsh).to output_no_errors
-      expect(gitsh).to output /hello/
+      expect(gitsh).to output(/hello/)
     end
   end
 
@@ -74,7 +74,7 @@ describe 'Gitsh variables' do
       gitsh.type(':echo "hello $unset world"')
 
       expect(gitsh).to output_nothing
-      expect(gitsh).to output_error /unset/
+      expect(gitsh).to output_error(/unset/)
     end
   end
 end

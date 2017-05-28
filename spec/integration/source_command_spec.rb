@@ -10,7 +10,7 @@ describe 'The :source command' do
         gitsh.type ':echo $source_worked'
 
         expect(gitsh).to output_no_errors
-        expect(gitsh).to output /Yes it did!/
+        expect(gitsh).to output(/Yes it did!/)
       end
     end
 
@@ -22,7 +22,7 @@ describe 'The :source command' do
         gitsh.type ':echo $source_worked'
 
         expect(gitsh).to output_no_errors
-        expect(gitsh).to output /True/
+        expect(gitsh).to output(/True/)
       end
     end
   end
@@ -32,7 +32,7 @@ describe 'The :source command' do
       GitshRunner.interactive do |gitsh|
         gitsh.type ':source'
 
-        expect(gitsh).to output_error /usage/
+        expect(gitsh).to output_error(/usage/)
         expect(gitsh).to output_nothing
       end
     end
@@ -43,7 +43,7 @@ describe 'The :source command' do
       GitshRunner.interactive do |gitsh|
         gitsh.type ':source not/a/real/file'
 
-        expect(gitsh).to output_error /No such file/
+        expect(gitsh).to output_error(/No such file/)
         expect(gitsh).to output_nothing
       end
     end

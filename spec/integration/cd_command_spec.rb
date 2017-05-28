@@ -32,11 +32,11 @@ describe 'The :cd command' do
     GitshRunner.interactive do |gitsh|
       gitsh.type ':cd /not-a-real-path'
 
-      expect(gitsh).to output_error /gitsh: cd: No such directory/
+      expect(gitsh).to output_error(/gitsh: cd: No such directory/)
 
       gitsh.type ":cd #{__FILE__}"
 
-      expect(gitsh).to output_error /gitsh: cd: Not a directory/
+      expect(gitsh).to output_error(/gitsh: cd: Not a directory/)
     end
   end
 

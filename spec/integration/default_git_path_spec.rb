@@ -8,7 +8,7 @@ describe 'Default git path' do
       gitsh.type('init')
 
       expect(gitsh).to output_no_errors
-      expect(gitsh).to output /^Fake git: init/
+      expect(gitsh).to output(/^Fake git: init/)
     end
   end
 
@@ -20,7 +20,7 @@ describe 'Default git path' do
       gitsh.type('init')
 
       expect(gitsh).to output_no_errors
-      expect(gitsh).to output /^Fake git: init/
+      expect(gitsh).to output(/^Fake git: init/)
     end
   end
 end
