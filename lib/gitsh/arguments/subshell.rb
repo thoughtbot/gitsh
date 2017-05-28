@@ -26,7 +26,7 @@ module Gitsh
       def strip_whitespace(output)
         output.
           sub(%r{\r?\n\Z}, '').
-          gsub(%r{[\n\r\s]+}, ' ')
+          gsub(%r{\s+}, ' ')
       end
     end
   end
