@@ -4,12 +4,10 @@ module Gitsh
       def initialize(status_porcelain, git_dir)
         @status_porcelain = status_porcelain
         @git_dir = git_dir
+        @initialized = File.exist?(git_dir)
       end
 
       def initialized?
-        if @initialized.nil?
-          @initialized = File.exist?(git_dir)
-        end
         @initialized
       end
 
