@@ -73,7 +73,7 @@ describe Gitsh::Commands::GitCommand do
           arguments("commit", "-m", "Some stuff"),
           shell_command_runner: mock_runner,
         )
-        result = command.execute(env)
+        command.execute(env)
 
         expect(mock_runner).to have_received(:run).with(
           ["/usr/bin/env", "git", "-c", "foo=1", "commit", "-m", "Some stuff"],
@@ -97,7 +97,7 @@ describe Gitsh::Commands::GitCommand do
           arguments("commit", "-m", "Some stuff"),
           shell_command_runner: mock_runner,
         )
-        result = command.execute(env)
+        command.execute(env)
 
         expect(mock_runner).to have_received(:run).with(
           ["/usr/bin/env", "git", "git", "commit", "-m", "Some stuff"],

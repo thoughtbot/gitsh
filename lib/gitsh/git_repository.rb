@@ -57,7 +57,7 @@ module Gitsh
         "config --get #{Shellwords.escape(name)}",
         force_default_git_command
       )
-      out, err, status = Open3.capture3(command)
+      out, _, status = Open3.capture3(command)
       if status.success?
         out.chomp
       elsif block_given?

@@ -36,7 +36,6 @@ describe Gitsh::Interpreter do
       parser = double(:parser)
       allow(parser).to receive(:parse).
         and_raise(RLTK::NotInLanguage.new([], double(:token), []))
-      lexer = double('Lexer', lex: tokens([:WORD, 'commit']))
       input_strategy = double(
         :input_strategy,
         setup: nil,

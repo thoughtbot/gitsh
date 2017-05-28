@@ -40,7 +40,7 @@ class GitshRunner
         runner.join
       end
     end
-  rescue RSpec::Expectations::ExpectationNotMetError => e
+  rescue RSpec::Expectations::ExpectationNotMetError
     runner.kill
     runner.join
     raise
