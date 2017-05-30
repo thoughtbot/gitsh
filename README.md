@@ -77,6 +77,7 @@ For a quick introduction to `gitsh`, watch [our video on Upcase][].
 
 * Mac OS X, via homebrew:
 
+        brew install ruby   # for proper readline support
         brew tap thoughtbot/formulae
         brew install gitsh
 
@@ -86,7 +87,7 @@ For a quick introduction to `gitsh`, watch [our video on Upcase][].
 
         sudo pkg_add gitsh
 
-See the [installation guide][INSTALL] for install instructions for other
+See the [installation guide][INSTALL] for details and install instructions for other
 operating systems.
 
 ## Contributing to gitsh
