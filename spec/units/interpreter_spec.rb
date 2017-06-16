@@ -64,7 +64,7 @@ describe Gitsh::Interpreter do
       parser = double(:parser, parse: command)
       lexer = double('Lexer')
       allow(lexer).to receive(:lex).with('(commit').
-        and_return(tokens([:LEFT_PAREN], [:WORD, 'commit'], [:MISSING, ')']))
+        and_return(tokens([:LEFT_PAREN], [:WORD, 'commit'], [:INCOMPLETE, ')']))
       allow(lexer).to receive(:lex).with("(commit\n)").
         and_return(tokens([:LEFT_PAREN], [:WORD, 'commit'], [:RIGHT_PAREN]))
       input_strategy = double(
@@ -99,7 +99,7 @@ describe Gitsh::Interpreter do
       parser = double(:parser, parse: nil)
       lexer = double(
         'Lexer',
-        lex: tokens([:LEFT_PAREN], [:WORD, 'commit'], [:MISSING, ')']),
+        lex: tokens([:LEFT_PAREN], [:WORD, 'commit'], [:INCOMPLETE, ')']),
       )
       input_strategy = double(
         :input_strategy,

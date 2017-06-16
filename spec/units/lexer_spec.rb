@@ -171,34 +171,43 @@ describe Gitsh::Lexer do
 
     it 'adds an error token for unclosed strings' do
       expect('\'never ending').
-        to produce_tokens ['WORD(never ending)', 'MISSING(\')', 'EOS']
+        to produce_tokens ['WORD(never ending)', 'INCOMPLETE(\')', 'EOS']
 
       expect('"never ending').
-        to produce_tokens ['WORD(never ending)', 'MISSING(")', 'EOS']
+        to produce_tokens ['WORD(never ending)', 'INCOMPLETE(")', 'EOS']
     end
 
     it 'adds an error token for unclosed subshells' do
       expect('$(:echo Hello').to produce_tokens [
-        'SUBSHELL_START', 'WORD(:echo)', 'SPACE', 'WORD(Hello)', 'MISSING())', 'EOS'
+        'SUBSHELL_START', 'WORD(:echo)', 'SPACE', 'WORD(Hello)', 'INCOMPLETE())', 'EOS'
       ]
     end
 
     it 'adds an error token for trailing logical operators' do
       expect(':echo first &&').to produce_tokens [
-        'WORD(:echo)', 'SPACE', 'WORD(first)', 'AND', 'MISSING(command)', 'EOS'
+        'WORD(:echo)', 'SPACE', 'WORD(first)', 'AND', 'INCOMPLETE(command)', 'EOS'
       ]
       expect(':echo first ||').to produce_tokens [
-        'WORD(:echo)', 'SPACE', 'WORD(first)', 'OR', 'MISSING(command)', 'EOS'
+        'WORD(:echo)', 'SPACE', 'WORD(first)', 'OR', 'INCOMPLETE(command)', 'EOS'
       ]
     end
 
     it 'adds an error token for a trailing escape character' do
       expect('foo\\').
-        to produce_tokens ['WORD(foo)', 'MISSING(continuation)', 'EOS']
+        to produce_tokens ['WORD(foo)', 'INCOMPLETE(continuation)', 'EOS']
       expect('foo\\\\').
         to produce_tokens ['WORD(foo)', 'WORD(\\)', 'EOS']
       expect('foo\\\\\\').
-        to produce_tokens ['WORD(foo)', 'WORD(\\)', 'MISSING(continuation)', 'EOS']
+        to produce_tokens ['WORD(foo)', 'WORD(\\)', 'INCOMPLETE(continuation)', 'EOS']
+    end
+
+    it 'adds an error token for incomplete variable references' do
+      expect(':echo $').
+        to produce_tokens ['WORD(:echo)', 'SPACE', 'MISSING(var)', 'EOS']
+      expect(':echo ${').
+        to produce_tokens ['WORD(:echo)', 'SPACE', 'MISSING(var)', 'EOS']
+      expect(':echo ${x').
+        to produce_tokens ['WORD(:echo)', 'SPACE', 'VAR(x)', 'MISSING(})', 'EOS']
     end
 
     it 'ignores comments' do

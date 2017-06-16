@@ -59,7 +59,7 @@ module Gitsh
 
     rule(/#{UNQUOTED_STRING_ESCAPABLES.to_negative_regexp}+/) { |t| [:WORD, t] }
     rule(/\\[\r\n]/) { |_| }
-    rule(/\\\z/) { |_| [:MISSING, :continuation] }
+    rule(/\\\z/) { |_| [:INCOMPLETE, :continuation] }
     rule(/\\#{UNQUOTED_STRING_ESCAPABLES.to_regexp}/) { |t| [:WORD, t[1]] }
     rule(/\\/) { |t| [:WORD, t] }
 
@@ -90,26 +90,38 @@ module Gitsh
     rule(/"/, :soft_string) { pop_state }
 
     [:default, :soft_string].each do |state|
-      rule(/\$[a-z_][a-z0-9_.-]*/i, state) { |t| [:VAR, t[1..-1]] }
-      rule(/\$\{[a-z_][a-z0-9_.-]*\}/i, state) { |t| [:VAR, t[2..-2]] }
+      rule(/\$/, state) { push_state(:need_var_name) }
+      rule(/\$\{/, state) do
+        push_state(:need_closing_brace)
+        push_state(:need_var_name)
+      end
     end
+    rule(/[a-z_][a-z0-9_.-]*/i, :need_var_name) do |t|
+      pop_state
+      [:VAR, t]
+    end
+    rule(/\}/, :need_closing_brace) { pop_state }
 
     def self.lex(string, file_name = nil, env = self::Environment.new(@start_state))
       tokens = super
 
       case env.state
       when :hard_string
-        tokens.insert(-2, RLTK::Token.new(:MISSING, '\''))
+        tokens.insert(-2, RLTK::Token.new(:INCOMPLETE, '\''))
       when :soft_string
-        tokens.insert(-2, RLTK::Token.new(:MISSING, '"'))
+        tokens.insert(-2, RLTK::Token.new(:INCOMPLETE, '"'))
+      when :need_var_name
+        tokens.insert(-2, RLTK::Token.new(:MISSING, 'var'))
+      when :need_closing_brace
+        tokens.insert(-2, RLTK::Token.new(:MISSING, '}'))
       end
 
       if env.right_paren_stack.any?
-        tokens.insert(-2, RLTK::Token.new(:MISSING, ')'))
+        tokens.insert(-2, RLTK::Token.new(:INCOMPLETE, ')'))
       end
 
       if tokens.length > 1 && [:AND, :OR].include?(tokens[-2].type)
-        tokens.insert(-2, RLTK::Token.new(:MISSING, 'command'))
+        tokens.insert(-2, RLTK::Token.new(:INCOMPLETE, 'command'))
       end
 
       tokens

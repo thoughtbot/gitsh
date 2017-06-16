@@ -44,7 +44,7 @@ module Gitsh
     end
 
     def incomplete_command?(tokens)
-      tokens.reverse_each.detect { |token| token.type == :MISSING }
+      tokens.reverse_each.detect { |token| token.type == :INCOMPLETE }
     end
 
     def build_multi_line_command(previous_lines, new_line)
