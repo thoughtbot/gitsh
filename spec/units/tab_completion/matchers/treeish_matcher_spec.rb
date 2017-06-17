@@ -20,19 +20,17 @@ describe Gitsh::TabCompletion::Matchers::TreeishMatcher do
   end
 
   describe '#completions' do
-    context 'given blank input' do
-      it 'returns a combination of heads and paths' do
-        in_a_temporary_directory do
-          write_file('main.c')
-          write_file('other.c')
-          env = double(:env, repo_heads: ['master', 'feature'])
-          matcher = described_class.new(env)
+    it 'returns a combination of heads and paths' do
+      in_a_temporary_directory do
+        write_file('main.c')
+        write_file('other.c')
+        env = double(:env, repo_heads: ['master', 'feature'])
+        matcher = described_class.new(env)
 
-          expect(matcher.completions('')).
-            to match_array ['master', 'feature', 'main.c', 'other.c']
-          expect(matcher.completions('m')).
-            to match_array ['master', 'feature', 'main.c']
-        end
+        expect(matcher.completions('')).
+          to match_array ['master', 'feature', 'main.c', 'other.c']
+        expect(matcher.completions('m')).
+          to match_array ['master', 'main.c']
       end
     end
 

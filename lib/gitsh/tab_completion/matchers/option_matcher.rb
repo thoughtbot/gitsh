@@ -17,7 +17,7 @@ module Gitsh
 
         def completions(token)
           if token.start_with?('-')
-            options_without_args
+            options_without_args.select { |option| option.start_with?(token) }
           else
             []
           end

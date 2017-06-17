@@ -4,11 +4,12 @@ require 'gitsh/tab_completion/dsl/option_transition_factory'
 describe Gitsh::TabCompletion::DSL::OptionTransitionFactory do
   describe '#build' do
     it 'adds a transition to the start state and returns the end state' do
-      matcher = stub_matcher
+      option_matcher = stub_option_matcher
+      text_matcher = stub_text_matcher('--file')
       start_state = double(
         :start_state,
         add_transition: nil,
-        add_text_transition: nil,
+        add_transition: nil,
       )
       path_factory = double(:path_factory, build: nil)
       context = double(
@@ -26,9 +27,9 @@ describe Gitsh::TabCompletion::DSL::OptionTransitionFactory do
 
       expect(end_state).to be_a(Gitsh::TabCompletion::Automaton::State)
       expect(start_state).
-        to have_received(:add_transition).with(matcher, end_state)
+        to have_received(:add_transition).with(option_matcher, end_state)
       expect(start_state).
-        to have_received(:add_text_transition).with('--file', anything)
+        to have_received(:add_transition).with(text_matcher, anything)
       expect(path_factory).to have_received(:build).with(
         anything,
         end_state: end_state,
@@ -39,11 +40,12 @@ describe Gitsh::TabCompletion::DSL::OptionTransitionFactory do
 
     context 'given an end state' do
       it 'adds a transition between the start and end states' do
-        matcher = stub_matcher
+        option_matcher = stub_option_matcher
+        text_matcher = stub_text_matcher('--file')
         start_state = double(
           :start_state,
           add_transition: nil,
-          add_text_transition: nil,
+          add_transition: nil,
         )
         end_state = double(:end_state)
         path_factory = double(:path_factory, build: nil)
@@ -66,21 +68,14 @@ describe Gitsh::TabCompletion::DSL::OptionTransitionFactory do
 
         expect(result).to eq(end_state)
         expect(start_state).
-          to have_received(:add_transition).with(matcher, end_state)
+          to have_received(:add_transition).with(option_matcher, end_state)
         expect(start_state).
-          to have_received(:add_text_transition).with('--file', anything)
+          to have_received(:add_transition).with(text_matcher, anything)
         expect(path_factory).to have_received(:build).with(
           anything,
           end_state: end_state,
         )
       end
     end
-  end
-
-  def stub_matcher
-    klass = Gitsh::TabCompletion::Matchers::OptionMatcher
-    matcher = instance_double(klass)
-    allow(klass).to receive(:new).and_return(matcher)
-    matcher
   end
 end
