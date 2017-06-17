@@ -1,4 +1,5 @@
 require 'gitsh/tab_completion/matchers/option_matcher'
+require 'gitsh/tab_completion/matchers/text_matcher'
 
 module Gitsh
   module TabCompletion
@@ -41,7 +42,10 @@ module Gitsh
           def build_transitions_for_options_with_arguments
             context.options_with_arguments.each do |option|
               intermediate_state = Automaton::State.new(option.name)
-              start_state.add_text_transition(option.name, intermediate_state)
+              start_state.add_transition(
+                Matchers::TextMatcher.new(option.name),
+                intermediate_state,
+              )
               option.argument_factory.build(
                 intermediate_state,
                 end_state: end_state,
