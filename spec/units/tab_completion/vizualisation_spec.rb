@@ -10,8 +10,8 @@ describe Gitsh::TabCompletion::Vizualisation do
 
       dot = described_class.new(start_state).to_dot
 
-      expect(dot).to include("#{start_state.object_id} [ label=\"start\" ]")
-      expect(dot).to include("#{end_state.object_id} [ label=\"end\" ]")
+      expect(dot).to include(%Q{#{start_state.object_id} [ label="start" ]})
+      expect(dot).to include(%Q{#{end_state.object_id} [ label="end" ]})
       expect(dot).to include(
         %Q{#{start_state.object_id} -> #{end_state.object_id} [ label="\\"a\\"" ]}
       )
