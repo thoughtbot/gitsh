@@ -10,6 +10,10 @@ module Gitsh
           @env = env
         end
 
+        def name
+          'revision'
+        end
+
         def completions(token)
           prefix, partial_name = split(token)
           env.repo_heads.

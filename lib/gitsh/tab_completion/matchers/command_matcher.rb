@@ -9,6 +9,10 @@ module Gitsh
           @internal_command = internal_command
         end
 
+        def name
+          'command'
+        end
+
         private
 
         attr_reader :env, :internal_command

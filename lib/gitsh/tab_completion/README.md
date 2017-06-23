@@ -102,6 +102,18 @@ then hit <kbd>tab</kbd>. In this case, we'd pass `add` to the automaton and move
 from state `0` to state `4`. From state `4` the next thing we expect is a path,
 so we'd offer file paths from the current directory as completions.
 
+### Building the state graph
+
+The state graph is built by the `Gitsh::TabCompletion::AutomatonFactory` class.
+
+To help debug the state graph, the repository includes a visualisation tool.
+Running `bin/tcviz` will output the graph in [Graphviz's dot language][1].
+Running this through Graphviz's dot(1) program produces an image file, e.g.
+
+    ./bin/tcviz | dot -Tsvg -o tab_completion.svg
+
+[1]: http://www.graphviz.org/content/dot-language
+
 ## Major components
 
 - `Gitsh::TabCompletion::Facade` provides a single interface to the rest of

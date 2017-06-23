@@ -4,6 +4,8 @@ module Gitsh
   module TabCompletion
     module Matchers
       class TextMatcher < BaseMatcher
+        attr_reader :word
+
         def initialize(word)
           @word = word
         end
@@ -20,9 +22,7 @@ module Gitsh
           super + word.hash
         end
 
-        protected
-
-        attr_reader :word
+        private
 
         def all_completions
           [word]

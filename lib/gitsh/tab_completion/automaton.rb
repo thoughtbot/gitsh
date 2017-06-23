@@ -17,6 +17,10 @@ module Gitsh
         match(context).flat_map { |state| state.completions(token) }
       end
 
+      def accept_visitor(visitor)
+        start_state.accept_visitor(visitor, Set.new)
+      end
+
       private
 
       attr_reader :start_state
@@ -26,7 +30,7 @@ module Gitsh
       end
 
       class State
-        attr_reader :free_transitions
+        attr_reader :name
 
         def initialize(name)
           @name = name
@@ -46,6 +50,15 @@ module Gitsh
           matching_transitions(token).map(&:freely_reachable).inject(Set.new, :|)
         end
 
+        def accept_visitor(visitor, visited_states)
+          unless visited_states.include?(self)
+            visited_states << self
+            visitor.visit_state(self)
+            visit_free_transitions(visitor, visited_states)
+            visit_transitions(visitor, visited_states)
+          end
+        end
+
         def freely_reachable
           free_transitions.map(&:freely_reachable).inject([self].to_set, :|)
         end
@@ -60,7 +73,7 @@ module Gitsh
 
         private
 
-        attr_reader :transitions, :name
+        attr_reader :free_transitions, :transitions
 
         def matching_transitions(token)
           transitions.inject(Set.new) do |matched_states, (matcher, states)|
@@ -68,6 +81,22 @@ module Gitsh
               matched_states | states
             else
               matched_states
+            end
+          end
+        end
+
+        def visit_free_transitions(visitor, visited_states)
+          free_transitions.each do |end_state|
+            visitor.visit_free_transition(self, end_state)
+            end_state.accept_visitor(visitor, visited_states)
+          end
+        end
+
+        def visit_transitions(visitor, visited_states)
+          transitions.each do |matcher, end_states|
+            end_states.each do |end_state|
+              visitor.visit_transition(self, end_state, matcher)
+              end_state.accept_visitor(visitor, visited_states)
             end
           end
         end

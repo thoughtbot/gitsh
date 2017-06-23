@@ -9,6 +9,10 @@ module Gitsh
           paths(prefix).map { |option| option.sub(prefix, token) }
         end
 
+        def name
+          'path'
+        end
+
         private
 
         def normalize_path(token)

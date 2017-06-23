@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+%w( lib ext ).each do |directory|
+  $LOAD_PATH.unshift(File.expand_path("../../#{directory}", __FILE__))
+end
+
+require 'gitsh/environment'
+require 'gitsh/tab_completion/automaton_factory'
+require 'gitsh/tab_completion/visualization'
+
+env = Gitsh::Environment.new
+automaton = Gitsh::TabCompletion::AutomatonFactory.build(env)
+viz = Gitsh::TabCompletion::Visualization.new(automaton)
+
+$stdout.puts viz.to_dot
+$stderr.puts viz.summary

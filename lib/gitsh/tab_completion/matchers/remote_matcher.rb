@@ -8,6 +8,10 @@ module Gitsh
           @env = env
         end
 
+        def name
+          'remote'
+        end
+
         private
 
         attr_reader :env
