@@ -7,10 +7,6 @@ module Gitsh
         def initialize(_env)
         end
 
-        def name
-          'path'
-        end
-
         def match?(word)
           !word.start_with?('-')
         end
