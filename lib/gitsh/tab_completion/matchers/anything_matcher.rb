@@ -16,6 +16,14 @@ module Gitsh
         def completions(_token)
           []
         end
+
+        def eql?(other)
+          self.class == other.class
+        end
+
+        def hash
+          self.class.hash + 1
+        end
       end
     end
   end

@@ -23,7 +23,17 @@ module Gitsh
           end
         end
 
-        private
+        def eql?(other)
+          self.class == other.class &&
+            options_without_args == other.options_without_args &&
+            options_with_args == other.options_with_args
+        end
+
+        def hash
+          self.class.hash + options_without_args.hash + options_with_args.hash
+        end
+
+        protected
 
         attr_reader :options_without_args, :options_with_args
       end

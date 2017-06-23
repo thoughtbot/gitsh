@@ -25,6 +25,14 @@ module Gitsh
           end
         end
 
+        def eql?(other)
+          self.class == other.class
+        end
+
+        def hash
+          self.class.hash + 1
+        end
+
         private
 
         attr_reader :env

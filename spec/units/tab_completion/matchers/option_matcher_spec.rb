@@ -54,4 +54,45 @@ describe Gitsh::TabCompletion::Matchers::OptionMatcher do
       end
     end
   end
+
+  describe '#eql?' do
+    it 'returns true for another instance of the class with the same options' do
+      matcher1 = described_class.new(['a', 'b'], ['c', 'd'])
+      matcher2 = described_class.new(['a', 'b'], ['c', 'd'])
+
+      expect(matcher1).to eql(matcher2)
+    end
+
+    it 'returns false for another instance of the class with different options' do
+      matcher1 = described_class.new(['a', 'b'], ['c', 'd'])
+      matcher2 = described_class.new(['a', 'b'], ['x', 'y'])
+      matcher3 = described_class.new(['x', 'y'], ['c', 'd'])
+
+      expect(matcher1).not_to eql(matcher2)
+      expect(matcher1).not_to eql(matcher3)
+      expect(matcher2).not_to eql(matcher3)
+    end
+
+    it 'returns false when given an instance of any other class' do
+      matcher = described_class.new(['a', 'b'], ['c', 'd'])
+      other = double(
+        :not_a_matcher,
+        options_without_args: ['a', 'b'],
+        options_with_args: ['c', 'd'],
+      )
+
+      expect(matcher).not_to eql(other)
+    end
+  end
+
+  describe '#hash' do
+    it 'returns the same value for all instances of the class with the options' do
+      matcher1 = described_class.new(['a', 'b'], ['c', 'd'])
+      matcher2 = described_class.new(['a', 'b'], ['c', 'd'])
+      matcher3 = described_class.new(['w', 'x'], ['y', 'z'])
+
+      expect(matcher1.hash).to eq(matcher2.hash)
+      expect(matcher1.hash).not_to eq(matcher3.hash)
+    end
+  end
 end
