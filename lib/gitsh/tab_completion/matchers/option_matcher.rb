@@ -12,7 +12,7 @@ module Gitsh
         end
 
         def match?(word)
-          word =~ /\A--?[^-]+\Z/ && !options_with_args.include?(word)
+          word =~ /\A--?[^-]/ && !options_with_args.include?(word)
         end
 
         def completions(token)

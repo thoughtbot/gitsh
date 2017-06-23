@@ -8,6 +8,7 @@ describe Gitsh::TabCompletion::Matchers::OptionMatcher do
 
       expect(matcher.match?('-a')).to be_truthy
       expect(matcher.match?('--force')).to be_truthy
+      expect(matcher.match?('--untracked-files')).to be_truthy
     end
 
     it 'returns false for "-" and "--"' do
