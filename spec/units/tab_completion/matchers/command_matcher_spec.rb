@@ -63,7 +63,7 @@ describe Gitsh::TabCompletion::Matchers::CommandMatcher do
       matcher = described_class.new(double(:env), double(:internal_command))
       other = double(:not_a_matcher)
 
-      expect(matcher).not_to eql(double)
+      expect(matcher).not_to eql(other)
     end
   end
 
