@@ -116,7 +116,7 @@ describe Gitsh::TabCompletion::Automaton do
         visit_free_transition: nil,
       )
 
-      result = automaton.accept_visitor(visitor)
+      automaton.accept_visitor(visitor)
 
       expect(visitor).to have_received(:visit_state).with(state_0).once
       expect(visitor).to have_received(:visit_state).with(state_1).once

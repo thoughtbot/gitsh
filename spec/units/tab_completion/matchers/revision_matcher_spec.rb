@@ -65,7 +65,7 @@ describe Gitsh::TabCompletion::Matchers::RevisionMatcher do
       matcher = described_class.new(double(:env))
       other = double(:not_a_matcher)
 
-      expect(matcher).not_to eql(double)
+      expect(matcher).not_to eql(other)
     end
   end
 
