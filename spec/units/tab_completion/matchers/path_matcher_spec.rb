@@ -40,7 +40,7 @@ describe Gitsh::TabCompletion::Matchers::PathMatcher do
       matcher = described_class.new
       other = double(:not_a_matcher)
 
-      expect(matcher).not_to eql(double)
+      expect(matcher).not_to eql(other)
     end
   end
 
