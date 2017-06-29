@@ -174,6 +174,20 @@ describe Gitsh::Environment do
     end
   end
 
+  describe '#config_directory' do
+    it 'defaults to "/usr/local/etc/gitsh"' do
+      env = described_class.new
+
+      expect(env.config_directory).to eq '/usr/local/etc/gitsh'
+    end
+
+    it 'can be overridden with an initializer argument' do
+      env = described_class.new(config_directory: '/custom/prefix/etc/gitsh')
+
+      expect(env.config_directory).to eq '/custom/prefix/etc/gitsh'
+    end
+  end
+
   describe '#print' do
     it 'prints to the output stream' do
       output = StringIO.new

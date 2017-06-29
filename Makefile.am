@@ -13,17 +13,19 @@ bin_PROGRAMS = gitsh
 gitsh_SOURCES = src/gitsh.c
 AM_CPPFLAGS = -DGITSH_RB_PATH="\"$(rubydir)/$(PACKAGE).rb\""
 
-dist_man_MANS = man/man1/gitsh.1
+dist_man_MANS = man/man1/gitsh.1 man/man5/gitsh_completions.5
 nobase_dist_pkgdata_DATA = $(vendorfiles)
 nobase_dist_ruby_DATA = $(libfiles)
 pkgrubylib_DATA = lib/gitsh/version.rb
 ruby_SCRIPTS = src/gitsh.rb
+dist_pkgsysconf_DATA = etc/completions
 
 CLEANFILES = src/gitsh.rb lib/gitsh/version.rb
 
 substitute_values = sed \
 	-e 's|@RUBY[@]|$(RUBY)|g' \
 	-e 's|@rubylibdir[@]|$(rubylibdir)|g' \
+	-e 's|@pkgsysconfdir[@]|$(pkgsysconfdir)|g' \
 	-e 's|@gemsetuppath[@]|$(gemsetuppath)|g' \
 	-e 's|@PACKAGE_VERSION[@]|$(PACKAGE_VERSION)|g'
 
@@ -47,6 +49,12 @@ install-data-local:
 distclean-local:
 	rm -rf vendor/gems
 	rm -f ext/gitsh/Makefile
+
+man/man1/gitsh.1: Makefile man/man1/gitsh.1.in
+	$(substitute_values) $(srcdir)/$@.in > $@
+
+man/man5/gitsh_completions.5: Makefile man/man5/gitsh_completions.5.in
+	$(substitute_values) $(srcdir)/$@.in > $@
 
 
 # Test

@@ -1,10 +1,11 @@
 require 'gitsh/tab_completion/matchers/base_matcher'
+require 'gitsh/commands/internal_command'
 
 module Gitsh
   module TabCompletion
     module Matchers
       class CommandMatcher < BaseMatcher
-        def initialize(env, internal_command)
+        def initialize(env, internal_command = Commands::InternalCommand)
           @env = env
           @internal_command = internal_command
         end

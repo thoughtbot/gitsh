@@ -22,6 +22,8 @@ test-driver
 /gitsh
 src/gitsh.rb
 lib/gitsh/version.rb
+man/man1/gitsh.1
+man/man5/gitsh_completions.5
 gitsh-*.tar.gz
 vendor/gems
 *.o

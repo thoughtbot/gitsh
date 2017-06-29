@@ -61,6 +61,7 @@ cd "$current_dir"
 rubydir=$datadir/$PACKAGE/ruby
 rubylibdir=$rubydir/lib
 pkgrubylibdir=$rubylibdir/gitsh
+pkgsysconfdir=$sysconfdir/gitsh
 libfiles="$(echo $(find "$srcdir/lib/gitsh" -name \*.rb))"
 vendorfiles="$(echo $(find "$srcdir/vendor/gems" -type f))"
 testfiles="$(echo $(find "$srcdir/spec/integration" "$srcdir/spec/units" -type f -name \*rb))"
@@ -70,6 +71,7 @@ AC_SUBST([RUBY])
 AC_SUBST([rubydir])
 AC_SUBST([rubylibdir])
 AC_SUBST([pkgrubylibdir])
+AC_SUBST([pkgsysconfdir])
 AC_SUBST([libfiles])
 AC_SUBST([vendorfiles])
 AC_SUBST([testfiles])

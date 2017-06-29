@@ -9,7 +9,9 @@ require 'gitsh/environment'
 require 'gitsh/tab_completion/automaton_factory'
 require 'gitsh/tab_completion/visualization'
 
-env = Gitsh::Environment.new
+env = Gitsh::Environment.new(
+  config_directory: File.expand_path('../../etc', __FILE__),
+)
 automaton = Gitsh::TabCompletion::AutomatonFactory.build(env)
 viz = Gitsh::TabCompletion::Visualization.new(automaton)
 

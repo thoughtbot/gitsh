@@ -104,7 +104,8 @@ class GitshRunner
     @env ||= Gitsh::Environment.new(
       input_stream: input_stream,
       output_stream: output_stream,
-      error_stream: error_stream
+      error_stream: error_stream,
+      config_directory: File.expand_path('../../../etc', __FILE__),
     ).tap do |env|
       env['gitsh.historyFile'] = File.join(Dir.tmpdir, 'gitsh_test_history')
       options.fetch(:settings, {}).each do |key, value|
