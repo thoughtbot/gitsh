@@ -6,3 +6,38 @@ Style/StringLiterals:
   SupportedStyles:
     - single_quotes
     - double_quotes
+
+Style/CollectionMethods:
+  Enabled: true
+  PreferredMethods:
+    find: detect
+    reduce: inject
+    collect: map
+    find_all: select
+
+Style/VariableNumber:
+  Description: Use normalcase for variable numbers.
+  Enabled: false
+
+Style/TrailingCommaInArguments:
+  Description: 'Checks for trailing comma in argument lists.'
+  StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#no-trailing-array-commas'
+  EnforcedStyleForMultiline: consistent_comma
+  SupportedStylesForMultiline:
+    - comma
+    - consistent_comma
+    - no_comma
+  Enabled: true
+
+Style/TrailingCommaInLiteral:
+  Description: 'Checks for trailing comma in array and hash literals.'
+  StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#no-trailing-array-commas'
+  EnforcedStyleForMultiline: consistent_comma
+  SupportedStylesForMultiline:
+    - comma
+    - consistent_comma
+    - no_comma
+  Enabled: true
+
+Style/EmptyMethod:
+  Enabled: false
