@@ -1,1 +1,1 @@
-$command ($revision|$path|$remote)+
+$command ($revision|$path|$remote)* --? $path+

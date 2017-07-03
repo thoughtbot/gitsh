@@ -28,10 +28,26 @@ describe Gitsh::TabCompletion::DSL::Parser do
       expect(result.parts.first.word).to eq('stash')
     end
 
+    it 'parses rules with the asterisk operator' do
+      result = parse_single_rule(tokens([:WORD, 'verbose'], [:STAR], [:EOS]))
+
+      expect(result).to be_a_star_operation
+      expect(result.child).to be_a_text_transition
+      expect(result.child.word).to eq('verbose')
+    end
+
     it 'parses rules with the plus operator' do
       result = parse_single_rule(tokens([:WORD, 'verbose'], [:PLUS], [:EOS]))
 
       expect(result).to be_a_plus_operation
+      expect(result.child).to be_a_text_transition
+      expect(result.child.word).to eq('verbose')
+    end
+
+    it 'parses rules with the question mark operator' do
+      result = parse_single_rule(tokens([:WORD, 'verbose'], [:MAYBE], [:EOS]))
+
+      expect(result).to be_a_maybe_operation
       expect(result.child).to be_a_text_transition
       expect(result.child.word).to eq('verbose')
     end
@@ -115,8 +131,16 @@ describe Gitsh::TabCompletion::DSL::Parser do
     be_a(Gitsh::TabCompletion::DSL::ConcatenationFactory)
   end
 
+  def be_a_star_operation
+    be_a Gitsh::TabCompletion::DSL::StarOperationFactory
+  end
+
   def be_a_plus_operation
     be_a(Gitsh::TabCompletion::DSL::PlusOperationFactory)
+  end
+
+  def be_a_maybe_operation
+    be_a(Gitsh::TabCompletion::DSL::MaybeOperationFactory)
   end
 
   def be_a_choice

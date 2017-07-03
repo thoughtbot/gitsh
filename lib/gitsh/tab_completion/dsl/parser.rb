@@ -1,9 +1,11 @@
 require 'rltk'
 require 'gitsh/tab_completion/dsl/choice_factory'
 require 'gitsh/tab_completion/dsl/concatenation_factory'
+require 'gitsh/tab_completion/dsl/maybe_operation_factory'
 require 'gitsh/tab_completion/dsl/plus_operation_factory'
 require 'gitsh/tab_completion/dsl/rule_factory'
 require 'gitsh/tab_completion/dsl/rule_set_factory'
+require 'gitsh/tab_completion/dsl/star_operation_factory'
 require 'gitsh/tab_completion/dsl/text_transition_factory'
 require 'gitsh/tab_completion/dsl/variable_transition_factory'
 require 'gitsh/tab_completion/matchers/command_matcher'
@@ -77,7 +79,9 @@ module Gitsh
 
         production(:term) do
           clause('item') { |factory| factory }
+          clause('.item STAR') { |factory| StarOperationFactory.new(factory) }
           clause('.item PLUS') { |factory| PlusOperationFactory.new(factory) }
+          clause('.item MAYBE') { |factory| MaybeOperationFactory.new(factory) }
         end
 
         production(:item) do

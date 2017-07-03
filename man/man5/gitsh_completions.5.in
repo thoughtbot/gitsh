@@ -1,4 +1,4 @@
-.Dd June 29, 2017
+.Dd July 3, 2017
 .Dt GITSH_COMPLETIONS 5
 .Os
 .Sh NAME
@@ -65,14 +65,18 @@ Some arguments are optional, and others can be repeated.
 This can be specified using operators similar to those provided by
 regular expressions. To expand the previous example,
 .Xr git-add 1
-can accept one or more paths:
+can accept one or more paths preceded by an optional
+.Ic "--"
+token:
 .Bd -literal -offset -indent
-add  $path+
+add --? $path+
 .Ed
 .Pp
 In this example, the
+.Ic ?
+and
 .Ic +
-operator modifies the meaning of the argument.
+operators modify the meaning of the literal and variable arguments.
 See the section on
 .Sx OPERATORS
 for a complete list of what's supported.
@@ -83,6 +87,18 @@ The following operators are supported. They have similar semantics to regular
 expressions, except that they operate on an entire word instead of a single
 character.
 .Bl -tag -width Ds
+.It Ic word?
+Indicates that
+.Ic word
+can appear zero or one times. In other words,
+.Ic word
+is optional.
+.It Ic word*
+Indicates that
+.Ic word
+can appear zero or more times. In other words,
+.Ic word
+is optional and can be repeated.
 .It Ic word+
 Indicates that
 .Ic word
@@ -98,9 +114,7 @@ may appear. Unlike regular expressions, the surrounding parentheses are
 required, and this is the only context in which parentheses may be used.
 .El
 .Pp
-The post-fix
-.Ic +
-operator may be applied to a list of options, but the
+The various post-fix operators may be applied to a list of options, but the
 options inside the list must be literals or variables.
 .
 .Sh VARIABLES
@@ -110,11 +124,9 @@ session.
 .Pp
 Variables are more permissive when they are matching the context before a
 completion than when they are generating completions. For example, consider
-the following rules:
+the following rule:
 .Bd -literal -offset -indent
-diff $revision $path
-
-diff $path
+diff $revision? $path
 .Ed
 .Pp
 If the user enters
@@ -175,11 +187,13 @@ for popular Git commands.
 .Sh EXAMPLES
 The
 .Xr git-add 1
-command takes one or more file system paths.
+command takes an optional
+.Ic -- ,
+followed by one or more file system paths.
 .Pp
 This argument scheme is represented as:
 .Bd -literal -offset -indent
-add $path+
+add --? $path+
 .Ed
 .Pp
 I have a custom command called
@@ -191,9 +205,7 @@ I can add this to my
 .Ic gitsh_completions
 file as:
 .Bd -literal -offset -indent
-browse $revision $path
-
-browse $path
+browse $revision? $path
 .Ed
 .
 .Sh SEE ALSO

@@ -11,9 +11,19 @@ describe Gitsh::TabCompletion::DSL::Lexer do
       expect('add $path').to produce_tokens ['WORD(add)', 'VAR(path)', 'EOS']
     end
 
+    it 'recognises the asterisk operator' do
+      expect('add* $path*').
+        to produce_tokens ['WORD(add)', 'STAR', 'VAR(path)', 'STAR', 'EOS']
+    end
+
     it 'recognises the plus operator' do
       expect('add+ $path+').
         to produce_tokens ['WORD(add)', 'PLUS', 'VAR(path)', 'PLUS', 'EOS']
+    end
+
+    it 'recognises the question mark operator' do
+      expect('add? $path?').
+        to produce_tokens ['WORD(add)', 'MAYBE', 'VAR(path)', 'MAYBE', 'EOS']
     end
 
     it 'recognises the pipe operator' do
