@@ -42,9 +42,7 @@ describe Gitsh::TabCompletion::DSL::Parser do
     end
 
     it 'parses rules with the asterisk operator' do
-      result = parse_single_rule(tokens(
-        [:WORD, 'verbose'], [:STAR], [:EOS]
-      ))
+      result = parse_single_rule(tokens([:WORD, 'verbose'], [:STAR], [:EOS]))
 
       expect(result).to be_a_star_operation
       expect(result.child).to be_a_text_transition
@@ -60,9 +58,7 @@ describe Gitsh::TabCompletion::DSL::Parser do
     end
 
     it 'parses rules with the question mark operator' do
-      result = parse_single_rule(tokens(
-        [:WORD, 'verbose'], [:MAYBE], [:EOS]
-      ))
+      result = parse_single_rule(tokens([:WORD, 'verbose'], [:MAYBE], [:EOS]))
 
       expect(result).to be_a_maybe_operation
       expect(result.child).to be_a_text_transition
@@ -177,7 +173,7 @@ describe Gitsh::TabCompletion::DSL::Parser do
   end
 
   def be_a_maybe_operation
-    be_a Gitsh::TabCompletion::DSL::MaybeOperationFactory
+    be_a(Gitsh::TabCompletion::DSL::MaybeOperationFactory)
   end
 
   def be_a_choice

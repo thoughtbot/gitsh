@@ -8,7 +8,7 @@ module Gitsh
       end
 
       def completions(context, token)
-        match(context).flat_map { |state| state.completions(token) }
+        match(context).flat_map { |state| state.completions(token) }.uniq
       end
 
       def match(tokens)

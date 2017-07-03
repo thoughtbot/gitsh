@@ -91,6 +91,24 @@ describe Gitsh::TabCompletion::Automaton do
         expect(automaton.completions(['foo'], '')).to eq []
       end
     end
+
+    it 'filters out duplicates' do
+      #       ,--- aa ---,
+      #       |          v
+      # ---> (0)        (1) --- aa ---> (2)
+      #       |          ^
+      #       '----------'
+
+      state_0 = described_class::State.new(0)
+      state_1 = described_class::State.new(1)
+      state_2 = described_class::State.new(2)
+      add_text_transition(state_0, 'aa', state_1)
+      state_0.add_free_transition(state_1)
+      add_text_transition(state_1, 'aa', state_2)
+      automaton = described_class.new(state_0)
+
+      expect(automaton.completions([], '')).to eq ['aa']
+    end
   end
 
   describe '#accept_visitor' do
