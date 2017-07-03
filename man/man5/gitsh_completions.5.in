@@ -16,12 +16,12 @@ The content of a
 file consists of rules defining the options and arguments that are expected
 by various commands.
 .Xr gitsh 1
-uses the rules to match the input before the word being completed,
+uses the rules to match the input before the word being completed
 and to generate completions that are relevant in the context.
 .Pp
 Each rule is separated from other rules by a blank line.
 .Pp
-The first line of a rule specifies the name of the command,
+The first line of a rule specifies the name of the command
 and the arguments it accepts. In the simplest case, these are just
 space-separated words. For example, the following
 .Nm gitsh_completions
