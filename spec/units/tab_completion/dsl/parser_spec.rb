@@ -17,15 +17,31 @@ describe Gitsh::TabCompletion::DSL::Parser do
       expect(result.matcher).to be_a_revision_matcher
     end
 
-    it 'parses rules with multiple words and variables' do
+    it 'parses the special $opt variable' do
+      result = parse_single_rule(tokens([:OPT_VAR], [:EOS]))
+
+      expect(result).to be_an_option_transition
+    end
+
+    it 'parses single options' do
+      result = parse_single_rule(tokens([:OPTION, '--verbose'], [:EOS]))
+
+      expect(result).to be_a_text_transition
+      expect(result.word).to eq('--verbose')
+    end
+
+    it 'parses rules with multiple words, variables, and options' do
       result = parse_single_rule(tokens(
-        [:WORD, 'stash'], [:WORD, 'pop'], [:VAR, 'revision'], [:EOS],
+        [:WORD, 'stash'], [:WORD, 'pop'], [:OPTION, '--verbose'],
+        [:VAR, 'revision'], [:EOS],
       ))
 
       expect(result).to be_a_concatenation
-      expect(result.parts.length).to eq(3)
+      expect(result.parts.length).to eq(4)
       expect(result.parts.first).to be_a_text_transition
       expect(result.parts.first.word).to eq('stash')
+      expect(result.parts[2]).to be_a_text_transition
+      expect(result.parts[2].word).to eq('--verbose')
     end
 
     it 'parses rules with the asterisk operator' do
@@ -90,6 +106,30 @@ describe Gitsh::TabCompletion::DSL::Parser do
       expect(result.child.choices.length).to eq(2)
     end
 
+    it 'parses rules with options' do
+      result = described_class.parse(tokens(
+        [:WORD, 'push'], [:OPT_VAR],
+        [:INDENT], [:OPTION, '--force'],
+        [:INDENT], [:OPTION, '--remote'], [:VAR, 'remote'],
+        [:EOS],
+      ), gitsh_env: double(:env))
+
+      rule_factory = result.rules.first
+      expect(rule_factory.options).to be_a_choice
+
+      expect(rule_factory.options.choices.length).to eq(2)
+
+      first_argument_choice = rule_factory.options.choices.first
+      last_argument_choice = rule_factory.options.choices.last
+
+      expect(first_argument_choice).to be_a_text_transition
+      expect(first_argument_choice.word).to eq('--force')
+      expect(last_argument_choice).to be_a_concatenation
+      expect(last_argument_choice.parts.length).to eq(2)
+      expect(last_argument_choice.parts.first).to be_a_text_transition
+      expect(last_argument_choice.parts.last).to be_a_variable_transition
+    end
+
     it 'parses multiple rules in the same input' do
       result = described_class.parse(tokens(
         [:WORD, 'push'], [:BLANK],
@@ -125,6 +165,10 @@ describe Gitsh::TabCompletion::DSL::Parser do
 
   def be_a_variable_transition
     be_a(Gitsh::TabCompletion::DSL::VariableTransitionFactory)
+  end
+
+  def be_an_option_transition
+    be_a(Gitsh::TabCompletion::DSL::OptionTransitionFactory)
   end
 
   def be_a_concatenation

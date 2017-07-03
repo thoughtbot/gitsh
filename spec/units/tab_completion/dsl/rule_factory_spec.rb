@@ -6,11 +6,13 @@ describe Gitsh::TabCompletion::DSL::RuleFactory do
     it "delegates to the rule's root factory" do
       start_state = double(:start_state)
       root = double(:factory, build: nil)
-      factory = described_class.new(root)
+      options = double(:options)
+      factory = described_class.new(root, options)
 
       factory.build(start_state)
 
-      expect(root).to have_received(:build).with(start_state)
+      expect(root).to have_received(:build).
+        with(start_state, known_options_factory: options)
     end
   end
 end

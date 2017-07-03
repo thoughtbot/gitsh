@@ -13,7 +13,7 @@ sessions.
 .Pp
 The content of a
 .Nm gitsh_completions
-file consists of rules defining the arguments that are expected
+file consists of rules defining the options and arguments that are expected
 by various commands.
 .Xr gitsh 1
 uses the rules to match the input before the word being completed
@@ -21,7 +21,7 @@ and to generate completions that are relevant in the context.
 .Pp
 Each rule is separated from other rules by a blank line.
 .Pp
-The rule specifies the name of the command
+The first line of a rule specifies the name of the command
 and the arguments it accepts. In the simplest case, these are just
 space-separated words. For example, the following
 .Nm gitsh_completions
@@ -81,6 +81,51 @@ See the section on
 .Sx OPERATORS
 for a complete list of what's supported.
 .Pp
+Subsequent lines of each rule specify the options that the command accepts.
+These lines start with a whitespace indent,
+followed by the option name which must start with a
+.Ic -
+character,
+optionally followed by an argument the option takes.
+.Pp
+The special
+.Ic $opt
+variable is used in the first line of the rule to specify where the options are
+expected to appear. For example,
+.Xr git-add 1
+accepts options like
+.Ic --all
+and
+.Ic --edit :
+.Bd -literal -offset -indent
+add $opt* --? $path+
+  --all
+  --edit
+.Ed
+.Pp
+Some options are followed by an argument. This argument is specified in the
+same way as a positional argument would be specified in the first line of the
+completion rule, including support for the same variables and operators.
+For example, the
+.Xr git-init 1
+command can be passed a template directory via the
+.Ic --template
+option:
+.Bd -literal -offset -indent
+init $opt*
+  --template $path
+.Ed
+.Pp
+It is usually not useful to list short options (i.e. single character options)
+in a completion rule, except when they expect an argument. For example, the
+.Xr git-commit 1
+command can be passed a file containing the commit message via the
+.Ic -F
+option:
+.Bd -literal -offset -indent
+commit $opt*
+  -F $path
+.Ed
 .
 .Sh OPERATORS
 The following operators are supported. They have similar semantics to regular
@@ -115,7 +160,14 @@ required, and this is the only context in which parentheses may be used.
 .El
 .Pp
 The various post-fix operators may be applied to a list of options, but the
-options inside the list must be literals or variables.
+options inside the list must be literals or variables. For example, various
+commands take a
+.Ic --recurse-submodules
+option with an optional argument:
+.Bd -literal -offset -indent
+fetch $opt*
+  --recurse-submodules (yes|on-demand|no)?
+.Ed
 .
 .Sh VARIABLES
 Variables represent types of arguments that we want to tab complete in a
@@ -175,6 +227,26 @@ and there is a local branch called
 .Ic my-feature ,
 then the completions would include
 .Ic master..my-feature .
+.It Ic $opt
+Produces the options specified on subsequent lines of the current rule.
+See the
+.Sx DESCRIPTION
+section above for more details.
+.Pp
+Unlike other variables listed here,
+.Ic $opt
+only matches input that begins with a
+.Ic -
+character and is followed by one or more other characters.
+For example,
+.Ic -a
+and
+.Ic --all
+would match, but
+.Ic example.txt
+and
+.Ic --
+wouldn't.
 .El
 .
 .Sh FILES
@@ -187,13 +259,18 @@ for popular Git commands.
 .Sh EXAMPLES
 The
 .Xr git-add 1
-command takes an optional
+command takes zero or more options,
+followed by an optional
 .Ic -- ,
 followed by one or more file system paths.
 .Pp
 This argument scheme is represented as:
 .Bd -literal -offset -indent
-add --? $path+
+add $opt* --? $path+
+  --all
+  --edit
+  --force
+  --update
 .Ed
 .Pp
 I have a custom command called

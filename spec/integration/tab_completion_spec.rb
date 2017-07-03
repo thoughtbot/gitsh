@@ -86,6 +86,15 @@ describe 'Completing things with tab' do
     end
   end
 
+  it 'completes options' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type("--ver\t")
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output(/\d+/)
+    end
+  end
+
   it 'completes paths' do
     GitshRunner.interactive do |gitsh|
       gitsh.type('init')

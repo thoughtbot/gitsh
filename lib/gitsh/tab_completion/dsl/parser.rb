@@ -2,6 +2,8 @@ require 'rltk'
 require 'gitsh/tab_completion/dsl/choice_factory'
 require 'gitsh/tab_completion/dsl/concatenation_factory'
 require 'gitsh/tab_completion/dsl/maybe_operation_factory'
+require 'gitsh/tab_completion/dsl/null_factory'
+require 'gitsh/tab_completion/dsl/option_transition_factory'
 require 'gitsh/tab_completion/dsl/plus_operation_factory'
 require 'gitsh/tab_completion/dsl/rule_factory'
 require 'gitsh/tab_completion/dsl/rule_set_factory'
@@ -73,8 +75,24 @@ module Gitsh
           clause('.rules BLANK+ .rule') { |rules, rule| rules + [rule] }
         end
 
-        production(:rule, 'term+') do |factories|
-          RuleFactory.new(maybe_concatenate(factories))
+        production(:rule) do
+          clause('command_format') do |factory|
+            RuleFactory.new(factory, NullFactory.new)
+          end
+          clause('command_format opt_var_value+') do |factory, options|
+            RuleFactory.new(factory, ChoiceFactory.new(options))
+          end
+        end
+
+        production(:command_format, 'term+') do |factories|
+          maybe_concatenate(factories)
+        end
+
+        production(:opt_var_value) do
+          clause('INDENT .option') { |option| option }
+          clause('INDENT .option .term') do |option, argument_factory|
+            ConcatenationFactory.new([option, argument_factory])
+          end
         end
 
         production(:term) do
@@ -101,10 +119,16 @@ module Gitsh
         end
 
         production(:atom) do
+          clause('option') { |option| option }
           clause('WORD') { |word| TextTransitionFactory.new(word) }
+          clause('OPT_VAR') { |_| OptionTransitionFactory.new }
           clause('VAR') do |var_name|
             VariableTransitionFactory.new(matcher_for_variable(var_name))
           end
+        end
+
+        production(:option, 'OPTION') do |opt_name|
+          TextTransitionFactory.new(opt_name)
         end
 
         finalize

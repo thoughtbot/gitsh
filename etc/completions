@@ -1,1 +1,5 @@
-$command ($revision|$path|$remote)* --? $path+
+$command $opt* ($revision|$path|$remote)* --? $path+
+
+$opt
+  --version
+  --help

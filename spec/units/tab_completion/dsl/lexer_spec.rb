@@ -7,8 +7,22 @@ describe Gitsh::TabCompletion::DSL::Lexer do
       expect('stash pop').to produce_tokens ['WORD(stash)', 'WORD(pop)', 'EOS']
     end
 
+    it 'recognises the special $opt variable' do
+      expect('add $opt').to produce_tokens ['WORD(add)', 'OPT_VAR', 'EOS']
+    end
+
     it 'recognises variables' do
       expect('add $path').to produce_tokens ['WORD(add)', 'VAR(path)', 'EOS']
+      expect('add $optish').
+        to produce_tokens ['WORD(add)', 'VAR(optish)', 'EOS']
+    end
+
+    it 'recognises long options' do
+      expect('--foo').to produce_tokens ['OPTION(--foo)', 'EOS']
+    end
+
+    it 'recognises short options' do
+      expect('-S').to produce_tokens ['OPTION(-S)', 'EOS']
     end
 
     it 'recognises the asterisk operator' do
@@ -38,6 +52,15 @@ describe Gitsh::TabCompletion::DSL::Lexer do
       ]
     end
 
+    it 'recognises indented lines' do
+      expect("push\n  --force \n  --all").to produce_tokens [
+        'WORD(push)',
+        'INDENT', 'OPTION(--force)',
+        'INDENT', 'OPTION(--all)',
+        'EOS',
+      ]
+    end
+
     it 'recognises blank lines' do
       expect("push\n\npull").
         to produce_tokens ['WORD(push)', 'BLANK', 'WORD(pull)', 'EOS']
@@ -50,6 +73,14 @@ describe Gitsh::TabCompletion::DSL::Lexer do
       expect("# comment\npush").to produce_tokens ['WORD(push)', 'EOS']
       expect("push\n\n# comment\npull").
         to produce_tokens ['WORD(push)', 'BLANK', 'WORD(pull)', 'EOS']
+      expect(
+        "push\n  --force   # caution!\n  --force-with-lease",
+      ).to produce_tokens [
+        'WORD(push)',
+        'INDENT', 'OPTION(--force)',
+        'INDENT', 'OPTION(--force-with-lease)',
+        'EOS',
+      ]
     end
   end
 end
