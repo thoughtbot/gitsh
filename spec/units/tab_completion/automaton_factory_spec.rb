@@ -4,11 +4,12 @@ require 'gitsh/tab_completion/automaton_factory'
 describe Gitsh::TabCompletion::AutomatonFactory do
   describe '.build' do
     it 'loads various tab completion DSL files' do
-      env = double(:env)
+      config_directory = '/tmp/etc/gitsh'
+      env = double(:env, config_directory: config_directory)
       start_state = stub_automaton_state
       automaton = stub_automaton
       stub_dsl_loading
-      global_config_path = File.join(GITSH_CONFIG_DIRECTORY, 'completions')
+      global_config_path = File.join(config_directory, 'completions')
       user_config_path = File.join(ENV['HOME'], '.gitsh_completions')
 
       result = described_class.build(env)

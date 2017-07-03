@@ -1,3 +1,5 @@
+require 'gitsh/tab_completion/automaton'
+
 module Gitsh
   module TabCompletion
     module DSL

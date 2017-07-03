@@ -1,4 +1,4 @@
-.Dd May 7, 2017
+.Dd June 29, 2017
 .Dt GITSH 1
 .Os
 .Sh NAME
@@ -406,7 +406,7 @@ The
 .Pa .gitshrc
 file will not be loaded for non-interactive sessions, e.g. when gitsh is
 invoked with the path to a script file.
-.It Pa $(prefix)/etc/gitsh/completions
+.It Pa @pkgsysconfdir@/completions
 System-wide tab completions file, which defines the tab completion options
 for popular Git commands.
 .It Pa $HOME/.gitsh_completions

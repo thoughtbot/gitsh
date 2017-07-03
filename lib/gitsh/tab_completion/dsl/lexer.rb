@@ -15,10 +15,10 @@ module Gitsh
         rule(/\)/) { :RIGHT_PAREN }
         rule(/\s*\n\s*\n/) { :BLANK }
         rule(/\s*\n\s+/) { :INDENT }
-        rule(/\s+/) { }
+        rule(/\s+/) {}
 
         rule(/#/) { push_state :comment }
-        rule(/[^\n]+/, :comment) { }
+        rule(/[^\n]+/, :comment) {}
         rule(/(?=\n)/, :comment) { pop_state }
       end
     end

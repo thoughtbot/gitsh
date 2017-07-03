@@ -30,9 +30,9 @@ describe Gitsh::TabCompletion::DSL::Parser do
       expect(result.word).to eq('--verbose')
     end
 
-    it 'parses rules with multiple words, variables, and options' do
+    it 'parses rules with multiple words and variables' do
       result = parse_single_rule(tokens(
-        [:WORD, 'stash'], [:WORD, 'pop'], [:VAR, 'opt'], [:EOS]
+        [:WORD, 'stash'], [:WORD, 'pop'], [:VAR, 'revision'], [:EOS],
       ))
 
       expect(result).to be_a_concatenation
@@ -52,9 +52,7 @@ describe Gitsh::TabCompletion::DSL::Parser do
     end
 
     it 'parses rules with the plus operator' do
-      result = parse_single_rule(tokens(
-        [:WORD, 'verbose'], [:PLUS], [:EOS]
-      ))
+      result = parse_single_rule(tokens([:WORD, 'verbose'], [:PLUS], [:EOS]))
 
       expect(result).to be_a_plus_operation
       expect(result.child).to be_a_text_transition
@@ -74,7 +72,7 @@ describe Gitsh::TabCompletion::DSL::Parser do
     it 'parses rules with the pipe operator' do
       result = parse_single_rule(tokens(
         [:LEFT_PAREN], [:WORD, 'commit'], [:OR],
-        [:WORD, 'add'], [:OR], [:VAR, 'path'], [:RIGHT_PAREN], [:EOS]
+        [:WORD, 'add'], [:OR], [:VAR, 'path'], [:RIGHT_PAREN], [:EOS],
       ))
 
       expect(result).to be_a_choice
@@ -88,7 +86,7 @@ describe Gitsh::TabCompletion::DSL::Parser do
     it 'parses rules with the pipe operator and multiple words' do
       result = parse_single_rule(tokens(
         [:LEFT_PAREN], [:WORD, 'stash'], [:WORD, 'pop'], [:OR],
-        [:WORD, 'add'], [:RIGHT_PAREN], [:EOS]
+        [:WORD, 'add'], [:RIGHT_PAREN], [:EOS],
       ))
 
       expect(result).to be_a_choice
@@ -101,10 +99,10 @@ describe Gitsh::TabCompletion::DSL::Parser do
     it 'parses rules combining the pipe operator and a post-fix operator' do
       result = parse_single_rule(tokens(
         [:LEFT_PAREN], [:WORD, 'add'], [:OR], [:WORD, 'commit'], [:RIGHT_PAREN],
-        [:MAYBE], [:EOS]
+        [:PLUS], [:EOS],
       ))
 
-      expect(result).to be_a_maybe_operation
+      expect(result).to be_a_plus_operation
       expect(result.child).to be_a_choice
       expect(result.child.choices.length).to eq(2)
     end
@@ -137,68 +135,60 @@ describe Gitsh::TabCompletion::DSL::Parser do
       expect(result.rules.first).to be_a_rule_factory
       expect(result.rules.last).to be_a_rule_factory
     end
+  end
 
-    def parse_single_rule(tokens)
-      env = double(:env)
-      result = described_class.parse(tokens, gitsh_env: env)
-      expect(result).to be_a_rule_set_factory
-      result.rules.first.root
-    end
+  def parse_single_rule(tokens)
+    env = double(:env)
+    result = described_class.parse(tokens, gitsh_env: env)
+    expect(result).to be_a_rule_set_factory
+    result.rules.first.root
+  end
 
-    def tokens(*tokens)
-      tokens.map.with_index do |token, i|
-        type, value = token
-        pos = RLTK::StreamPosition.new(i, 1, i, 10, nil)
-        RLTK::Token.new(type, value, pos)
-      end
-    end
+  def be_a_rule_set_factory
+    be_a(Gitsh::TabCompletion::DSL::RuleSetFactory)
+  end
 
-    def be_a_rule_set_factory
-      be_a(Gitsh::TabCompletion::DSL::RuleSetFactory)
-    end
+  def be_a_rule_factory
+    be_a(Gitsh::TabCompletion::DSL::RuleFactory)
+  end
 
-    def be_a_rule_factory
-      be_a(Gitsh::TabCompletion::DSL::RuleFactory)
-    end
+  def be_a_text_transition
+    be_a(Gitsh::TabCompletion::DSL::TextTransitionFactory)
+  end
 
-    def be_a_text_transition
-      be_a Gitsh::TabCompletion::DSL::TextTransitionFactory
-    end
+  def be_a_variable_transition
+    be_a(Gitsh::TabCompletion::DSL::VariableTransitionFactory)
+  end
 
-    def be_a_variable_transition
-      be_a Gitsh::TabCompletion::DSL::VariableTransitionFactory
-    end
+  def be_an_option_transition
+    be_a Gitsh::TabCompletion::DSL::OptionTransitionFactory
+  end
 
-    def be_an_option_transition
-      be_a Gitsh::TabCompletion::DSL::OptionTransitionFactory
-    end
+  def be_a_concatenation
+    be_a(Gitsh::TabCompletion::DSL::ConcatenationFactory)
+  end
 
-    def be_a_concatenation
-      be_a Gitsh::TabCompletion::DSL::ConcatenationFactory
-    end
+  def be_a_star_operation
+    be_a Gitsh::TabCompletion::DSL::StarOperationFactory
+  end
 
-    def be_a_star_operation
-      be_a Gitsh::TabCompletion::DSL::StarOperationFactory
-    end
+  def be_a_plus_operation
+    be_a(Gitsh::TabCompletion::DSL::PlusOperationFactory)
+  end
 
-    def be_a_plus_operation
-      be_a Gitsh::TabCompletion::DSL::PlusOperationFactory
-    end
+  def be_a_maybe_operation
+    be_a Gitsh::TabCompletion::DSL::MaybeOperationFactory
+  end
 
-    def be_a_maybe_operation
-      be_a Gitsh::TabCompletion::DSL::MaybeOperationFactory
-    end
+  def be_a_choice
+    be_a(Gitsh::TabCompletion::DSL::ChoiceFactory)
+  end
 
-    def be_a_choice
-      be_a Gitsh::TabCompletion::DSL::ChoiceFactory
-    end
+  def be_a_revision_matcher
+    be_a(Gitsh::TabCompletion::Matchers::RevisionMatcher)
+  end
 
-    def be_a_revision_matcher
-      be_a Gitsh::TabCompletion::Matchers::RevisionMatcher
-    end
-
-    def be_a_path_matcher
-      be_a Gitsh::TabCompletion::Matchers::PathMatcher
-    end
+  def be_a_path_matcher
+    be_a(Gitsh::TabCompletion::Matchers::PathMatcher)
   end
 end

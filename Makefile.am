@@ -50,6 +50,12 @@ distclean-local:
 	rm -rf vendor/gems
 	rm -f ext/gitsh/Makefile
 
+man/man1/gitsh.1: Makefile man/man1/gitsh.1.in
+	$(substitute_values) $(srcdir)/$@.in > $@
+
+man/man5/gitsh_completions.5: Makefile man/man5/gitsh_completions.5.in
+	$(substitute_values) $(srcdir)/$@.in > $@
+
 
 # Test
 

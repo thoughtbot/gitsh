@@ -13,7 +13,7 @@ module Gitsh
       end
 
       def build
-        load_config(File.join(GITSH_CONFIG_DIRECTORY, 'completions'))
+        load_config(File.join(env.config_directory, 'completions'))
         load_config(File.join(ENV['HOME'], '.gitsh_completions'))
         Automaton.new(start_state)
       end

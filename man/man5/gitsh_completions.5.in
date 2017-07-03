@@ -1,0 +1,204 @@
+.Dd June 29, 2017
+.Dt GITSH_COMPLETIONS 5
+.Os
+.Sh NAME
+.Nm gitsh_completions
+.Nd Defines options for tab completion
+.
+.Sh DESCRIPTION
+.Nm gitsh_completions
+files define the tab completions options that are available in interactive
+.Xr gitsh 1
+sessions.
+.Pp
+The content of a
+.Nm gitsh_completions
+file consists of rules defining the arguments that are expected
+by various commands.
+.Xr gitsh 1
+uses the rules to match the input before the word being completed
+and to generate completions that are relevant in the context.
+.Pp
+Each rule is separated from other rules by a blank line.
+.Pp
+The rule specifies the name of the command
+and the arguments it accepts. In the simplest case, these are just
+space-separated words. For example, the following
+.Nm gitsh_completions
+file defines three rules for the
+.Xr git-stash 1
+command:
+.Bd -literal -offset -indent
+stash list
+
+stash show
+
+stash drop
+.Ed
+.Pp
+With these rules in place,
+.Xr gitsh 1
+could tab complete the command
+.Ic stash ,
+or if the user had already entered
+.Ic stash
+it could tab complete the sub-commands
+.Ic list ,
+.Ic show ,
+and
+.Ic drop .
+.Pp
+In addition to literal words we expect to see in the command,
+we can use variables that represent particular types of argument.
+For example, the
+.Xr git-add 1
+command expects a file path as an argument:
+.Bd -literal -offset -indent
+add $path
+.Ed
+.Pp
+See the section on
+.Sx VARIABLES
+for a complete list of what's supported.
+.Pp
+Some arguments are optional, and others can be repeated.
+This can be specified using operators similar to those provided by
+regular expressions. To expand the previous example,
+.Xr git-add 1
+can accept one or more paths:
+.Bd -literal -offset -indent
+add  $path+
+.Ed
+.Pp
+In this example, the
+.Ic +
+operator modifies the meaning of the argument.
+See the section on
+.Sx OPERATORS
+for a complete list of what's supported.
+.Pp
+.
+.Sh OPERATORS
+The following operators are supported. They have similar semantics to regular
+expressions, except that they operate on an entire word instead of a single
+character.
+.Bl -tag -width Ds
+.It Ic word+
+Indicates that
+.Ic word
+can appear one or more times. In other words,
+.Ic word
+is required but can be repeated.
+.It Ic (first|second)
+Indicates that either
+.Ic first
+or
+.Ic second
+may appear. Unlike regular expressions, the surrounding parentheses are
+required, and this is the only context in which parentheses may be used.
+.El
+.Pp
+The post-fix
+.Ic +
+operator may be applied to a list of options, but the
+options inside the list must be literals or variables.
+.
+.Sh VARIABLES
+Variables represent types of arguments that we want to tab complete in a
+.Xr gitsh 1
+session.
+.Pp
+Variables are more permissive when they are matching the context before a
+completion than when they are generating completions. For example, consider
+the following rules:
+.Bd -literal -offset -indent
+diff $revision $path
+
+diff $path
+.Ed
+.Pp
+If the user enters
+.Ic diff ,
+followed by a space, and presses the tab key, then the
+.Ic $revision
+variable will produce the names of revisions in the repository as possible
+completions.
+However, if the user enters
+.Ic diff my-branch ,
+followed by a space, and presses the tab key, then the
+.Ic $revision
+variable will match the input
+.Ic my-branch
+regardless of whether or not it's a valid revision name.
+.Xr gitsh 1
+will assume the revision argument has been provided, and present completions
+for the
+.Ic $path
+variable.
+.Pp
+The role of the tab completion system is to understand the structure of
+commands and present useful options; it can leave the validation of the user's
+input to Git.
+.Pp
+The following variables are supported:
+.Bl -tag -width Ds
+.It Ic $command
+Produces the names of Git commands. This includes any custom Git commands found
+on the user's
+.Ev PATH ,
+the user's Git aliases, and internal gitsh commands.
+.It Ic $path
+Produces paths to files and directories, relative to the current working
+directory.
+.It Ic $remote
+Produces the names of Git remotes in the current repository.
+.It Ic $revision
+Produces various names for Git revisions, including the names of local
+branches, remote tracking branches, and tags.
+.Pp
+The completion options produced by this variable will also try to take
+punctuation into account. For example, if the word being completed is
+.Ic master..my-f ,
+and there is a local branch called
+.Ic my-feature ,
+then the completions would include
+.Ic master..my-feature .
+.El
+.
+.Sh FILES
+.Bl -tag -width Ds
+.It Pa @pkgsysconfdir@/completions
+System-wide tab completions file, which defines the tab completion options
+for popular Git commands.
+.El
+.
+.Sh EXAMPLES
+The
+.Xr git-add 1
+command takes one or more file system paths.
+.Pp
+This argument scheme is represented as:
+.Bd -literal -offset -indent
+add $path+
+.Ed
+.Pp
+I have a custom command called
+.Ic git browse ,
+which takes two arguments: an optional Git revision, followed by a single
+file system path.
+.Pp
+I can add this to my
+.Ic gitsh_completions
+file as:
+.Bd -literal -offset -indent
+browse $revision $path
+
+browse $path
+.Ed
+.
+.Sh SEE ALSO
+.Xr gitsh 1
+.
+.Sh AUTHORS
+.An George Brocklehurst Aq george@thoughtbot.com
+.An thoughtbot Aq hello@thoughtbot.com

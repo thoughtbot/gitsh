@@ -8,7 +8,7 @@ describe Gitsh::TabCompletion::DSL::Lexer do
     end
 
     it 'recognises variables' do
-      expect('add $opt').to produce_tokens ['WORD(add)', 'VAR(opt)', 'EOS']
+      expect('add $path').to produce_tokens ['WORD(add)', 'VAR(path)', 'EOS']
     end
 
     it 'recognises long options' do
@@ -25,8 +25,8 @@ describe Gitsh::TabCompletion::DSL::Lexer do
     end
 
     it 'recognises the plus operator' do
-      expect('add+ $opt+').
-        to produce_tokens ['WORD(add)', 'PLUS', 'VAR(opt)', 'PLUS', 'EOS']
+      expect('add+ $path+').
+        to produce_tokens ['WORD(add)', 'PLUS', 'VAR(path)', 'PLUS', 'EOS']
     end
 
     it 'recognises the question mark operator' do

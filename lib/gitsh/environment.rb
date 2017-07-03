@@ -6,8 +6,9 @@ require 'gitsh/magic_variables'
 module Gitsh
   class Environment
     DEFAULT_GIT_COMMAND = '/usr/bin/env git'.freeze
+    DEFAULT_CONFIG_DIRECTORY = '/usr/local/etc/gitsh'.freeze
 
-    attr_reader :input_stream, :output_stream, :error_stream
+    attr_reader :input_stream, :output_stream, :error_stream, :config_directory
 
     def initialize(options={})
       @input_stream = options.fetch(:input_stream, $stdin)
@@ -16,6 +17,10 @@ module Gitsh
       @repo = options.fetch(:repository_factory, GitRepository).new(self)
       @variables = Hash.new
       @magic_variables = options.fetch(:magic_variables) { MagicVariables.new(@repo) }
+      @config_directory = options.fetch(
+        :config_directory,
+        DEFAULT_CONFIG_DIRECTORY,
+      )
     end
 
     def initialize_copy(original)

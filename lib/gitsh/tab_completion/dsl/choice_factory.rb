@@ -1,3 +1,5 @@
+require 'gitsh/tab_completion/automaton'
+
 module Gitsh
   module TabCompletion
     module DSL
@@ -9,7 +11,9 @@ module Gitsh
         end
 
         def build(start_state, options = {})
-          end_state = options.fetch(:end_state) { Automaton::State.new('choice') }
+          end_state = options.fetch(:end_state) do
+            Automaton::State.new('choice')
+          end
           choices.each do |choice|
             choice.build(start_state, options.merge(end_state: end_state))
           end

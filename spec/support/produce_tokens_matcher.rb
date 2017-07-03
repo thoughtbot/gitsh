@@ -7,4 +7,3 @@ RSpec::Matchers.define(:produce_tokens) do |expected|
 
   diffable
 end
-
