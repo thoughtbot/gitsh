@@ -15,6 +15,8 @@ describe Gitsh::TabCompletion::DSL do
         'log $opt $revision',
         '  --color (always|never|auto)',
       ].join("\n"))
+      start_state = Gitsh::TabCompletion::Automaton::State.new('start')
+      env = Gitsh::Environment.new
 
       described_class.load(path, start_state, env)
 
