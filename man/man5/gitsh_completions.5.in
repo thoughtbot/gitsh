@@ -206,6 +206,10 @@ input to Git.
 .Pp
 The following variables are supported:
 .Bl -tag -width Ds
+.It Ic $anything
+Produces no completion options, but matches any user input. This is useful
+for situations where we know Git requires an argument, but we're unable to
+produce useful completions for it.
 .It Ic $command
 Produces the names of Git commands. This includes any custom Git commands found
 on the user's

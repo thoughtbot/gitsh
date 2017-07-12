@@ -10,6 +10,7 @@ require 'gitsh/tab_completion/dsl/rule_set_factory'
 require 'gitsh/tab_completion/dsl/star_operation_factory'
 require 'gitsh/tab_completion/dsl/text_transition_factory'
 require 'gitsh/tab_completion/dsl/variable_transition_factory'
+require 'gitsh/tab_completion/matchers/anything_matcher'
 require 'gitsh/tab_completion/matchers/command_matcher'
 require 'gitsh/tab_completion/matchers/path_matcher'
 require 'gitsh/tab_completion/matchers/remote_matcher'
@@ -20,6 +21,7 @@ module Gitsh
     module DSL
       class Parser < RLTK::Parser
         VARIABLE_TO_MATCHER_CLASS = {
+          'anything' => Matchers::AnythingMatcher,
           'command' => Matchers::CommandMatcher,
           'path' => Matchers::PathMatcher,
           'remote' => Matchers::RemoteMatcher,

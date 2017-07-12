@@ -1,5 +1,926 @@
-$command $opt* ($revision|$path|$remote)* --? $path+
+# This file defines tab completion options for gitsh(1).
+# The file format is described by gitsh_completions(5).
+
+
+# Common Git commands
+# ===================
+
+(add|stage) $opt* --? $path+
+  --all
+  --chmod $anything
+  --dry-run
+  --edit
+  --force
+  --ignore-errors
+  --ignore-missing
+  --ignore-removal
+  --intent-to-add
+  --interactive
+  --no-all
+  --no-ignore-removal
+  --patch
+  --refresh
+  --update
+  --verbose
+
+blame $opt* $revision? --? $path
+  --abbrev $anything
+  --contents $path
+  --date $anything
+  --encoding $anything
+  --incremental
+  --indent-heuristic
+  --line-porcelain
+  --no-indent-heuristic
+  --no-progress
+  --porcelain
+  --progress
+  --reverse $revision
+  --reverse $revision
+  --root
+  --score-debug
+  --show-email
+  --show-name
+  --show-number
+  --show-stats
+  --since $anything
+  -L $anything
+  -S $path
+
+# Listing
+branch $opt* $anything*
+  --abbrev $anything
+  --all
+  --color (always|never|auto)
+  --column $anything
+  --contains $revision
+  --ignore-case
+  --list
+  --merged $revision
+  --no-abbrev
+  --no-color
+  --no-column
+  --no-contains $revision
+  --no-merged $revision
+  --points-at $anything
+  --remotes
+  --sort $anything
+  --verbose
+
+# Creating
+branch $opt* $anything $revision?
+  --create-reflog
+  --force
+  --no-create-reflog
+  --no-track
+  --quiet
+  --set-upstream
+  --track
+
+# Modifying
+branch $opt $anything?
+  --edit-description
+  --set-upstream-to $anything
+  --unset-upstream
+  -u $anything
+
+# Renaming
+branch $opt+ $anything? $anything
+  --force
+  --move
+  -M
+  -m
+
+# Deleting
+branch $opt* $anything+
+  --delete
+  --force
+  --quiet
+  --remotes
+  -d
+  -D
+
+checkout $opt* $revision?
+  --confict (merge|diff3)
+  --detach
+  --force
+  --ignore-other-worktrees
+  --ignore-skip-worktree-bits
+  --merge
+  --no-progress
+  --no-recurse-submodules
+  --no-track
+  --orphan $anything
+  --ours
+  --patch
+  --progress
+  --quiet
+  --recurse-submodules
+  --theirs
+  --track
+  -b $anything
+  -B $anything
+
+checkout $opt* $anything? --? $path+
+
+cherry-pick $opt* $revision+
+  --allow-empty
+  --allow-empty-message
+  --edit
+  --ff
+  --gpg-sign $anything?
+  --keep-redundant-commits
+  --mainline $anything
+  --no-commit
+  --signoff
+  --strategy (resolve|recursive|octopus|ours|subtree)
+  --strategy-option (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
+  -X (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
+  -m $anything
+
+cherry-pick $opt
+  --continue
+  --quit
+  --abort
+
+commit $opt* --? $path*
+  --all
+  --allow-empty
+  --allow-empty-message
+  --amend
+  --author $anything
+  --branch
+  --cleanup (strip|whitespace|verbatim|scissors|default)
+  --date $anything
+  --dry-run
+  --edit
+  --file $path
+  --fixup $revision
+  --gpg-sign $anything
+  --include
+  --interactive
+  --long
+  --message $anything
+  --no-edit
+  --no-gpg-sign
+  --no-post-rewrite
+  --no-status
+  --no-verify
+  --null
+  --only
+  --patch
+  --porcelain
+  --quiet
+  --reedit-message $revision
+  --reset-author
+  --reuse-message $revision
+  --short
+  --signoff
+  --squash $revision
+  --status
+  --template $path
+  --untracked-files (no|normal|all)?
+  --verbose
+  -C $revision
+  -F $path
+  -c $revision
+  -m $anything
+  -t $path
+
+config $opt*
+  --add
+  --blob $anything
+  --bool
+  --bool-or-int
+  --edit
+  --file $path
+  --get
+  --get-all
+  --get-color $anything $anything?
+  --get-colorbool $anything (true|false)?
+  --get-regexp
+  --get-urlmatch $anything $anything
+  --global
+  --includes
+  --int
+  --list
+  --local
+  --name-only
+  --no-includes
+  --null
+  --path
+  --remove-section
+  --rename-section
+  --replace-all
+  --show-origin
+  --system
+  --unset
+  --unset-all
+  -f $path
+
+diff $opt* ($revision|$revision $revision)? --? $path*
+  --abbrev $anything?
+  --binary
+  --break-rewrites $anything?
+  --cached
+  --check
+  --color (always|never|auto)
+  --color-words $anything?
+  --compaction-heuristic
+  --diff-algorithm (default|patient|minimal|histogram|myers)
+  --diff-filter $anything?
+  --dirstat (changes|lines|files|cumulative)?
+  --dst-prefix $anything
+  --exit-code
+  --ext-diff
+  --find-copies $anything?
+  --find-copies-harder
+  --find-renames $anything?
+  --full-index
+  --function-context
+  --histogram
+  --ident-heuristic
+  --ignore-all-space
+  --ignore-blank-lines
+  --ignore-space-at-eol
+  --ignore-space-change
+  --ignore-submodules (none|untracked|dirty|all)?
+  --inter-hunk-context $anything
+  --irreversible-delete
+  --ita-invisible-in-index
+  --line-prefix
+  --minimal
+  --name-only
+  --name-status
+  --no-color
+  --no-compaction-heuristic
+  --no-ext-diff
+  --no-ident-heuristic
+  --no-index
+  --no-patch
+  --no-prefix
+  --no-renames
+  --no-textconv
+  --numstat
+  --patch
+  --patch-with-raw
+  --patch-with-stat
+  --patience
+  --pickaxe-all
+  --pickaxe-regex
+  --quiet
+  --raw
+  --relative $path?
+  --shortstat
+  --src-prefix $anything
+  --stat $anything?
+  --submodule $anything
+  --summary
+  --text
+  --textconv
+  --unified $anything
+  --word-diff (color|plain|porcelain|none)?
+  --word-diff-regex $anything
+  --ws-error-highlight (old|new|context)
+  -S $anything
+
+fetch $opt* $remote $revision
+  --all
+  --append
+  --deepen $anything
+  --depth $anything
+  --dry-run
+  --force
+  --ipv4
+  --ipv6
+  --jobs $anything
+  --keep
+  --multiple
+  --no-recurse-submodules
+  --no-tags
+  --progress
+  --prune
+  --quiet
+  --recurse-submodules (yes|on-demand|no)?
+  --recurse-submodules-default (yes|on-demand)?
+  --refmap $anything
+  --shallow-exclude $revision
+  --shallow-since $anything
+  --submodule-prefix $path
+  --tags
+  --unshallow
+  --update-head-ok
+  --update-shallow
+  --upload-pack $anything
+  --verbose
+  -j $anything
+
+grep $opt* $anything $revision* --? $path+
+  --after-context $anything
+  --all-match
+  --and
+  --basic-regexp
+  --before-context $anything
+  --break
+  --cached
+  --color (always|never|auto)
+  --context $anything
+  --count
+  --exclude-standard
+  --extended-regexp
+  --files-with-matches
+  --files-without-match
+  --fixed-strings
+  --full-name
+  --function-context
+  --heading
+  --ignore-case
+  --invert-match
+  --line-number
+  --max-depth $anything
+  --name-only
+  --no-color
+  --no-exclude-standard
+  --no-index
+  --no-textconv
+  --not $anything
+  --null
+  --open-files-in-pager $anything?
+  --or
+  --perl-regexp
+  --quiet
+  --recurse-submodules
+  --show-function
+  --text
+  --textconv
+  --threads $anything
+  --untracked
+  --word-regexp
+  -f $path
+  -C $anything
+  -A $anything
+  -B $anything
+
+help $opt* ($command|attributes|everyday|glossary|ignore|modules|revisions|tutorial|workflows)
+  --all
+  --guides
+  --info
+  --man
+  --web
+
+init $opt* $path?
+  --bare
+  --quiet
+  --separate-git-dir $path
+  --shared (false|true|umask|group|all|world|everybody)?
+  --template $path
+
+log $opt* $revision? --? $path*
+  --abbrev $anything?
+  --abbrev-commit
+  --after $anything
+  --all
+  --all-match
+  --ancestry-path
+  --author $anything
+  --author-date-order
+  --basic-regexp
+  --before $anything
+  --binary
+  --bisect
+  --boundary
+  --branches $anything?
+  --break-rewrites $anything?
+  --cc
+  --check
+  --cherry
+  --cherry-mark
+  --cherry-pick
+  --children
+  --color (always|never|auto)
+  --color-words $anything?
+  --committer $anything
+  --date (relative|local|iso8601|iso8601-strict|rfc2822|short|raw|unix|format:)
+  --date-order
+  --decorate (short|full|auto|no)
+  --dense
+  --diff-algorithm (default|patient|minimal|histogram|myers)
+  --diff-filter $anything?
+  --dirstat (changes|lines|files|cumulative)?
+  --do-walk
+  --dst-prefix $anything
+  --encoding $anything
+  --exclude $anything
+  --expand-tabs $anything?
+  --ext-diff
+  --extended-regexp
+  --find-copies $anything?
+  --find-copies-harder
+  --find-renames $anything?
+  --first-parent
+  --fixed-strings
+  --follow
+  --format (oneline|short|medium|full|fuller|email|raw|format:)
+  --full-diff
+  --full-history
+  --full-index
+  --function-context
+  --glob $anything
+  --graph
+  --grep $anything
+  --grep-reflog $anything
+  --histogram
+  --ident-heuristic
+  --ignore-all-space
+  --ignore-blank-lines
+  --ignore-missing
+  --ignore-space-at-eol
+  --ignore-space-change
+  --ignore-submodules (none|untracked|dirty|all)?
+  --inter-hunk-context $anything
+  --invert-grep
+  --irreversible-delete
+  --ita-invisible-in-index
+  --left-only
+  --left-right
+  --line-prefix $anything
+  --log-size
+  --max-count $anything
+  --max-parents $anything
+  --merge
+  --merges
+  --minimal
+  --min-parents $anything
+  --name-only
+  --name-status
+  --no-abbrev-commit
+  --no-color
+  --no-deocrate
+  --no-expand-tabs
+  --no-ext-diff
+  --no-ident-heuristic
+  --no-max-parents
+  --no-merges
+  --no-min-parents
+  --no-notes
+  --no-patch
+  --no-prefix
+  --no-renames
+  --no-standard-notes
+  --no-textconv
+  --no-walk (sorted|unsorted)?
+  --not
+  --notes $anything?
+  --numstat
+  --oneline
+  --parents
+  --patch
+  --patch-with-raw
+  --patch-with-stat
+  --patience
+  --perl-regexp
+  --pickaxe-all
+  --pickaxe-regex
+  --pretty (oneline|short|medium|full|fuller|email|raw|format:)?
+  --raw
+  --reflog
+  --regexp-ignore-case
+  --relative $path?
+  --relative-date
+  --remotes $remote?
+  --remove-empty
+  --reverse
+  --right-only
+  --shortstat
+  --show-linear-break $anything?
+  --show-notes $anything?
+  --show-signature
+  --simplify-by-decoration
+  --simplify-merges
+  --since $anything
+  --skip $anything
+  --source
+  --sparse
+  --src-prefix $anything
+  --standard-notes
+  --stat $anything?
+  --stdin
+  --submodule $anything
+  --summary
+  --tags $anything?
+  --text
+  --textconv
+  --topo-order
+  --until $anything
+  --unified $anything
+  --use-mailmap
+  --walk-reflogs
+  --word-diff (color|plain|porcelain|none)?
+  --word-diff-regex $anything
+  --ws-error-highlight (old|new|context)
+  -G $anything
+  -L $anything
+  -O $path
+  -S $anything
+  -n $anything
+
+merge $opt* $revision*
+  --abort
+  --allow-unrelated-histories
+  --commit
+  --continue
+  --edit
+  --ff
+  --ff-only
+  --gpg-sign $anything?
+  --log $anything?
+  --no-commit
+  --no-edit
+  --no-ff
+  --no-log
+  --no-progress
+  --no-rerere-autoupdate
+  --no-squash
+  --no-stat
+  --no-summary
+  --no-verify-signatures
+  --progress
+  --quiet
+  --rerere-autoupdate
+  --squash
+  --stat
+  --strategy (resolve|recursive|octopus|ours|subtree)
+  --strategy-option (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
+  --summary
+  --verbose
+  --verify-signatures
+  -m $anything
+  -s (resolve|recursive|octopus|ours|subtree)
+  -S $anything?
+  -X (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
+
+mv $opt* $path+
+  --dry-run
+  --force
+  --verbose
+
+pull $opt* $remote $revision*
+  --all
+  --allow-unrelated-histories
+  --append
+  --autostash
+  --commit
+  --deepen $anything
+  --depth $anything
+  --edit
+  --ff
+  --ff-only
+  --force
+  --ipv4
+  --ipv6
+  --keep
+  --log $anything?
+  --no-autostash
+  --no-commit
+  --no-edit
+  --no-ff
+  --no-log
+  --no-rebase
+  --no-recurse-submodules
+  --no-squash
+  --no-stat
+  --no-summary
+  --no-tags
+  --no-verify-signatures
+  --progress
+  --quiet
+  --rebase (false|true|preserve|interactive)?
+  --recurse-submodules (yes|on-demand|no)?
+  --shallow-exclude $revision
+  --shallow-since $anything?
+  --squash
+  --stat
+  --strategy (resolve|recursive|octopus|ours|subtree)
+  --strategy-option (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
+  --summary
+  --unshallow
+  --update-head-ok
+  --update-shallow
+  --upload-pack $anything
+  --verbose
+  --verify-signatures
+  -s (resolve|recursive|octopus|ours|subtree)
+  -X (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
+
+push $opt* $remote $revision*
+  --all
+  --atomic
+  --delete
+  --dry-run
+  --exec $anything
+  --follow-tags
+  --force
+  --force-with-lease $anything?
+  --ipv4
+  --ipv6
+  --mirror
+  --no-atomic
+  --no-force-with-lease
+  --no-recurse-submodules
+  --no-signed
+  --no-thin
+  --no-verify
+  --porcelain
+  --progress
+  --prune
+  --push-option
+  --quiet
+  --receive-pack $anything
+  --recurse-submodules (yes|on-demand|no)?
+  --repo $remote
+  --set-upstream
+  --sign (true|false|if-asked)
+  --signed
+  --tags
+  --thin
+  --verbose
+  --verify
+
+rebase $opt* $revision $anything
+  --abort
+  --autosquash
+  --autostash
+  --committer-date-is-author-date
+  --continue
+  --edit-todo
+  --exec $anything
+  --force-rebase
+  --fork-point
+  --gpg-sign $anything
+  --ignore-date
+  --ignore-whitespace
+  --interactive
+  --keep-empty
+  --merge
+  --no-autosquash
+  --no-autostash
+  --no-ff
+  --no-fork-point
+  --no-stat
+  --no-verify
+  --onto $revision
+  --preserve-merges
+  --quiet
+  --quit
+  --root
+  --signoff
+  --skip
+  --stat
+  --strategy (resolve|recursive|octopus|ours|subtree)
+  --strategy-option (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
+  --verbose
+  --verify
+  --whitespace (nowarn|warn|fix|error|error-all)
+  -S $anything?
+  -X (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
+  -s (resolve|recursive|octopus|ours|subtree)
+  -x $anything
+
+remote --verbose
+
+remote add $opt* $anything $anything
+  --tags
+  --no-tags
+  --mirror (fetch|push)
+  -t $anything
+  -m $anything
+
+remote rename $remote $anything
+
+remote remove $remote
+
+remote set-head $opt* $remote $revision
+  --auto
+  --delete
+
+remote set-branches $opt* $remote $revision+
+  --add
+
+remote get-url $opt* $remote
+  --push
+  --all
+
+remote set-url $opt* $remote $anything
+  --push
+  --add
+  --delete
+
+remote (--verbose|-v)? show $opt* $remote+
+
+remote prune $opt* $remote+
+  --dry-run
+
+remote (--verbose|-v)? update $opt* $remote+
+  --prune
+
+reset $opt* $revision --? $path*
+  --hard
+  --keep
+  --merge
+  --mixed
+  --patch
+  --quiet
+  --soft
+
+revert $opt* $revision+
+  --abort
+  --continue
+  --edit
+  --gpg-sign $anything
+  --mainline $anything
+  --no-commit
+  --no-edit
+  --quit
+  --signoff
+  --strategy (resolve|recursive|octopus|ours|subtree)
+  --strategy-option (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
+  -m $anything
+  -X (ours|theirs|patience|diff-algorithm|ignore-space-change|ignore-all-space|ignore-space-at-eol|renormalize|no-renormalize|no-renames|find-renames|rename-threshold|subtree)
+
+rm $opt* --? $path+
+  --cached
+  --dry-run
+  --force
+  --ignore-unmatch
+  --quiet
+
+show $opt* $anything
+  --abbrev-commit
+  --encoding $anything
+  --expand-tabs $anything?
+  --format (oneline|short|medium|full|fuller|email|raw|format:)
+  --no-abbrev-commit
+  --no-expand-tabs
+  --no-notes
+  --no-standard-notes
+  --notes $anything?
+  --oneline
+  --pretty (oneline|short|medium|full|fuller|email|raw|format:)?
+  --show-notes $anything?
+  --show-signature
+  --standard-notes
+
+show-branch $opt* $revision+
+  --all
+  --color (always|never|auto)?
+  --current
+  --date-order
+  --independent
+  --list
+  --merge-base
+  --more $anything
+  --no-color
+  --no-name
+  --reflog $anything? $anything?
+  --remotes
+  --sha1-name
+  --sparse
+  --topics
+  --topo-order
+
+stash list
+
+stash show $anything
+
+stash drop $opt* $anything
+  --quiet
+
+stash (pop|apply) $opt* $anything
+  --index
+  --quiet
+
+stash branch $anything $anything
+
+stash save? $opt*
+  --all
+  --include-untracked
+  --keep-index
+  --no-keep-index
+  --patch
+  --quiet
+
+stash clear
+
+stash create
+
+stash store $opt* $revision
+  --message $anything
+  --quiet
+  -m $anything
+
+status $opt* --? $path*
+  --branch
+  --column $anything?
+  --ignore-submodules (none|untracked|dirty|all)?
+  --ignored
+  --long
+  --no-column
+  --porcelain $anything?
+  --short
+  --untracked-files (no|normal|all)?
+  --verbose
+  -u (no|normal|all)?
+
+submodule --quiet? add $opt* --? $remote $path
+  --branch $revision
+  --depth $anything
+  --force
+  --name $anything
+  --reference $remote
+  -b $revision
+
+submodule --quiet? status $opt* --? $path+
+  --cached
+  --recursive
+
+submodule --quiet? init --? $path+
+
+submodule --quiet? deinit $opt* --? $path+
+  --all
+  --force
+
+submodule --quiet? update $opt* --? $path+
+  --depth $anything
+  --force
+  --init
+  --jobs $anything
+  --merge
+  --no-fetch
+  --rebase
+  --recursive
+  --reference $remote
+  --remote
+
+submodule --quiet? foreach $opt* $anything
+  --recursive
+
+submodule --quiet? sync $opt* --? $path+
+  --recursive
+
+tag $opt* $anything $revision
+  --annotate
+  --cleanup (strip|whitespace|verbatim)
+  --column $anything
+  --contains $revision
+  --create-reflog
+  --delete
+  --file $path
+  --force
+  --ignore-case
+  --list $anything
+  --local-user $anything
+  --merged $revision
+  --merged $revision?
+  --message $anything
+  --no-column
+  --no-contains $revision
+  --no-merged
+  --no-merged $revision
+  --points-at $revision
+  --sign
+  --sort $anything
+  --verify
+  -F $path
+  -l $anything
+  -m $anything
+  -u $anything
+
+
+# gitsh internal commands
+# =======================
+
+:set
+
+:cd $path
+
+:exit
+
+:echo
+
+:help (:set|:cd|:exit|:echo|:help|:source)
+
+:source $path
+
+
+# Git options with no command
+# ===========================
 
 $opt
   --version
   --help
+
+
+# fallbacks
+# =========
+
+$command
