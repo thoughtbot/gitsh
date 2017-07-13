@@ -62,10 +62,10 @@ module Gitsh
         end
 
         production(:rule_set) do
-          clause('rule') do |rule_factory|
+          clause('BLANK* .rule BLANK*') do |rule_factory|
             RuleSetFactory.new([rule_factory])
           end
-          clause('rules') do |rule_factories|
+          clause('BLANK* .rules BLANK*') do |rule_factories|
             RuleSetFactory.new(rule_factories)
           end
         end

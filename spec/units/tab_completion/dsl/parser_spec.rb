@@ -142,6 +142,15 @@ describe Gitsh::TabCompletion::DSL::Parser do
       expect(result.rules.first).to be_a_rule_factory
       expect(result.rules.last).to be_a_rule_factory
     end
+
+    it 'parses rules with leading and trailing blank lines' do
+      result = parse_single_rule(tokens(
+        [:BLANK], [:BLANK], [:WORD, 'stash'], [:BLANK], [:BLANK], [:EOS],
+      ))
+
+      expect(result).to be_a_text_transition
+      expect(result.word).to eq('stash')
+    end
   end
 
   def parse_single_rule(tokens)
