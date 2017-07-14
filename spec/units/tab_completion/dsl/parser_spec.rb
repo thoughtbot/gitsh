@@ -111,23 +111,26 @@ describe Gitsh::TabCompletion::DSL::Parser do
         [:WORD, 'push'], [:OPT_VAR],
         [:INDENT], [:OPTION, '--force'],
         [:INDENT], [:OPTION, '--remote'], [:VAR, 'remote'],
+        [:INDENT], [:OPTION, '--multiple'], [:WORD, '1'], [:WORD, '2'],
         [:EOS],
       ), gitsh_env: double(:env))
 
       rule_factory = result.rules.first
       expect(rule_factory.options).to be_a_choice
 
-      expect(rule_factory.options.choices.length).to eq(2)
+      expect(rule_factory.options.choices.length).to eq(3)
 
-      first_argument_choice = rule_factory.options.choices.first
-      last_argument_choice = rule_factory.options.choices.last
+      first_argument_choice = rule_factory.options.choices[0]
+      second_argument_choice = rule_factory.options.choices[1]
+      third_argument_choice = rule_factory.options.choices[2]
 
       expect(first_argument_choice).to be_a_text_transition
       expect(first_argument_choice.word).to eq('--force')
-      expect(last_argument_choice).to be_a_concatenation
-      expect(last_argument_choice.parts.length).to eq(2)
-      expect(last_argument_choice.parts.first).to be_a_text_transition
-      expect(last_argument_choice.parts.last).to be_a_variable_transition
+      expect(second_argument_choice).to be_a_concatenation
+      expect(second_argument_choice.parts.length).to eq(2)
+      expect(second_argument_choice.parts.first).to be_a_text_transition
+      expect(second_argument_choice.parts.last).to be_a_variable_transition
+      expect(third_argument_choice.parts.length).to eq(3)
     end
 
     it 'parses multiple rules in the same input' do

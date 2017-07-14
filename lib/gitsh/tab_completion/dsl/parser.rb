@@ -90,8 +90,8 @@ module Gitsh
 
         production(:opt_var_value) do
           clause('INDENT .option') { |option| option }
-          clause('INDENT .option .term') do |option, argument_factory|
-            ConcatenationFactory.new([option, argument_factory])
+          clause('INDENT .option .term+') do |option, argument_factories|
+            ConcatenationFactory.new([option] + argument_factories)
           end
         end
 
