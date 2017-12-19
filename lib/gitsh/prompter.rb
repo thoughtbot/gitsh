@@ -31,13 +31,15 @@ module Gitsh
       end
 
       def to_s
-        padded_prompt_format.gsub(/%[bBcdDw#]/) do |match|
+        padded_prompt_format.gsub(/%[bBcdDgGw#]/) do |match|
           case match
           when "%b" then branch_name
           when "%B" then shortened_branch_name
           when "%c" then status_color
           when "%d" then working_directory
           when "%D" then File.basename(working_directory)
+          when "%g" then git_command
+          when "%G" then File.basename(git_command)
           when "%w" then clear_color
           when "%#" then terminator
           end
@@ -78,6 +80,10 @@ module Gitsh
         else
           'uninitialized'
         end
+      end
+
+      def git_command
+        env.git_command
       end
 
       def terminator

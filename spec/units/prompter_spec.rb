@@ -166,6 +166,26 @@ describe Gitsh::Prompter do
           "#{File.basename(Dir.getwd.sub(/\A#{Dir.home}/, '~'))} "
         )
       end
+
+      it 'replaces %g with the absolute path of the current git binary' do
+        env = env_double(
+          format: '%g',
+          git_command: '/usr/local/bin/my-custom-git',
+        )
+        prompter = Gitsh::Prompter.new(env: env)
+
+        expect(prompter.prompt).to eq '/usr/local/bin/my-custom-git '
+      end
+
+      it 'replaces %G with the basename of the current git binary' do
+        env = env_double(
+          format: '%G',
+          git_command: '/usr/local/bin/my-custom-git',
+        )
+        prompter = Gitsh::Prompter.new(env: env)
+
+        expect(prompter.prompt).to eq 'my-custom-git '
+      end
     end
 
     def env_double(attrs={})
@@ -179,6 +199,7 @@ describe Gitsh::Prompter do
         ),
         repo_current_head: 'master',
         repo_config_color: red,
+        git_command: '/usr/local/bin/my-custom-git',
       }
       double('Environment', default_attrs.merge(attrs)).tap do |env|
         allow(env).to receive(:[]).with('gitsh.prompt').and_return(format)

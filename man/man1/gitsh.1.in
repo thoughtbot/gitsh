@@ -144,6 +144,8 @@ command. The following placeholders can be used in the custom prompt:
 .It \&%B            Ta current HEAD, limited to 15 characters
 .It %d              Ta absolute path to current working directory
 .It \&%D            Ta basename of the current working directory
+.It %g              Ta absolute path of git binary in use
+.It %G              Ta basename of git binary in use
 .It %c              Ta start coloring based on status (see previous table)
 .It %w              Ta return to default color (e.g. after using %c)
 .El
