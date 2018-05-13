@@ -13,7 +13,10 @@ module Gitsh
       end
 
       def build
-        load_config(File.join(env.config_directory, 'completions'))
+        start_state = Automaton::State.new('start')
+        config_paths.each do |path|
+          DSL.load(path, start_state, env)
+        end
         Automaton.new(start_state)
       end
 
@@ -21,12 +24,11 @@ module Gitsh
 
       attr_reader :env
 
-      def load_config(path)
-        DSL.load(path, start_state, env)
-      end
-
-      def start_state
-        @start_state ||= Automaton::State.new('start')
+      def config_paths
+        [
+          File.join(env.config_directory, 'completions'),
+          File.join(ENV.fetch('HOME', '/'), '.gitsh_completions'),
+        ]
       end
     end
   end

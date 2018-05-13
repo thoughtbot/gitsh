@@ -25,7 +25,7 @@ module FileSystemHelper
 
   def with_a_temporary_home_directory(&block)
     if ENV['TEMP_HOME']
-      block.call
+      block.call(ENV['TEMP_HOME'])
     else
       switch_home_directory(&block)
     end
@@ -52,7 +52,7 @@ module FileSystemHelper
       ENV['HOME'] = path
       write_file("#{path}/.inputrc", DEFAULT_READLINE_CONFIG)
       write_file("#{path}/.gitconfig", DEFAULT_GIT_CONFIG)
-      block.call
+      block.call(path)
     end
   ensure
     ENV['HOME'] = original_home

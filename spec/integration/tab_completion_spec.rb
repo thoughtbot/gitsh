@@ -155,4 +155,19 @@ describe 'Completing things with tab' do
       expect(gitsh).to output(/\AThird\nSecond\n\Z/)
     end
   end
+
+  it 'completes with custom rules' do
+    with_a_temporary_home_directory do |home|
+      write_file("#{home}/.gitsh_completions", 'recho $revision')
+      GitshRunner.interactive do |gitsh|
+        gitsh.type('init')
+        gitsh.type('commit --allow-empty -m First')
+        gitsh.type('config --local alias.recho "!echo"')
+        gitsh.type("recho m\t")
+
+        expect(gitsh).to output_no_errors
+        expect(gitsh).to output(/master/)
+      end
+    end
+  end
 end

@@ -3,7 +3,7 @@ require 'gitsh/tab_completion/automaton_factory'
 
 describe Gitsh::TabCompletion::AutomatonFactory do
   describe '.build' do
-    it 'laods the tab completion DSL file' do
+    it 'loads the tab completion DSL file' do
       config_directory = '/tmp/etc/gitsh'
       env = double(:env, config_directory: config_directory)
       start_state = stub_automaton_state
