@@ -258,6 +258,9 @@ wouldn't.
 .It Pa @pkgsysconfdir@/completions
 System-wide tab completions file, which defines the tab completion options
 for popular Git commands.
+.It Pa $HOME/.gitsh_completions
+User-defined completions file, which can be used to add completions for custom
+commands or aliases.
 .El
 .
 .Sh EXAMPLES

@@ -17,8 +17,7 @@
 is a language for interacting with a
 .Xr git 1
 repository. It supports all git subcommands, custom aliases, and custom
-commands for interacting with the shell itself. Commands, path names,
-branch names, and tag names can all be completed using tab completion.
+commands for interacting with the shell itself.
 .Pp
 Running gitsh with no arguments will start an interactive session. Quit by
 either typing
@@ -30,6 +29,13 @@ or sending an EOF character.
 Passing the path to a file containing a series of commands or sending a series
 of commands to gitsh's standard input will run each of those commands in
 sequence.
+.Pp
+In interactive mode, commands and their arguments can be completed using tab
+completion.
+The rules for what can be completed are defined in configuration files;
+see
+.Xr gitsh_completions 5
+for details.
 .Pp
 It supports these options and arguments:
 .
@@ -415,6 +421,14 @@ for popular Git commands.
 See
 .Xr gitsh_completions 5
 for details on the format of this file.
+.It Pa $HOME/.gitsh_completions
+User-defined tab completions file, which can be used to add additional
+completion rules, for example to add tab completion support for custom
+commands and aliases.
+.Pp
+As with the system-wide completions file,
+this file uses the format described in
+.Xr gitsh_completions 5 .
 .El
 .Sh ENVIRONMENT
 .Bl -tag -width Ds
