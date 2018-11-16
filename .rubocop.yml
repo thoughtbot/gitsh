@@ -15,7 +15,7 @@ Style/CollectionMethods:
     collect: map
     find_all: select
 
-Style/VariableNumber:
+Naming/VariableNumber:
   Description: Use normalcase for variable numbers.
   Enabled: false
 
@@ -29,14 +29,12 @@ Style/TrailingCommaInArguments:
     - no_comma
   Enabled: true
 
-Style/TrailingCommaInLiteral:
-  Description: 'Checks for trailing comma in array and hash literals.'
-  StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#no-trailing-array-commas'
+Style/TrailingCommaInArrayLiteral:
   EnforcedStyleForMultiline: consistent_comma
-  SupportedStylesForMultiline:
-    - comma
-    - consistent_comma
-    - no_comma
+  Enabled: true
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: consistent_comma
   Enabled: true
 
 Style/EmptyMethod:
