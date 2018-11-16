@@ -7,6 +7,7 @@ For a quick introduction to `gitsh`, watch [our video on Upcase][].
 
 [![Build Status](https://travis-ci.org/thoughtbot/gitsh.png?branch=master)](https://travis-ci.org/thoughtbot/gitsh)
 [![Code Climate](https://codeclimate.com/github/thoughtbot/gitsh.png)](https://codeclimate.com/github/thoughtbot/gitsh)
+[![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
 [our video on Upcase]: https://upcase.com/videos/gitsh?utm_source=github&utm_medium=open-source&utm_campaign=gitsh
 
