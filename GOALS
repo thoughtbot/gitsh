@@ -1,0 +1,7 @@
+gitsh hits 1.0 when:
+
+[x] it provides a useful interactive shell environment.
+[x] it runs scripts.
+[ ] it has the kinds of features expected by advanced shell users.
+[ ] its tab completion system is at least as good as Git's bash integration.
+[ ] it has a smooth install process on popular versions of macOS, BSD and GNU/Linux.
