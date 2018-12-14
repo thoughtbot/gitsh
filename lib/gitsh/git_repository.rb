@@ -1,6 +1,7 @@
 require 'open3'
 require 'shellwords'
 require 'gitsh/git_repository/status'
+require 'gitsh/git_command_list'
 
 module Gitsh
   class GitRepository
@@ -32,13 +33,7 @@ module Gitsh
     end
 
     def commands
-      git_output('help -a').
-        lines.
-        select { |line| line =~ /^  [a-z]/ }.
-        map { |line| line.split(/\s+/) }.
-        flatten.
-        reject { |cmd| cmd.empty? || cmd =~ /--/ }.
-        sort
+      GitCommandList.new(env).to_a
     end
 
     def aliases

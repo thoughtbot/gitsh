@@ -127,14 +127,13 @@ describe Gitsh::GitRepository do
   end
 
   context '#commands' do
-    it 'produces the list of porcelain commands' do
+    it 'delegates to the GitCommandList class' do
+      commands = double(:commands)
+      command_list = instance_double(Gitsh::GitCommandList, to_a: commands)
+      allow(Gitsh::GitCommandList).to receive(:new).and_return(command_list)
       repo = Gitsh::GitRepository.new(env)
-      expect(repo.commands).to include %(add)
-      expect(repo.commands).to include %(commit)
-      expect(repo.commands).to include %(checkout)
-      expect(repo.commands).to include %(status)
-      expect(repo.commands).not_to include %(add--interactive)
-      expect(repo.commands).not_to include ''
+
+      expect(repo.commands).to eq(commands)
     end
   end
 
