@@ -62,6 +62,7 @@ describe Gitsh::TabCompletion::Context do
       expect(described_class.new(':echo $my_var ')).not_to be_completing_variable
       expect(described_class.new(':echo \'$varish')).not_to be_completing_variable
       expect(described_class.new(':echo \'$')).not_to be_completing_variable
+      expect(described_class.new('')).not_to be_completing_variable
     end
   end
 end

@@ -17,7 +17,11 @@ module Gitsh
       end
 
       def completing_variable?
-        [:VAR, :MISSING].include?(last_meaningful_token.type)
+        if meaningful_tokens.any?
+          [:VAR, :MISSING].include?(meaningful_tokens.last.type)
+        else
+          false
+        end
       end
 
       private
@@ -60,9 +64,10 @@ module Gitsh
           reverse
       end
 
-      def last_meaningful_token
-        tokens.reverse_each.
-          detect { |token| !NOT_MEANINGFUL.include?(token.type) }
+      def meaningful_tokens
+        @_meaningful_tokens ||= tokens.reject do |token|
+          NOT_MEANINGFUL.include?(token.type)
+        end
       end
 
       def tokens
