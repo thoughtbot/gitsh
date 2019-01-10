@@ -7,13 +7,15 @@ EXTRA_DIST = \
 	ext/gitsh/extconf.rb \
 	ext/gitsh/src/line_editor.c \
 	src/gitsh.rb.in \
-	lib/gitsh/version.rb.in
+	lib/gitsh/version.rb.in \
+	man/man1/gitsh.1.in \
+	man/man5/gitsh_completions.5.in
 
 bin_PROGRAMS = gitsh
 gitsh_SOURCES = src/gitsh.c
 AM_CPPFLAGS = -DGITSH_RB_PATH="\"$(rubydir)/$(PACKAGE).rb\""
 
-dist_man_MANS = man/man1/gitsh.1 man/man5/gitsh_completions.5
+man_MANS = man/man1/gitsh.1 man/man5/gitsh_completions.5
 nobase_dist_pkgdata_DATA = $(vendorfiles)
 nobase_dist_ruby_DATA = $(libfiles)
 pkgrubylib_DATA = lib/gitsh/version.rb
