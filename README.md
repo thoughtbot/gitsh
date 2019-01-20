@@ -76,7 +76,7 @@ For a quick introduction to `gitsh`, watch [our video on Upcase][].
 
 ## Installing gitsh
 
-* Mac OS X, via homebrew:
+* macOS, via Homebrew:
 
       brew tap thoughtbot/formulae
       brew install gitsh

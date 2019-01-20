@@ -13,7 +13,7 @@ Here's a quick guide to begin contributing:
 
         git clone https://github.com/thoughtbot/gitsh.git
 
-2. Ensure GNU Readline is installed, e.g. on OS X you would run:
+2. Ensure GNU Readline is installed, e.g. on macOS you would run:
 
         brew install readline
 
@@ -34,7 +34,7 @@ Here's a quick guide to begin contributing:
     Readline isn't installed on your system, or if it finds an incompatible
     implementation first. If this happens, you can set the `CPPFLAGS` and
     `LDFLAGS` environment variables to tell gitsh where to find Readline.
-    For example, on OS X with Readline installed via Homebrew, you will need
+    For example, on macOS with Readline installed via Homebrew, you will need
     something like this:
 
         RUBY=$(which ruby) CPPFLAGS='-I/usr/local/opt/readline/include' \

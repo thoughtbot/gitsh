@@ -4,7 +4,7 @@ gitsh installation
 The ideal way to install gitsh is via your operating system's package manager.
 Currently gitsh packages are available for:
 
-* OS X (via homebrew)
+* macOS (via Homebrew)
 * Arch Linux
 * OpenBSD (-current)
 
