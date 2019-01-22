@@ -1,5 +1,3 @@
-#!@RUBY@ --disable-gems
-
 $LOAD_PATH.unshift('@rubylibdir@')
 
 require '@gemsetuppath@'

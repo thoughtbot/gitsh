@@ -3,6 +3,7 @@ EXTRA_DIST = \
 	LICENSE \
 	README.md \
 	INSTALL \
+	configure.rb \
 	vendor/vendorize \
 	ext/gitsh/extconf.rb \
 	ext/gitsh/src/line_editor.c \
@@ -13,13 +14,16 @@ EXTRA_DIST = \
 
 bin_PROGRAMS = gitsh
 gitsh_SOURCES = src/gitsh.c
-AM_CPPFLAGS = -DGITSH_RB_PATH="\"$(rubydir)/$(PACKAGE).rb\""
+gitsh_CPPFLAGS = $(RUBY_CFLAGS) \
+	-DGITSH_RB_PATH="\"$(rubydir)/$(PACKAGE).rb\""
+gitsh_LDFLAGS = $(RUBY_LIBS)
+LDADD = $(RUBY_LDADD)
 
 man_MANS = man/man1/gitsh.1 man/man5/gitsh_completions.5
 nobase_dist_pkgdata_DATA = $(vendorfiles)
 nobase_dist_ruby_DATA = $(libfiles)
 pkgrubylib_DATA = lib/gitsh/version.rb
-ruby_SCRIPTS = src/gitsh.rb
+ruby_DATA = src/gitsh.rb
 dist_pkgsysconf_DATA = etc/completions
 
 CLEANFILES = src/gitsh.rb lib/gitsh/version.rb
@@ -33,7 +37,6 @@ substitute_values = sed \
 
 src/gitsh.rb: Makefile src/gitsh.rb.in
 	$(substitute_values) $(srcdir)/$@.in > $@
-	chmod +x $@
 
 lib/gitsh/version.rb: Makefile lib/gitsh/version.rb.in
 	$(substitute_values) $(srcdir)/$@.in > $@

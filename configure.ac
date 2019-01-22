@@ -33,6 +33,13 @@ AX_PROG_RUBY_VERSION(
   AC_MSG_ERROR(Ruby 2.3.0 or later is required to install gitsh)
 )
 
+RUBY_CFLAGS=$($RUBY ./configure.rb '-I$(rubyarchhdrdir) -I$(rubyhdrdir)')
+RUBY_LIBS=$($RUBY ./configure.rb '-L$($(libdirname)) $(LIBRUBYARG) $(LIBS)')
+RUBY_LDADD=$($RUBY ./configure.rb '$($(libdirname))/$(LIBRUBY)')
+AC_SUBST([RUBY_CFLAGS])
+AC_SUBST([RUBY_LIBS])
+AC_SUBST([RUBY_LDADD])
+
 VENDOR_DIRECTORY="vendor/gems"
 
 test -d $VENDOR_DIRECTORY || mkdir -p $VENDOR_DIRECTORY
