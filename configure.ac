@@ -28,9 +28,9 @@ if test -n $RUBY; then
 fi
 
 AX_PROG_RUBY_VERSION(
-  [2.0.0],
+  [2.3.0],
   [],
-  AC_MSG_ERROR(Ruby 2.0.0 or later is required to install gitsh)
+  AC_MSG_ERROR(Ruby 2.3.0 or later is required to install gitsh)
 )
 
 VENDOR_DIRECTORY="vendor/gems"
