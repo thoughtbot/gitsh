@@ -6,6 +6,7 @@ describe Gitsh::LineEditor do
   SAVED_ENV = %w[COLUMNS LINES]
 
   before do
+    @saved_safe = $SAFE
     @saved_env = ENV.values_at(*SAVED_ENV)
     @inputrc, ENV[INPUTRC] = ENV[INPUTRC], IO::NULL
 
@@ -27,6 +28,8 @@ describe Gitsh::LineEditor do
   end
 
   after do
+    $SAFE = @saved_safe
+
     ENV[INPUTRC] = @inputrc
 
     @saved_line_editor_settings.each do |key, value|
