@@ -429,6 +429,23 @@ commands and aliases.
 As with the system-wide completions file,
 this file uses the format described in
 .Xr gitsh_completions 5 .
+.It Pa $HOME/.inputrc
+gitsh uses
+.Xr readline 3
+for interactive input, and therefore uses the settings in the user's
+.Pa .inputrc
+file.
+.Pp
+Settings can be conditionally loaded by specific applications.
+The following example, adapted from the
+.Xr readline 3
+documentation, demonstrates how to apply a setting only to gitsh:
+.Bd -literal -offset indent
+$if gitsh
+  # Quote the current or previous word
+  "\\C-xq": "\\eb\\"\\ef\\""
+$endif
+.Ed
 .El
 .Sh ENVIRONMENT
 .Bl -tag -width Ds
@@ -452,6 +469,7 @@ rebase master
 .Xr gitsh_completions 5
 .Xr git 1
 .Xr gittutorial 7
+.Xr readline 3
 .
 .Sh HISTORY
 Written by

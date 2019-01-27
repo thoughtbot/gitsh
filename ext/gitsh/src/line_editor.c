@@ -1544,7 +1544,7 @@ Init_line_editor_native(void)
     VALUE history, fcomp, ucomp, version;
 
     /* Allow conditional parsing of the ~/.inputrc file. */
-    rl_readline_name = (char *)"Ruby";
+    rl_readline_name = (char *)"gitsh";
 
 #if defined HAVE_RL_GETC_FUNCTION
     /* libedit check rl_getc_function only when rl_initialize() is called, */
