@@ -83,6 +83,10 @@ module Gitsh
       input_stream.tty?
     end
 
+    def repo_branches
+      repo.branches
+    end
+
     def repo_remotes
       repo.remotes
     end

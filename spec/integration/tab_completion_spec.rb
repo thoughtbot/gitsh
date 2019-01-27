@@ -83,6 +83,16 @@ describe 'Completing things with tab' do
       gitsh.type("checkout my-\t")
 
       expect(gitsh).to prompt_with "#{cwd_basename} my-feature@ "
+
+      gitsh.type('checkout master')
+      gitsh.type("branch -D my-\t")
+
+      expect(gitsh).to output_no_errors
+
+      gitsh.type('branch')
+
+      expect(gitsh).to output(/\bmaster\b/)
+      expect(gitsh).not_to output(/\bmy-feature\b/)
     end
   end
 

@@ -26,6 +26,10 @@ module Gitsh
       status_factory.new(git_output('status --porcelain'), git_dir)
     end
 
+    def branches
+      git_output(%{branch --format='%(refname:short)'}).lines.map(&:chomp)
+    end
+
     def heads
       git_output(%{for-each-ref --format='%(refname:short)'}).
         lines.

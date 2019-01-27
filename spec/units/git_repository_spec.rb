@@ -110,6 +110,25 @@ describe Gitsh::GitRepository do
     end
   end
 
+  describe '#branches' do
+    it 'produces all the branch names' do
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          run 'git init'
+          run 'git commit --allow-empty -m "Something swell"'
+
+          expect(repo.branches).to eq %w(master)
+
+          run 'git checkout -b awesome-sauce'
+          run 'git tag v2.0'
+
+          expect(repo.branches).to eq %w(awesome-sauce master)
+        end
+      end
+    end
+  end
+
   context '#heads' do
     it 'produces all the branches and tags' do
       with_a_temporary_home_directory do

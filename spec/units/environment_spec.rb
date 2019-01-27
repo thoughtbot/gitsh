@@ -253,6 +253,12 @@ describe Gitsh::Environment do
     let(:repo_factory) { double('RepositoryFactory', new: repo) }
     let(:env) { described_class.new(repository_factory: repo_factory) }
 
+    describe '#repo_branches' do
+      it 'is delegated to the GitRepository' do
+        expect(env).to delegate(:repo_branches).to(repo, :branches)
+      end
+    end
+
     describe '#repo_heads' do
       it 'is delegated to the GitRepository' do
         expect(env).to delegate(:repo_heads).to(repo, :heads)

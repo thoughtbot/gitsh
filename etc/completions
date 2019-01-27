@@ -77,21 +77,21 @@ branch $opt* $anything $revision?
   --track
 
 # Modifying
-branch $opt $anything?
+branch $opt $branch?
   --edit-description
   --set-upstream-to $anything
   --unset-upstream
   -u $anything
 
 # Renaming
-branch $opt+ $anything? $anything
+branch $opt+ $branch? $anything
   --force
   --move
   -M
   -m
 
 # Deleting
-branch $opt* $anything+
+branch $opt* $branch+
   --delete
   --force
   --quiet
@@ -388,7 +388,7 @@ log $opt* $revision? --? $path*
   --binary
   --bisect
   --boundary
-  --branches $anything?
+  --branches $branch?
   --break-rewrites $anything?
   --cc
   --check
@@ -831,12 +831,12 @@ status $opt* --? $path*
   -u (no|normal|all)?
 
 submodule --quiet? add $opt* --? $remote $path
-  --branch $revision
+  --branch $branch
   --depth $anything
   --force
   --name $anything
   --reference $remote
-  -b $revision
+  -b $branch
 
 submodule --quiet? status $opt* --? $path+
   --cached

@@ -219,6 +219,11 @@ The following variables are supported:
 Produces no completion options, but matches any user input. This is useful
 for situations where we know Git requires an argument, but we're unable to
 produce useful completions for it.
+.It Ic $branch
+Produces the names of Git branches in the repository. Note that the more
+permissive
+.Ic $revision
+variable could be more appropriate.
 .It Ic $command
 Produces the names of Git commands. This includes any custom Git commands found
 on the user's
