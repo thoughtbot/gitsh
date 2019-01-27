@@ -61,7 +61,7 @@ branch $opt* $anything*
   --no-column
   --no-contains $revision
   --no-merged $revision
-  --points-at $anything
+  --points-at $revision
   --remotes
   --sort $anything
   --verbose
