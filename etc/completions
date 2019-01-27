@@ -36,7 +36,6 @@ blame $opt* $revision? --? $path
   --porcelain
   --progress
   --reverse $revision
-  --reverse $revision
   --root
   --score-debug
   --show-email
