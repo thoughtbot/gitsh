@@ -124,4 +124,38 @@ gitsh is packaged and installed using GNU autotools.
 
         make release
 
+## Regular maintenance
+
+### Updating supported Ruby versions
+
+When a new version of Ruby is released, or an old version of Ruby reaches
+end-of-life, we should update gitsh's requirements to match.
+
+1. Update the build system (`configure.ac`):
+    - Change the `AX_PROG_RUBY_VERSION` call to the minimum supported version.
+    - Change the list of possible binary names passed to `AC_PATH_PROGS` to
+      reflect the supported versions, e.g. if Ruby 2.6 is supported, then
+      `ruby26` should be included in the list.
+2. Update the CI configuration in `.travis.yml`.
+3. Update references to the minimum supported version in the documentation:
+    - Update the install instructions template in `INSTALL.in`.
+    - Update the generated `INSTALL` instructions (`./configure && make`).
+4. Update the Ruby dependency in package manager templates to the minimum
+   supported version:
+    - `homebrew/gitsh.rb.in`
+    - `arch/PKGBUILD.in`
+
+### Updating gem dependencies
+
+Gems can be updated in the usual way:
+
+    bundle update
+
+When updating Rubygems for gitsh, there are a few things to consider:
+
+- The Gemfile is only used by developers and maintainers. When gitsh is
+  distributed, all of the gems' files are included in the distribution.
+- Use the minimum supported Ruby version when updating gems to avoid
+  installing versions that are incompatible with older Rubies.
+
 [style-guide]: https://github.com/thoughtbot/guides/tree/master/style#ruby
