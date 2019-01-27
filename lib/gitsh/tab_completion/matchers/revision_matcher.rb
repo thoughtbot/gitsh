@@ -16,14 +16,16 @@ module Gitsh
 
         def completions(token)
           prefix, partial_name = split(token)
-          env.repo_heads.
-            select { |option| option.start_with?(partial_name) }.
-            map { |option| prefix + option }
+          super(partial_name).map { |option| prefix + option }
         end
 
         private
 
         attr_reader :env
+
+        def all_completions
+          env.repo_heads
+        end
 
         def split(token)
           parts = token.rpartition(SEPARATORS)
