@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'gitsh/error'
 require 'gitsh/tab_completion/facade'
 
 describe Gitsh::TabCompletion::Facade do
@@ -11,7 +12,7 @@ describe Gitsh::TabCompletion::Facade do
         stub_variable_completer
         automaton = stub_automaton_factory
         escaper = stub_escaper
-        facade = described_class.new(line_editor, double(:env))
+        facade = described_class.new(line_editor, stub_env)
 
         facade.call('lib/')
 
@@ -75,5 +76,11 @@ describe Gitsh::TabCompletion::Facade do
     command_completer = instance_double(klass)
     allow(klass).to receive(method).and_return(command_completer)
     command_completer
+  end
+
+  def stub_env
+    env = double(:env)
+    allow(env).to receive(:fetch).and_raise(Gitsh::UnsetVariableError)
+    env
   end
 end

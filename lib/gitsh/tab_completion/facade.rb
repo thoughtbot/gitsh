@@ -1,3 +1,4 @@
+require 'gitsh/tab_completion/alias_expander'
 require 'gitsh/tab_completion/automaton_factory'
 require 'gitsh/tab_completion/command_completer'
 require 'gitsh/tab_completion/context'
@@ -28,7 +29,7 @@ module Gitsh
       def command_completions(context, input)
         CommandCompleter.new(
           line_editor,
-          context.prior_words,
+          AliasExpander.new(context.prior_words, env).call,
           input,
           automaton,
           escaper,

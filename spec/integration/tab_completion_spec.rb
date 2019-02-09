@@ -170,4 +170,17 @@ describe 'Completing things with tab' do
       end
     end
   end
+
+  it 'completes arguments to aliases' do
+    GitshRunner.interactive do |gitsh|
+      write_file('file.txt')
+      gitsh.type('init')
+      gitsh.type('config --local alias.a "add"')
+
+      gitsh.type("a --ver\t fil\t")
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output(/file\.txt/)
+    end
+  end
 end

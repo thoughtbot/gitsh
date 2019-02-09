@@ -424,7 +424,7 @@ for details on the format of this file.
 .It Pa $HOME/.gitsh_completions
 User-defined tab completions file, which can be used to add additional
 completion rules, for example to add tab completion support for custom
-commands and aliases.
+commands and some aliases.
 .Pp
 As with the system-wide completions file,
 this file uses the format described in

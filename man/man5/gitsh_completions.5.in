@@ -126,6 +126,15 @@ option:
 commit $opt*
   -F $path
 .Ed
+.Pp
+Aliases for Git commands are expanded before applying tab completion rules,
+allowing users to benefit from the standard completion rules even when they
+are using an alias.
+.Pp
+Aliases for shell commands, i.e. aliases whose command begins with the
+.Ic !
+character, are not expanded, allowing users to define custom completion
+rules.
 .
 .Sh OPERATORS
 The following operators are supported. They have similar semantics to regular
