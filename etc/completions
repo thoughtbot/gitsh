@@ -646,7 +646,7 @@ push $opt* $remote $revision*
   --verbose
   --verify
 
-rebase $opt* $revision $anything
+rebase $opt* $revision+
   --abort
   --autosquash
   --autostash
