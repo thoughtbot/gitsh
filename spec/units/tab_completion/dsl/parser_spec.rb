@@ -154,6 +154,18 @@ describe Gitsh::TabCompletion::DSL::Parser do
       expect(result).to be_a_text_transition
       expect(result.word).to eq('stash')
     end
+
+    it 'parses fallback rules' do
+      result = parse_single_rule(tokens(
+        [:MODIFIER, 'fallback'], [:VAR, 'command'], [:VAR, 'revision'], [:EOS],
+      ))
+
+      expect(result).to be_a_concatenation
+      expect(result.parts.length).to eq(2)
+      expect(result.parts[0]).to be_a_fallback_transition
+      expect(result.parts[0].matcher).to be_a_command_matcher
+      expect(result.parts[1]).to be_a_variable_transition
+    end
   end
 
   def parse_single_rule(tokens)
@@ -183,6 +195,10 @@ describe Gitsh::TabCompletion::DSL::Parser do
     be_a(Gitsh::TabCompletion::DSL::OptionTransitionFactory)
   end
 
+  def be_a_fallback_transition
+    be_a(Gitsh::TabCompletion::DSL::FallbackTransitionFactory)
+  end
+
   def be_a_concatenation
     be_a(Gitsh::TabCompletion::DSL::ConcatenationFactory)
   end
@@ -201,6 +217,10 @@ describe Gitsh::TabCompletion::DSL::Parser do
 
   def be_a_choice
     be_a(Gitsh::TabCompletion::DSL::ChoiceFactory)
+  end
+
+  def be_a_command_matcher
+    be_a(Gitsh::TabCompletion::Matchers::CommandMatcher)
   end
 
   def be_a_revision_matcher

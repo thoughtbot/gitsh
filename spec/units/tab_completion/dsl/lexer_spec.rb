@@ -7,6 +7,10 @@ describe Gitsh::TabCompletion::DSL::Lexer do
       expect('stash pop').to produce_tokens ['WORD(stash)', 'WORD(pop)', 'EOS']
     end
 
+    it 'recognises colon-prefixed words' do
+      expect(':cd').to produce_tokens ['WORD(:cd)', 'EOS']
+    end
+
     it 'recognises the special $opt variable' do
       expect('add $opt').to produce_tokens ['WORD(add)', 'OPT_VAR', 'EOS']
     end
@@ -15,6 +19,11 @@ describe Gitsh::TabCompletion::DSL::Lexer do
       expect('add $path').to produce_tokens ['WORD(add)', 'VAR(path)', 'EOS']
       expect('add $optish').
         to produce_tokens ['WORD(add)', 'VAR(optish)', 'EOS']
+    end
+
+    it 'recognises modifiers' do
+      expect('fallback::$command').
+        to produce_tokens ['MODIFIER(fallback)', 'VAR(command)', 'EOS']
     end
 
     it 'recognises long options' do

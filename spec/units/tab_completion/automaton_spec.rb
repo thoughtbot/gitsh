@@ -42,6 +42,49 @@ describe Gitsh::TabCompletion::Automaton do
         expect(automaton.match(['b'])).to eq [state_2].to_set
       end
     end
+
+    context 'for a deterministic automaton with a fallback transition' do
+      it 'uses the fallback transition when there is no other match' do
+        # --> (0) --- a ------> (1)
+        #      |
+        #      '-- fallback --> (2)
+
+        state_0 = described_class::State.new(0)
+        state_1 = described_class::State.new(1)
+        state_2 = described_class::State.new(2)
+        add_text_transition(state_0, 'a', state_1)
+        add_fallback_transition(state_0, 'x', state_2)
+        automaton = described_class.new(state_0)
+
+        expect(automaton.match([])).to eq [state_0].to_set
+        expect(automaton.match(['a'])).to eq [state_1].to_set
+        expect(automaton.match(['b'])).to eq [state_2].to_set
+      end
+    end
+
+    context 'for a non-deterministic automaton with a fallback transition' do
+      it 'uses the fallback transition when there is no other match' do
+        # --> (0) --- a ------> (1) -----> (2)
+        #      |
+        #      '-- fallback --> (3) -----> (4)
+
+        state_0 = described_class::State.new(0)
+        state_1 = described_class::State.new(1)
+        state_2 = described_class::State.new(2)
+        state_3 = described_class::State.new(3)
+        state_4 = described_class::State.new(4)
+
+        add_text_transition(state_0, 'a', state_1)
+        state_1.add_free_transition(state_2)
+        add_fallback_transition(state_0, 'x', state_3)
+        state_3.add_free_transition(state_4)
+        automaton = described_class.new(state_0)
+
+        expect(automaton.match([])).to eq [state_0].to_set
+        expect(automaton.match(['a'])).to eq [state_1, state_2].to_set
+        expect(automaton.match(['b'])).to eq [state_3, state_4].to_set
+      end
+    end
   end
 
   describe '#completions' do
@@ -89,6 +132,21 @@ describe Gitsh::TabCompletion::Automaton do
         expect(automaton.completions([], 'a')).to eq ['aa']
         expect(automaton.completions(['aa'], '')).to eq ['bb']
         expect(automaton.completions(['foo'], '')).to eq []
+      end
+
+      it 'includes matches from fallback transitions' do
+        # --> (0) --- a ------> (1)
+        #      |
+        #      '-- fallback --> (2)
+
+        state_0 = described_class::State.new(0)
+        state_1 = described_class::State.new(1)
+        state_2 = described_class::State.new(2)
+        add_text_transition(state_0, 'a', state_1)
+        add_fallback_transition(state_0, 'x', state_2)
+        automaton = described_class.new(state_0)
+
+        expect(automaton.completions([], '')).to eq ['a', 'x']
       end
     end
 
@@ -206,6 +264,12 @@ describe Gitsh::TabCompletion::Automaton do
   def add_text_transition(start_state, word, end_state)
     Gitsh::TabCompletion::Matchers::TextMatcher.new(word).tap do |matcher|
       start_state.add_transition(matcher, end_state)
+    end
+  end
+
+  def add_fallback_transition(start_state, word, end_state)
+    Gitsh::TabCompletion::Matchers::TextMatcher.new(word).tap do |matcher|
+      start_state.add_fallback_transition(matcher, end_state)
     end
   end
 end

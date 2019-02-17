@@ -1,6 +1,7 @@
 require 'rltk'
 require 'gitsh/tab_completion/dsl/choice_factory'
 require 'gitsh/tab_completion/dsl/concatenation_factory'
+require 'gitsh/tab_completion/dsl/fallback_transition_factory'
 require 'gitsh/tab_completion/dsl/maybe_operation_factory'
 require 'gitsh/tab_completion/dsl/null_factory'
 require 'gitsh/tab_completion/dsl/option_transition_factory'
@@ -30,6 +31,10 @@ module Gitsh
           'revision' => Matchers::RevisionMatcher,
         }.freeze
 
+        MODIFER_TO_TRANSITION_CLASS = {
+          'fallback' => FallbackTransitionFactory,
+        }.freeze
+
         class Environment < RLTK::Parser::Environment
           def initialize(gitsh_env = nil)
             @gitsh_env = gitsh_env
@@ -47,6 +52,10 @@ module Gitsh
           def matcher_for_variable(var_name)
             @_matchers ||= {}
             @_matchers[var_name] ||= build_matcher(var_name)
+          end
+
+          def transition_factory_for_modifier(modifier_name)
+            MODIFER_TO_TRANSITION_CLASS.fetch(modifier_name)
           end
 
           private
@@ -126,13 +135,22 @@ module Gitsh
           clause('option') { |option| option }
           clause('WORD') { |word| TextTransitionFactory.new(word) }
           clause('OPT_VAR') { |_| OptionTransitionFactory.new }
-          clause('VAR') do |var_name|
-            VariableTransitionFactory.new(matcher_for_variable(var_name))
-          end
+          clause('var') { |var| var }
         end
 
         production(:option, 'OPTION') do |opt_name|
           TextTransitionFactory.new(opt_name)
+        end
+
+        production(:var) do
+          clause('VAR') do |var_name|
+            VariableTransitionFactory.new(matcher_for_variable(var_name))
+          end
+
+          clause('MODIFIER VAR') do |modifier_name, var_name|
+            matcher = matcher_for_variable(var_name)
+            transition_factory_for_modifier(modifier_name).new(matcher)
+          end
         end
 
         finalize

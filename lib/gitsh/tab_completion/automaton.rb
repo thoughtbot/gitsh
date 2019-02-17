@@ -35,6 +35,7 @@ module Gitsh
         def initialize(name)
           @name = name
           @transitions = Hash.new { |h, k| h[k] = Set.new }
+          @fallback_transitions = Hash.new { |h, k| h[k] = Set.new }
           @free_transitions = Set.new
         end
 
@@ -42,12 +43,24 @@ module Gitsh
           transitions[matcher] << state
         end
 
+        def add_fallback_transition(matcher, state)
+          fallback_transitions[matcher] << state
+        end
+
         def add_free_transition(state)
           free_transitions << state
         end
 
         def follow(token)
-          matching_transitions(token).map(&:freely_reachable).inject(Set.new, :|)
+          new_states = matching_transitions(token).
+            map(&:freely_reachable).
+            inject(Set.new, :|)
+
+          if new_states.empty?
+            fallback_states
+          else
+            new_states
+          end
         end
 
         def accept_visitor(visitor, visited_states)
@@ -64,7 +77,7 @@ module Gitsh
         end
 
         def completions(token)
-          transitions.keys.flat_map { |matcher| matcher.completions(token) }
+          all_matchers.flat_map { |matcher| matcher.completions(token) }
         end
 
         def inspect
@@ -73,7 +86,11 @@ module Gitsh
 
         private
 
-        attr_reader :free_transitions, :transitions
+        attr_reader :free_transitions, :fallback_transitions, :transitions
+
+        def all_matchers
+          transitions.keys + fallback_transitions.keys
+        end
 
         def matching_transitions(token)
           transitions.inject(Set.new) do |matched_states, (matcher, states)|
@@ -83,6 +100,11 @@ module Gitsh
               matched_states
             end
           end
+        end
+
+        def fallback_states
+          fallback_transitions.values.inject(Set.new, :|).
+            map(&:freely_reachable).inject(Set.new, :|)
         end
 
         def visit_free_transitions(visitor, visited_states)

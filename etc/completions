@@ -922,4 +922,4 @@ $opt
 # fallbacks
 # =========
 
-$command
+fallback::$command $opt* ($revision|$path|$remote)* -- $path*

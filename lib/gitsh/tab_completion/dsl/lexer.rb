@@ -4,10 +4,12 @@ module Gitsh
   module TabCompletion
     module DSL
       class Lexer < RLTK::Lexer
-        WORD_CHARACTERS = /[^\s*+?|()#]/
+        WORD_CHARACTERS = /[^\s*+?|()#\$]/
 
         rule(/\$opt/) { :OPT_VAR }
         rule(/\$[a-z_]+/) { |t| [:VAR, t[1..-1]] }
+
+        rule(/[a-z_]+::/) { |t| [:MODIFIER, t[0..-3]] }
 
         rule(/-[A-Za-z0-9]/) { |t| [:OPTION, t] }
         rule(/--#{WORD_CHARACTERS}+/) { |t| [:OPTION, t] }

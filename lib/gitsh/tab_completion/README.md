@@ -59,8 +59,9 @@ consider the transitions from both of those states when we see the next input.
 
 The implementation in gitsh is slightly different from the NFAs used by regular
 expressions. We're not interested in just matching things, we're interested in
-what should come next after the input we've seen so far. That means our
-implementation has two differences:
+what should come next after the input we've seen so far. We also want to make
+sure we can provide good defaults in situations where we don't recognise the
+context. That means our implementation has three differences:
 
 1. There are no end states. We just run the automaton until we run out of input,
    and then use the current states the automaton is in to understand what might
@@ -70,6 +71,11 @@ implementation has two differences:
    completions. The matching behaviour is usually more permissive than the
    generating behaviour, e.g. if we're expecting a file system path we'd match
    on any input, but only generate valid paths to files that really exist.
+
+3. We introduce the concept of a _fallback transition_, which is a transition
+   that will only be used if there is no matching transition. This allows us
+   to define fallback rules for generic argument completion that will apply
+   only when a more specific rule isn't available.
 
 Before we run it through the NFA, the user's input gets split into a series of
 tokens. We're interested in matching everything before the word we're trying to

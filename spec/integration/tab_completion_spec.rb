@@ -193,4 +193,18 @@ describe 'Completing things with tab' do
       expect(gitsh).to output(/file\.txt/)
     end
   end
+
+  it 'generically completes arguments to commands with no specific rule' do
+    GitshRunner.interactive do |gitsh|
+      write_file('a-file.txt')
+      write_file('b-file.txt')
+
+      gitsh.type("!rm a-f\t")
+      gitsh.type('!ls')
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).not_to output(/a-file\.txt/)
+      expect(gitsh).to output(/b-file\.txt/)
+    end
+  end
 end

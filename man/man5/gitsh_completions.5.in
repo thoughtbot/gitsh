@@ -126,7 +126,8 @@ option:
 commit $opt*
   -F $path
 .Ed
-.Pp
+.
+.Sh ALIASES
 Aliases for Git commands are expanded before applying tab completion rules,
 allowing users to benefit from the standard completion rules even when they
 are using an alias.
@@ -135,6 +136,43 @@ Aliases for shell commands, i.e. aliases whose command begins with the
 .Ic !
 character, are not expanded, allowing users to define custom completion
 rules.
+.
+.Sh FALLBACKS
+The
+.Ic fallback::
+modifier can be used before a variable to indicate that it should only
+be used if no other rule applies. This allows for the specification of
+generic rules that will only be applied if no other, more specific rule
+is available.
+.Pp
+To illustrate how this is useful, consider the following rules:
+.Bd -literal -offset -indent
+add $path+
+
+$command ($path|$revision|$remote)
+.Ed
+.Pp
+A user trying to tab complete arguments to
+.Xr git-add 1
+will match both rules: the input will match the
+.Ic add
+rule, and correctly be offered paths to complete, but will also match the
+.Ic $command
+rule, and so they will also be offered revisions and remotes.
+.Pp
+We can solve the problem by modifying the more generic rule to act as a
+fallback:
+.Bd -literal -offset -indent
+add $path+
+
+fallback::$command ($path|$revision|$remote)
+.Ed
+.Pp
+Now we get the best of both worlds: tab completing arguments for
+.Xr git-add 1
+will match the specific rule and only be offered paths, but any other
+command will use the fallback rule and be given a generic set of completions
+including paths, revisions, and remotes.
 .
 .Sh OPERATORS
 The following operators are supported. They have similar semantics to regular
@@ -265,6 +303,18 @@ would match, but
 and
 .Ic --
 wouldn't.
+.El
+.
+.Sh MODIFIERS
+The meaning of variables can be modified by adding a prefix.
+.Pp
+The following modifiers are supported:
+.Bl -tag -width Ds
+.It Ic fallback::
+Indicates that the variable should only be matched if no other rule is
+available. See the
+.Sx FALLBACKS
+section above for more details.
 .El
 .
 .Sh FILES
