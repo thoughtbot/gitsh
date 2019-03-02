@@ -17,6 +17,7 @@ require 'gitsh/tab_completion/matchers/command_matcher'
 require 'gitsh/tab_completion/matchers/path_matcher'
 require 'gitsh/tab_completion/matchers/remote_matcher'
 require 'gitsh/tab_completion/matchers/revision_matcher'
+require 'gitsh/tab_completion/matchers/tag_matcher'
 
 module Gitsh
   module TabCompletion
@@ -29,6 +30,7 @@ module Gitsh
           'path' => Matchers::PathMatcher,
           'remote' => Matchers::RemoteMatcher,
           'revision' => Matchers::RevisionMatcher,
+          'tag' => Matchers::TagMatcher,
         }.freeze
 
         MODIFER_TO_TRANSITION_CLASS = {

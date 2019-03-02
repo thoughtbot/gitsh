@@ -30,6 +30,10 @@ module Gitsh
       git_output(%{branch --format='%(refname:short)'}).lines.map(&:chomp)
     end
 
+    def tags
+      git_output(%{tag --format='%(refname:short)'}).lines.map(&:chomp)
+    end
+
     def heads
       git_output(%{for-each-ref --format='%(refname:short)'}).
         lines.

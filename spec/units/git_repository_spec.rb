@@ -129,6 +129,26 @@ describe Gitsh::GitRepository do
     end
   end
 
+  describe '#tags' do
+    it 'produces all the tag names' do
+      with_a_temporary_home_directory do
+        in_a_temporary_directory do
+          repo = Gitsh::GitRepository.new(env)
+          run 'git init'
+          run 'git commit --allow-empty -m "Something swell"'
+          run 'git tag v1.0'
+
+          expect(repo.tags).to eq %w(v1.0)
+
+          run 'git checkout -b awesome-sauce'
+          run 'git tag v2.0'
+
+          expect(repo.tags).to eq %w(v1.0 v2.0)
+        end
+      end
+    end
+  end
+
   context '#heads' do
     it 'produces all the branches and tags' do
       with_a_temporary_home_directory do

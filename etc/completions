@@ -506,7 +506,7 @@ log $opt* $revision? --? $path*
   --stdin
   --submodule $anything
   --summary
-  --tags $anything?
+  --tags $tag?
   --text
   --textconv
   --topo-order
@@ -866,17 +866,17 @@ submodule --quiet? foreach $opt* $anything
 submodule --quiet? sync $opt* --? $path+
   --recursive
 
-tag $opt* $anything $revision
+tag $opt* $tag $revision
   --annotate
   --cleanup (strip|whitespace|verbatim)
   --column $anything
   --contains $revision
   --create-reflog
-  --delete
+  --delete $tag+
   --file $path
   --force
   --ignore-case
-  --list $anything
+  --list $tag
   --local-user $anything
   --merged $revision
   --merged $revision?

@@ -261,7 +261,7 @@ produce useful completions for it.
 Produces the names of Git branches in the repository. Note that the more
 permissive
 .Ic $revision
-variable could be more appropriate.
+variable could be more appropriate in some situations.
 .It Ic $command
 Produces the names of Git commands. This includes any custom Git commands found
 on the user's
@@ -283,6 +283,12 @@ and there is a local branch called
 .Ic my-feature ,
 then the completions would include
 .Ic master..my-feature .
+.Pp
+Note that the more specific
+.Ic $branch
+or
+.Ic $tag
+variables could be more appropriate in some situations.
 .It Ic $opt
 Produces the options specified on subsequent lines of the current rule.
 See the
@@ -303,6 +309,11 @@ would match, but
 and
 .Ic --
 wouldn't.
+.It Ic $tag
+Produces the names of Git tags in the repository. Note that the more
+permissive
+.Ic $revision
+variable could be more appropriate in some situations.
 .El
 .
 .Sh MODIFIERS

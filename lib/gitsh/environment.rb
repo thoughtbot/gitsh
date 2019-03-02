@@ -87,6 +87,10 @@ module Gitsh
       repo.branches
     end
 
+    def repo_tags
+      repo.tags
+    end
+
     def repo_remotes
       repo.remotes
     end

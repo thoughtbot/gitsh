@@ -259,6 +259,12 @@ describe Gitsh::Environment do
       end
     end
 
+    describe '#repo_tags' do
+      it 'is delegated to the GitRepository' do
+        expect(env).to delegate(:repo_tags).to(repo, :tags)
+      end
+    end
+
     describe '#repo_heads' do
       it 'is delegated to the GitRepository' do
         expect(env).to delegate(:repo_heads).to(repo, :heads)
