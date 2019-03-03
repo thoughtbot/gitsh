@@ -11,6 +11,14 @@ module Gitsh
       writer
     end
 
+    def print(*args)
+      output_stream.print(*args)
+    end
+
+    def puts(*args)
+      output_stream.puts(*args)
+    end
+
     def captured_output
       writer.close
       reader.read

@@ -37,7 +37,7 @@ describe 'Subshell' do
       gitsh.type ':echo $(:echo foo)$(:echo bar)'
 
       expect(gitsh).to output_no_errors
-      expect(gitsh).to output(/\bfoo\nbar\b/)
+      expect(gitsh).to output(/\bfoobar\b/)
     end
   end
 
