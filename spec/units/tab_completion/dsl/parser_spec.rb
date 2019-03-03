@@ -146,6 +146,16 @@ describe Gitsh::TabCompletion::DSL::Parser do
       expect(result.rules.last).to be_a_rule_factory
     end
 
+    it 'parses empty input' do
+      result = described_class.parse(
+        tokens([:EOS]),
+        gitsh_env: double(:env),
+      )
+
+      expect(result).to be_a_rule_set_factory
+      expect(result.rules).to be_empty
+    end
+
     it 'parses rules with leading and trailing blank lines' do
       result = parse_single_rule(tokens(
         [:BLANK], [:BLANK], [:WORD, 'stash'], [:BLANK], [:BLANK], [:EOS],

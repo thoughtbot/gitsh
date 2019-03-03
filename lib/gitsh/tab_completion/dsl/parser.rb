@@ -80,6 +80,9 @@ module Gitsh
           clause('BLANK* .rules BLANK*') do |rule_factories|
             RuleSetFactory.new(rule_factories)
           end
+          clause('BLANK*') do |_|
+            RuleSetFactory.new([])
+          end
         end
 
         production(:rules) do
