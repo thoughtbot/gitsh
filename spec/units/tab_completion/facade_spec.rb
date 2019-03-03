@@ -35,7 +35,7 @@ describe Gitsh::TabCompletion::Facade do
         line_editor = double(:line_editor, line_buffer: input)
         stub_command_completer
         variable_completer = stub_variable_completer
-        env = double(:env)
+        env = double(:env, config_directory: '/tmp/gitsh/')
         facade = described_class.new(line_editor, env)
 
         facade.call('name=$g')

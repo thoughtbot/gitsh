@@ -165,12 +165,13 @@ describe Gitsh::InputStrategies::Interactive do
 
   def env
     @env ||= double('Environment', {
+      config_directory: '/tmp/gitsh/',
+      fetch: '',
       print: nil,
       puts: nil,
       puts_error: nil,
       repo_config_color: '',
-      fetch: '',
-      :[] => nil
+      :[] => nil,
     })
   end
 

@@ -11,6 +11,7 @@ module Gitsh
       def initialize(line_editor, env)
         @line_editor = line_editor
         @env = env
+        @automaton = AutomatonFactory.build(env)
       end
 
       def call(input)
@@ -24,7 +25,7 @@ module Gitsh
 
       private
 
-      attr_reader :line_editor, :env
+      attr_reader :line_editor, :env, :automaton
 
       def command_completions(context, input)
         CommandCompleter.new(
@@ -38,10 +39,6 @@ module Gitsh
 
       def variable_completions(input)
         VariableCompleter.new(line_editor, input, env).call
-      end
-
-      def automaton
-        @automaton ||= AutomatonFactory.build(env)
       end
 
       def escaper
