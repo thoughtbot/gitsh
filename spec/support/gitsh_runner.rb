@@ -16,7 +16,7 @@ class GitshRunner
     new(options).run_interactive(&block)
   end
 
-  def initialize(options)
+  def initialize(options = {})
     @input_stream = RSpec::Mocks::Double.new('STDIN', tty?: true)
     @output_stream = Tempfile.new('stdout')
     @error_stream = Tempfile.new('stderr')
@@ -44,6 +44,15 @@ class GitshRunner
     runner.kill
     runner.join
     raise
+  end
+
+  def start_interactive
+    with_a_temporary_home_directory do
+      in_a_temporary_directory do
+        setup_unix_env
+        cli.run
+      end
+    end
   end
 
   def type(string)

@@ -185,7 +185,7 @@ describe Gitsh::TabCompletion::DSL::Parser do
       )
 
       expect { parse_single_rule(bad_tokens) }.
-        to raise_exception(RLTK::NotInLanguage)
+        to raise_exception(Gitsh::TabCompletion::DSL::ParseError)
     end
 
     it 'does not parse an option in the definition of another option' do
@@ -196,7 +196,7 @@ describe Gitsh::TabCompletion::DSL::Parser do
       )
 
       expect { parse_single_rule(bad_tokens) }.
-        to raise_exception(RLTK::NotInLanguage)
+        to raise_exception(Gitsh::TabCompletion::DSL::ParseError)
     end
   end
 

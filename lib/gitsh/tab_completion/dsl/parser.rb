@@ -2,6 +2,7 @@ require 'rltk'
 require 'gitsh/tab_completion/dsl/choice_factory'
 require 'gitsh/tab_completion/dsl/concatenation_factory'
 require 'gitsh/tab_completion/dsl/fallback_transition_factory'
+require 'gitsh/tab_completion/dsl/parse_error'
 require 'gitsh/tab_completion/dsl/maybe_operation_factory'
 require 'gitsh/tab_completion/dsl/null_factory'
 require 'gitsh/tab_completion/dsl/option_transition_factory'
@@ -74,6 +75,8 @@ module Gitsh
             tokens,
             opts.merge(env: Environment.new(opts.fetch(:gitsh_env))),
           )
+        rescue RLTK::NotInLanguage => error
+          raise ParseError.new('Unexpected', error.current)
         end
 
         production(:rule_set) do
