@@ -176,6 +176,28 @@ describe Gitsh::TabCompletion::DSL::Parser do
       expect(result.parts[0].matcher).to be_a_command_matcher
       expect(result.parts[1]).to be_a_variable_transition
     end
+
+    it 'does not parse an $opt variable in the definition of an option' do
+      bad_tokens = tokens(
+        [:WORD, 'add'], [:OPT_VAR],
+        [:INDENT], [:OPTION, '--broken'], [:OPT_VAR],
+        [:EOS],
+      )
+
+      expect { parse_single_rule(bad_tokens) }.
+        to raise_exception(RLTK::NotInLanguage)
+    end
+
+    it 'does not parse an option in the definition of another option' do
+      bad_tokens = tokens(
+        [:WORD, 'add'], [:OPT_VAR],
+        [:INDENT], [:OPTION, '--broken'], [:OPTION, '--nested'],
+        [:EOS],
+      )
+
+      expect { parse_single_rule(bad_tokens) }.
+        to raise_exception(RLTK::NotInLanguage)
+    end
   end
 
   def parse_single_rule(tokens)

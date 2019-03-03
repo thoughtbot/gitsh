@@ -99,44 +99,61 @@ module Gitsh
           end
         end
 
-        production(:command_format, 'term+') do |factories|
+        production(:command_format, 'command_term+') do |factories|
           maybe_concatenate(factories)
         end
 
         production(:opt_var_value) do
           clause('INDENT .option') { |option| option }
-          clause('INDENT .option .term+') do |option, argument_factories|
+          clause('INDENT .option .opt_term+') do |option, argument_factories|
             ConcatenationFactory.new([option] + argument_factories)
           end
         end
 
-        production(:term) do
-          clause('item') { |factory| factory }
-          clause('.item STAR') { |factory| StarOperationFactory.new(factory) }
-          clause('.item PLUS') { |factory| PlusOperationFactory.new(factory) }
-          clause('.item MAYBE') { |factory| MaybeOperationFactory.new(factory) }
-        end
+        [:command, :opt].each do |prefix|
+          term = "#{prefix}_term"
+          item = "#{prefix}_item"
+          choice = "#{prefix}_choice"
+          atom = "#{prefix}_atom"
 
-        production(:item) do
-          clause('atom') { |factory| factory }
-          clause('LEFT_PAREN .choice RIGHT_PAREN') do |factories|
-            ChoiceFactory.new(factories)
+          production(term) do
+            clause(item) { |factory| factory }
+            clause(".#{item} STAR") do |factory|
+              StarOperationFactory.new(factory)
+            end
+            clause(".#{item} PLUS") do |factory|
+              PlusOperationFactory.new(factory)
+            end
+            clause(".#{item} MAYBE") do |factory|
+              MaybeOperationFactory.new(factory)
+            end
+          end
+
+          production(item) do
+            clause(atom) { |factory| factory }
+            clause("LEFT_PAREN .#{choice} RIGHT_PAREN") do |factories|
+              ChoiceFactory.new(factories)
+            end
+          end
+
+          production(choice) do
+            clause(".#{atom}+ OR .#{atom}+") do |left, right|
+              [maybe_concatenate(left), maybe_concatenate(right)]
+            end
+            clause(".#{choice} OR .#{atom}+") do |left, right|
+              left + [maybe_concatenate(right)]
+            end
           end
         end
 
-        production(:choice) do
-          clause('.atom+ OR .atom+') do |left_atoms, right_atoms|
-            [maybe_concatenate(left_atoms), maybe_concatenate(right_atoms)]
-          end
-          clause('.choice OR .atom+') do |choices, right_atoms|
-            choices + [maybe_concatenate(right_atoms)]
-          end
-        end
-
-        production(:atom) do
+        production(:command_atom) do
+          clause('opt_atom') { |factory| factory }
           clause('option') { |option| option }
-          clause('WORD') { |word| TextTransitionFactory.new(word) }
           clause('OPT_VAR') { |_| OptionTransitionFactory.new }
+        end
+
+        production(:opt_atom) do
+          clause('WORD') { |word| TextTransitionFactory.new(word) }
           clause('var') { |var| var }
         end
 

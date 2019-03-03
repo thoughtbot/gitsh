@@ -105,7 +105,10 @@ add $opt* --? $path+
 .Pp
 Some options are followed by an argument. This argument is specified in the
 same way as a positional argument would be specified in the first line of the
-completion rule, including support for the same variables and operators.
+completion rule, including support for the same variables and operators
+(with the exception of the
+.Ic $opt
+variable).
 For example, the
 .Xr git-init 1
 command can be passed a template directory via the
