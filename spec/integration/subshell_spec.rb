@@ -41,6 +41,15 @@ describe 'Subshell' do
     end
   end
 
+  it 'supports subshells in larger argument lists' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type ':echo 1 $(:echo 2) 3'
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output(/\b1 2 3\b/)
+    end
+  end
+
   it 'is not confused by quoted parens in a subshell' do
     GitshRunner.interactive do |gitsh|
       gitsh.type ':echo $(:echo ")))")'

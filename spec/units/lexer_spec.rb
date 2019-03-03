@@ -37,10 +37,12 @@ describe Gitsh::Lexer do
     end
 
     it 'recognises parentheses' do
-      expect('(foo)').
-        to produce_tokens ['LEFT_PAREN', 'WORD(foo)', 'RIGHT_PAREN', 'EOS']
-      expect(' ( foo ) ').
-        to produce_tokens ['LEFT_PAREN', 'WORD(foo)', 'RIGHT_PAREN', 'EOS']
+      expect('(foo)').to produce_tokens [
+        'LEFT_PAREN', 'WORD(foo)', 'RIGHT_PAREN', 'EOS',
+      ]
+      expect(' ( foo ) ').to produce_tokens [
+        'LEFT_PAREN', 'WORD(foo)', 'RIGHT_PAREN', 'SPACE', 'EOS',
+      ]
     end
 
     [' ', "\t", "\f", '\'', '"', '\\', '$', '#', ';', '&', '|', '(', ')'].each do |char|

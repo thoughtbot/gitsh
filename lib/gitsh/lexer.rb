@@ -49,7 +49,7 @@ module Gitsh
       right_paren_stack.push(:RIGHT_PAREN)
       :LEFT_PAREN
     end
-    rule(/\s*\)\s*/) do
+    rule(/\s*\)/) do
       pop_state
       right_paren_stack.pop || :RIGHT_PAREN
     end
