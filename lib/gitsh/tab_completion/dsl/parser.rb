@@ -67,6 +67,11 @@ module Gitsh
 
           def build_matcher(var_name)
             VARIABLE_TO_MATCHER_CLASS.fetch(var_name).new(gitsh_env)
+          rescue KeyError
+            raise ParseError.new(
+              'Invalid',
+              RLTK::Token.new(:VAR, var_name, pos(0)),
+            )
           end
         end
 
