@@ -13,8 +13,8 @@ describe Gitsh::ArgumentList do
   describe '#values' do
     it 'returns the values of the arguments' do
       env = double('env')
-      hello_arg = spy('hello_arg', value: 'hello')
-      goodbye_arg = spy('goodbye_arg', value: 'goodbye')
+      hello_arg = spy('hello_arg', value: ['hello'])
+      goodbye_arg = spy('goodbye_arg', value: ['goodbye'])
       argument_list = Gitsh::ArgumentList.new([hello_arg, goodbye_arg])
 
       expect(argument_list.values(env)).to eq ['hello', 'goodbye']

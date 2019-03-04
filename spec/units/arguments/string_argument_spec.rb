@@ -7,7 +7,7 @@ describe Gitsh::Arguments::StringArgument do
       arg = described_class.new('Hello world')
       env = double('env')
 
-      expect(arg.value(env)).to eq 'Hello world'
+      expect(arg.value(env)).to eq ['Hello world']
     end
   end
 

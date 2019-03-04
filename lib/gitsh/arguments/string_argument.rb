@@ -6,7 +6,7 @@ module Gitsh
       end
 
       def value(_env)
-        raw_value
+        [raw_value]
       end
 
       def ==(other)

@@ -10,7 +10,7 @@ module Gitsh
       def value(env)
         capturing_env = CapturingEnvironment.new(env.clone)
         command.execute(capturing_env)
-        strip_whitespace(capturing_env.captured_output)
+        [strip_whitespace(capturing_env.captured_output)]
       end
 
       def ==(other)

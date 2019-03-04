@@ -7,7 +7,7 @@ describe Gitsh::Arguments::VariableArgument do
       env = { 'author' => 'George' }
       argument = described_class.new('author')
 
-      expect(argument.value(env)).to eq 'George'
+      expect(argument.value(env)).to eq ['George']
     end
   end
 

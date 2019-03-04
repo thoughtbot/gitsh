@@ -9,7 +9,7 @@ describe Gitsh::Arguments::CompositeArgument do
       second_argument = double('second_argument', value: 'World')
       argument = described_class.new([first_argument, second_argument])
 
-      expect(argument.value(env)).to eq 'HelloWorld'
+      expect(argument.value(env)).to eq ['HelloWorld']
       expect(first_argument).to have_received(:value).with(env)
       expect(second_argument).to have_received(:value).with(env)
     end
