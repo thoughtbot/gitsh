@@ -7,7 +7,7 @@ describe 'A .inputrc file in the home directory' do
     with_a_temporary_home_directory do
       write_file(inputrc_path, <<-INPUTRC)
         $if gitsh
-          "\C-xx": ":echo this is a test"
+          "\\C-xx": ":echo this is a test"
         $endif
       INPUTRC
 
