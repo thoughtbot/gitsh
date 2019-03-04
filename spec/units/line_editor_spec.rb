@@ -2,13 +2,11 @@ require 'spec_helper'
 require 'gitsh/line_editor'
 
 describe Gitsh::LineEditor do
-  INPUTRC = 'INPUTRC'
   SAVED_ENV = %w[COLUMNS LINES]
 
   before do
     @saved_safe = $SAFE
     @saved_env = ENV.values_at(*SAVED_ENV)
-    @inputrc, ENV[INPUTRC] = ENV[INPUTRC], IO::NULL
 
     @saved_line_editor_settings = {
       completer_quote_characters: described_class.completer_quote_characters || '',
@@ -29,8 +27,6 @@ describe Gitsh::LineEditor do
 
   after do
     $SAFE = @saved_safe
-
-    ENV[INPUTRC] = @inputrc
 
     @saved_line_editor_settings.each do |key, value|
       described_class.send("#{key}=", value)
