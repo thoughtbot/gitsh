@@ -25,7 +25,7 @@ module FileSystemHelper
 
   def with_a_temporary_home_directory(&block)
     if ENV['TEMP_HOME']
-      block.call(ENV['TEMP_HOME'])
+      block.call(ENV['HOME'])
     else
       switch_home_directory(&block)
     end
