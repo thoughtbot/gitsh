@@ -5,13 +5,26 @@ describe Gitsh::Arguments::CompositeArgument do
   describe '#value' do
     it 'returns the concatenated values of the arguments passed to the initializer' do
       env = double('env')
-      first_argument = double('first_argument', value: 'Hello')
-      second_argument = double('second_argument', value: 'World')
+      first_argument = double('first_argument', value: ['Hello'])
+      second_argument = double('second_argument', value: ['World'])
       argument = described_class.new([first_argument, second_argument])
 
       expect(argument.value(env)).to eq ['HelloWorld']
       expect(first_argument).to have_received(:value).with(env)
       expect(second_argument).to have_received(:value).with(env)
+    end
+
+    context 'when it contains arguments with multiple values' do
+      it 'produces the concatenated product of the various values' do
+        env = double('env')
+        argument = described_class.new([
+          double('first_argument', value: ['h']),
+          double('second_argument', value: ['i', 'o']),
+          double('third_argument', value: ['p']),
+        ])
+
+        expect(argument.value(env)).to eq ['hip', 'hop']
+      end
     end
   end
 
