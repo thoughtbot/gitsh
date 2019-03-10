@@ -17,6 +17,7 @@ describe Gitsh::ShellCommandRunner do
 
       expect(Process).to have_received(:spawn).with(
         'echo', 'Hello world',
+        in: env.input_stream.to_i,
         out: env.output_stream.to_i,
         err: env.error_stream.to_i
       )
@@ -66,6 +67,7 @@ describe Gitsh::ShellCommandRunner do
 
   let(:env) do
     double('Environment',
+      input_stream: double('InputStream', to_i: 0),
       output_stream: double('OutputStream', to_i: 1),
       error_stream: double('ErrorStream', to_i: 2),
       puts_error: nil

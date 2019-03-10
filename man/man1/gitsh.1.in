@@ -100,6 +100,15 @@ execute
 .Ic left ,
 and then
 .Ic right .
+.It Ic left | right
+execute
+.Ic left
+and
+.Ic right
+simultaneously, redirecting the standard output from
+.Ic left
+to the standard input of
+.Ic right .
 .El
 .Pp
 As in

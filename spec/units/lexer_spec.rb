@@ -29,6 +29,11 @@ describe Gitsh::Lexer do
         to produce_tokens ['WORD(foo)', 'OR', 'WORD(bar)', 'EOS']
     end
 
+    it 'recognises the | operator' do
+      expect('foo | bar').
+        to produce_tokens ['WORD(foo)', 'PIPE', 'WORD(bar)', 'EOS']
+    end
+
     it 'recognises newlines' do
       expect("foo\nbar").
         to produce_tokens ['WORD(foo)', 'EOL', 'WORD(bar)', 'EOS']

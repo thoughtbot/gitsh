@@ -9,6 +9,7 @@ require 'gitsh/commands/internal_command'
 require 'gitsh/commands/shell_command'
 require 'gitsh/commands/noop'
 require 'gitsh/commands/tree'
+require 'gitsh/commands/pipeline'
 
 module Gitsh
   class Parser < RLTK::Parser
@@ -36,6 +37,7 @@ module Gitsh
       clause('.commands SEMICOLON .commands') { |c1, c2| Commands::Tree::Multi.new(c1, c2) }
       clause('.commands OR .commands') { |c1, c2| Commands::Tree::Or.new(c1, c2) }
       clause('.commands AND .commands') { |c1, c2| Commands::Tree::And.new(c1, c2) }
+      clause('.commands PIPE .commands') { |c1, c2| Commands::Pipeline.new(c1, c2) }
     end
 
     production(:command, 'word argument_list?') do |word, args|

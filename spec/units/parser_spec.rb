@@ -169,6 +169,14 @@ describe Gitsh::Parser do
       expect(result).to be_a(Gitsh::Commands::Tree::Multi)
     end
 
+    it 'parses two commands combined with |' do
+      result = parse(tokens(
+        [:WORD, 'log'], [:PIPE], [:WORD, '!wc'], [:EOS],
+      ))
+
+      expect(result).to be_a(Gitsh::Commands::Pipeline)
+    end
+
     it 'parses two commands combined with newlines' do
       result = parse(tokens(
         [:WORD, 'add'], [:SPACE], [:WORD, '.'],
