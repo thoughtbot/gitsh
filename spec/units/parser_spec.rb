@@ -133,6 +133,8 @@ describe Gitsh::Parser do
     end
 
     it 'parses two commands combined with &&' do
+      stub_lazy_command
+
       result = parse(tokens(
         [:WORD, 'add'], [:SPACE], [:WORD, '.'],
         [:AND], [:WORD, 'commit'], [:EOS],
@@ -142,6 +144,8 @@ describe Gitsh::Parser do
     end
 
     it 'parses two commands combined with ||' do
+      stub_lazy_command
+
       result = parse(tokens(
         [:WORD, 'add'], [:SPACE], [:WORD, '.'],
         [:OR], [:WORD, ':echo'], [:SPACE], [:WORD, 'Oops'], [:EOS],
@@ -151,6 +155,8 @@ describe Gitsh::Parser do
     end
 
     it 'parses two commands combined with ;' do
+      stub_lazy_command
+
       result = parse(tokens(
         [:WORD, 'add'], [:SPACE], [:WORD, '.'],
         [:SEMICOLON], [:WORD, 'commit'], [:EOS],
@@ -160,6 +166,8 @@ describe Gitsh::Parser do
     end
 
     it 'parses two commands combined with newlines' do
+      stub_lazy_command
+
       result = parse(tokens(
         [:WORD, 'add'], [:SPACE], [:WORD, '.'],
         [:EOL], [:WORD, 'commit'], [:EOS],
