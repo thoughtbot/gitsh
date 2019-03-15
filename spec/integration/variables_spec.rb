@@ -69,6 +69,20 @@ describe 'Gitsh variables' do
     end
   end
 
+  it 'allows variables to be used as commands' do
+    GitshRunner.interactive do |gitsh|
+      gitsh.type(':set command :set')
+      gitsh.type('$command greeting hello')
+
+      expect(gitsh).to output_no_errors
+
+      gitsh.type(':echo $greeting')
+
+      expect(gitsh).to output_no_errors
+      expect(gitsh).to output(/hello/)
+    end
+  end
+
   it 'errors when told to read an unset variable' do
     GitshRunner.interactive do |gitsh|
       gitsh.type(':echo "hello $unset world"')

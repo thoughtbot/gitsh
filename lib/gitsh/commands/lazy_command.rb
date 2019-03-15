@@ -13,14 +13,14 @@ module Gitsh
         '!' => Gitsh::Commands::ShellCommand,
       }.freeze
 
-      def initialize(command:, args: [])
-        @prefix, @command = COMMAND_PREFIX_MATCHER.match(command).values_at(1, 2)
+      def initialize(args = [])
         @args = args.compact
       end
 
       def execute(env)
         arg_values = argument_list.values(env)
-        command_class.new(command, arg_values).execute(env)
+        prefix, command = split_command(arg_values.shift)
+        command_class(prefix).new(command, arg_values).execute(env)
       rescue Gitsh::Error => error
         env.puts_error("gitsh: #{error.message}")
         false
@@ -28,10 +28,14 @@ module Gitsh
 
       private
 
-      attr_reader :command, :args, :prefix
+      attr_reader :args
 
-      def command_class
+      def command_class(prefix)
         COMMAND_CLASS_BY_PREFIX.fetch(prefix)
+      end
+
+      def split_command(command)
+        COMMAND_PREFIX_MATCHER.match(command).values_at(1, 2)
       end
 
       def argument_list

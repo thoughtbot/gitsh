@@ -28,12 +28,12 @@ module Gitsh
       clause('.commands AND .commands') { |c1, c2| Commands::Tree::And.new(c1, c2) }
     end
 
-    production(:command, 'word argument_list?') do |word, args|
-      Commands::LazyCommand.new(command: word, args: (args || []))
+    production(:command, 'argument_list') do |args|
+      Commands::LazyCommand.new(args)
     end
 
     production(:argument_list) do
-      clause('SPACE .argument') { |arg| [arg] }
+      clause('.argument') { |arg| [arg] }
       clause('.argument_list SPACE .argument') { |list, arg| list + [arg] }
     end
 

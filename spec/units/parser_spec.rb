@@ -3,37 +3,15 @@ require 'gitsh/parser'
 
 describe Gitsh::Parser do
   describe '#parse' do
-    it 'parses Git commands' do
+    it 'parses commands' do
       command = stub_lazy_command
 
       result = parse(tokens([:WORD, 'commit'], [:EOS]))
 
       expect(result).to eq command
-      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
-        command: 'commit', args: [],
-      )
-    end
-
-    it 'parses internal commands' do
-      command = stub_lazy_command
-
-      result = parse(tokens([:WORD, ':echo'], [:EOS]))
-
-      expect(result).to eq command
-      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
-        command: ':echo', args: [],
-      )
-    end
-
-    it 'parses shell commands' do
-      command = stub_lazy_command
-
-      result = parse(tokens([:WORD, '!ls'], [:EOS]))
-
-      expect(result).to eq command
-      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
-        command: '!ls', args: [],
-      )
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with([
+        string('commit'),
+      ])
     end
 
     it 'parses Git commands broken into multiple words' do
@@ -44,9 +22,9 @@ describe Gitsh::Parser do
       ))
 
       expect(result).to eq command
-      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
-        command: 'commit', args: [],
-      )
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with([
+        string('commit'),
+      ])
     end
 
     it 'parses commands with arguments' do
@@ -58,10 +36,9 @@ describe Gitsh::Parser do
       ))
 
       expect(result).to eq command
-      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
-        command: 'commit',
-        args: [string('-m'), string('WIP')],
-      )
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with([
+        string('commit'), string('-m'), string('WIP'),
+      ])
     end
 
     it 'parses commands with variable arguments' do
@@ -73,10 +50,9 @@ describe Gitsh::Parser do
       ))
 
       expect(result).to eq command
-      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
-        command: 'commit',
-        args: [string('-m'), var('message')],
-      )
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with([
+        string('commit'), string('-m'), var('message'),
+      ])
     end
 
     it 'parses commands with subshell arguments' do
@@ -89,14 +65,12 @@ describe Gitsh::Parser do
       ))
 
       expect(result).to eq command
-      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
-        command: ':echo',
-        args: [var('message')],
-      )
-      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
-        command: 'commit',
-        args: [string('-m'), subshell(command)],
-      )
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with([
+        string(':echo'), var('message'),
+      ])
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with([
+        string('commit'), string('-m'), subshell(command),
+      ])
     end
 
     it 'parses commands with composite arguments' do
@@ -109,13 +83,11 @@ describe Gitsh::Parser do
       ))
 
       expect(result).to eq command
-      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
-        command: 'commit',
-        args: [
-          string('-m'),
-          composite([string('Written by: '), var('user.name'),]),
-        ],
-      )
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with([
+        string('commit'),
+        string('-m'),
+        composite([string('Written by: '), var('user.name')]),
+      ])
     end
 
     it 'parses commands surrounded by parentheses' do
@@ -126,10 +98,9 @@ describe Gitsh::Parser do
       ))
 
       expect(result).to eq command
-      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
-        command: 'commit',
-        args: [],
-      )
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with([
+        string('commit'),
+      ])
     end
 
     it 'parses two commands combined with &&' do
@@ -184,9 +155,9 @@ describe Gitsh::Parser do
       ))
 
       expect(result).to eq command
-      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
-        command: 'commit', args: [],
-      )
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with([
+        string('commit'),
+      ])
     end
 
     it 'parses blank lines' do
