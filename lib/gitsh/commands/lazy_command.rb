@@ -1,5 +1,4 @@
 require 'gitsh/argument_list'
-require 'gitsh/commands/error_handler'
 require 'gitsh/commands/git_command'
 require 'gitsh/commands/internal_command'
 require 'gitsh/commands/shell_command'
@@ -20,7 +19,10 @@ module Gitsh
       end
 
       def execute(env)
-        ErrorHandler.new(command_instance).execute(env)
+        command_instance.execute(env)
+      rescue Gitsh::Error => error
+        env.puts_error("gitsh: #{error.message}")
+        false
       end
 
       private

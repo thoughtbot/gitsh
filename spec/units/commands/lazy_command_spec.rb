@@ -5,16 +5,12 @@ describe Gitsh::Commands::LazyCommand do
   describe '#execute' do
     it 'executes Git commands' do
       env = double(:env)
-      error_handler = stub_error_handler
       command_instance = stub_command_class(Gitsh::Commands::GitCommand)
       lazy_command = Gitsh::Commands::LazyCommand.new(command: 'status')
 
       lazy_command.execute(env)
 
-      expect(error_handler).to have_received(:execute).with(env)
-      expect(Gitsh::Commands::ErrorHandler).to have_received(:new).with(
-        command_instance,
-      )
+      expect(command_instance).to have_received(:execute).with(env)
       expect(Gitsh::Commands::GitCommand).to have_received(:new).with(
         'status',
         instance_of(Gitsh::ArgumentList),
@@ -23,7 +19,6 @@ describe Gitsh::Commands::LazyCommand do
 
     it 'executes internal commands' do
       env = double(:env)
-      error_handler = stub_error_handler
       command_instance = stub_command_class(
         Gitsh::Commands::InternalCommand,
         instance_class: Gitsh::Commands::InternalCommand::Echo,
@@ -32,10 +27,7 @@ describe Gitsh::Commands::LazyCommand do
 
       lazy_command.execute(env)
 
-      expect(error_handler).to have_received(:execute).with(env)
-      expect(Gitsh::Commands::ErrorHandler).to have_received(:new).with(
-        command_instance,
-      )
+      expect(command_instance).to have_received(:execute).with(env)
       expect(Gitsh::Commands::InternalCommand).to have_received(:new).with(
         'echo',
         instance_of(Gitsh::ArgumentList),
@@ -44,25 +36,30 @@ describe Gitsh::Commands::LazyCommand do
 
     it 'executes shell commands' do
       env = double(:env)
-      error_handler = stub_error_handler
       command_instance = stub_command_class(Gitsh::Commands::ShellCommand)
       lazy_command = Gitsh::Commands::LazyCommand.new(command: '!ls')
 
       lazy_command.execute(env)
 
-      expect(error_handler).to have_received(:execute).with(env)
-      expect(Gitsh::Commands::ErrorHandler).to have_received(:new).with(
-        command_instance,
-      )
+      expect(command_instance).to have_received(:execute).with(env)
       expect(Gitsh::Commands::ShellCommand).to have_received(:new).with(
         'ls',
         instance_of(Gitsh::ArgumentList),
       )
     end
-  end
 
-  def stub_error_handler
-    stub_command_class(Gitsh::Commands::ErrorHandler)
+    context 'the command raises an error' do
+      it 'prints the error and returns false' do
+        env = spy('env', puts_error: nil)
+        command_instance = stub_command_class(Gitsh::Commands::GitCommand)
+        allow(command_instance).to receive(:execute).
+          and_raise(Gitsh::Error, 'Oh noes!')
+        handler = Gitsh::Commands::LazyCommand.new(command: 'status')
+
+        expect(handler.execute(env)).to eq false
+        expect(env).to have_received(:puts_error).with('gitsh: Oh noes!')
+      end
+    end
   end
 
   def stub_command_class(klass, instance_class: klass)
