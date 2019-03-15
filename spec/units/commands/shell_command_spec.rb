@@ -10,7 +10,7 @@ describe Gitsh::Commands::ShellCommand do
 
       command = described_class.new(
         'echo',
-        arguments('Hello', 'world'),
+        ['Hello', 'world'],
         shell_command_runner: mock_runner,
       )
       result = command.execute(env)
@@ -29,7 +29,7 @@ describe Gitsh::Commands::ShellCommand do
       escaped_args = ['with\\ space', '\\^\\$']
 
       described_class.
-        new('echo', arguments(*args), shell_command_runner: mock_runner).
+        new('echo', args, shell_command_runner: mock_runner).
         execute(env)
 
       expect(mock_runner).to have_received(:run).with(
@@ -44,7 +44,7 @@ describe Gitsh::Commands::ShellCommand do
       args = ['*', '[a-z]', '[!a-z]', '?', '\\*']
 
       described_class.
-        new('echo', arguments(*args), shell_command_runner: mock_runner).
+        new('echo', args, shell_command_runner: mock_runner).
         execute(env)
 
       expect(mock_runner).to have_received(:run).with(

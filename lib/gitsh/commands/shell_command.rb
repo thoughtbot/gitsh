@@ -7,9 +7,9 @@ module Gitsh
       GLOB_WHITELIST = '\*\[\]!\?\\\\'.freeze
       SHELL_CHARACTER_FILTER = /([^#{SHELLWORDS_WHITELIST}#{GLOB_WHITELIST}])/
 
-      def initialize(command, args, options = {})
+      def initialize(command, arg_values, options = {})
         @command = command
-        @args = args
+        @arg_values = arg_values
         @shell_command_runner = options.fetch(
           :shell_command_runner,
           ShellCommandRunner,
@@ -17,23 +17,23 @@ module Gitsh
       end
 
       def execute(env)
-        shell_command_runner.run(command_with_arguments(env), env)
+        shell_command_runner.run(command_with_arguments, env)
       end
 
       private
 
-      attr_reader :command, :args, :shell_command_runner
+      attr_reader :command, :arg_values, :shell_command_runner
 
-      def command_with_arguments(env)
+      def command_with_arguments
         [
           '/bin/sh',
           '-c',
-          [command, arg_values(env)].flatten.join(' '),
+          [command, escaped_arg_values].flatten.join(' '),
         ]
       end
 
-      def arg_values(env)
-        args.values(env).map do |arg|
+      def escaped_arg_values
+        arg_values.map do |arg|
           arg.gsub(SHELL_CHARACTER_FILTER, '\\\\\\1')
         end
       end

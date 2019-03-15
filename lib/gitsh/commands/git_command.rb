@@ -4,9 +4,9 @@ require 'gitsh/shell_command_runner'
 module Gitsh
   module Commands
     class GitCommand
-      def initialize(command, args, options = {})
+      def initialize(command, arg_values, options = {})
         @command = command
-        @args = args
+        @arg_values = arg_values
         @shell_command_runner = options.fetch(
           :shell_command_runner,
           ShellCommandRunner,
@@ -19,13 +19,13 @@ module Gitsh
 
       private
 
-      attr_reader :command, :args, :shell_command_runner
+      attr_reader :command, :arg_values, :shell_command_runner
 
       def command_with_arguments(env)
         if autocorrect_enabled?(env) && command == 'git'
-          [git_command(env), config_arguments(env), arg_values(env)].flatten
+          [git_command(env), config_arguments(env), arg_values].flatten
         else
-          [git_command(env), config_arguments(env), command, arg_values(env)].flatten
+          [git_command(env), config_arguments(env), command, arg_values].flatten
         end
       end
 
@@ -35,10 +35,6 @@ module Gitsh
 
       def config_arguments(env)
         env.config_variables.map { |k, v| ['-c', "#{k}=#{v}"] }
-      end
-
-      def arg_values(env)
-        args.values(env)
       end
 
       def autocorrect_enabled?(env)

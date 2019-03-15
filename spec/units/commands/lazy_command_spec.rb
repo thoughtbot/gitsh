@@ -13,7 +13,7 @@ describe Gitsh::Commands::LazyCommand do
       expect(command_instance).to have_received(:execute).with(env)
       expect(Gitsh::Commands::GitCommand).to have_received(:new).with(
         'status',
-        instance_of(Gitsh::ArgumentList),
+        [],
       )
     end
 
@@ -30,7 +30,7 @@ describe Gitsh::Commands::LazyCommand do
       expect(command_instance).to have_received(:execute).with(env)
       expect(Gitsh::Commands::InternalCommand).to have_received(:new).with(
         'echo',
-        instance_of(Gitsh::ArgumentList),
+        [],
       )
     end
 
@@ -44,7 +44,7 @@ describe Gitsh::Commands::LazyCommand do
       expect(command_instance).to have_received(:execute).with(env)
       expect(Gitsh::Commands::ShellCommand).to have_received(:new).with(
         'ls',
-        instance_of(Gitsh::ArgumentList),
+        [],
       )
     end
 
@@ -58,6 +58,26 @@ describe Gitsh::Commands::LazyCommand do
 
         expect(handler.execute(env)).to eq false
         expect(env).to have_received(:puts_error).with('gitsh: Oh noes!')
+      end
+    end
+
+    context 'with arguments' do
+      it 'calculates argument values before passing them on' do
+        env = double(:env)
+        allow(env).to receive(:fetch).with('foo').and_return('value')
+        command_instance = stub_command_class(Gitsh::Commands::ShellCommand)
+        lazy_command = Gitsh::Commands::LazyCommand.new(
+          command: '!ls',
+          args: [Gitsh::Arguments::VariableArgument.new('foo')],
+        )
+
+        lazy_command.execute(env)
+
+        expect(command_instance).to have_received(:execute).with(env)
+        expect(Gitsh::Commands::ShellCommand).to have_received(:new).with(
+          'ls',
+          ['value'],
+        )
       end
     end
   end

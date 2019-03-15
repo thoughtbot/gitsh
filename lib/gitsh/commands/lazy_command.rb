@@ -19,7 +19,8 @@ module Gitsh
       end
 
       def execute(env)
-        command_instance.execute(env)
+        arg_values = argument_list.values(env)
+        command_class.new(command, arg_values).execute(env)
       rescue Gitsh::Error => error
         env.puts_error("gitsh: #{error.message}")
         false
@@ -28,10 +29,6 @@ module Gitsh
       private
 
       attr_reader :command, :args, :prefix
-
-      def command_instance
-        command_class.new(command, argument_list)
-      end
 
       def command_class
         COMMAND_CLASS_BY_PREFIX.fetch(prefix)

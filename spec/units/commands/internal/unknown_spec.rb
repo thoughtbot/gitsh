@@ -7,7 +7,7 @@ describe Gitsh::Commands::InternalCommand::Unknown do
   describe '#execute' do
     it 'outputs an error message' do
       env = spy('env', puts_error: nil)
-      command = described_class.new('notacommand', arguments())
+      command = described_class.new('notacommand', [])
 
       command.execute(env)
 

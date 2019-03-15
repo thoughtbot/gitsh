@@ -15,7 +15,7 @@ describe Gitsh::Commands::GitCommand do
 
       command = described_class.new(
         "commit",
-        arguments("-m", "Some stuff"),
+        ['-m', 'Some stuff'],
         shell_command_runner: mock_runner,
       )
       result = command.execute(env)
@@ -40,7 +40,7 @@ describe Gitsh::Commands::GitCommand do
       )
       command = described_class.new(
         'commit',
-        arguments('-m', 'A test commit'),
+        ['-m', 'A test commit'],
         shell_command_runner: mock_runner,
       )
 
@@ -70,7 +70,7 @@ describe Gitsh::Commands::GitCommand do
 
         command = described_class.new(
           "git",
-          arguments("commit", "-m", "Some stuff"),
+          ['commit', '-m', 'Some stuff'],
           shell_command_runner: mock_runner,
         )
         command.execute(env)
@@ -94,7 +94,7 @@ describe Gitsh::Commands::GitCommand do
 
         command = described_class.new(
           "git",
-          arguments("commit", "-m", "Some stuff"),
+          ['commit', '-m', 'Some stuff'],
           shell_command_runner: mock_runner,
         )
         command.execute(env)

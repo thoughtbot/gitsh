@@ -2,8 +2,8 @@ require 'gitsh/error'
 
 module Gitsh::Commands
   module InternalCommand
-    def self.new(command, args)
-      command_class(command).new(command, args)
+    def self.new(command, arg_values)
+      command_class(command).new(command, arg_values)
     end
 
     def self.commands
@@ -15,9 +15,9 @@ module Gitsh::Commands
     end
 
     class Base
-      def initialize(command, args)
+      def initialize(command, arg_values)
         @command = command
-        @args = args
+        @arg_values = arg_values
       end
 
       def execute
@@ -32,11 +32,7 @@ module Gitsh::Commands
 
       private
 
-      attr_reader :command, :args
-
-      def arg_values(env)
-        @arg_values ||= args.values(env)
-      end
+      attr_reader :command, :arg_values
     end
 
     class Set < Base
@@ -51,7 +47,7 @@ TXT
 
       def execute(env)
         if valid_arguments?
-          key, value = arg_values(env)
+          key, value = arg_values
           env[key] = value
           true
         else
@@ -63,7 +59,7 @@ TXT
       private
 
       def valid_arguments?
-        args.length == 2
+        arg_values.length == 2
       end
     end
 
@@ -78,7 +74,7 @@ TXT
       end
 
       def execute(env)
-        env.puts arg_values(env).join(' ')
+        env.puts arg_values.join(' ')
         true
       end
     end
@@ -104,7 +100,7 @@ TXT
       private
 
       def valid_arguments?
-        args.length == 0 || args.length == 1
+        arg_values.length == 0 || arg_values.length == 1
       end
 
       def change_directory(env)
@@ -118,12 +114,10 @@ TXT
       end
 
       def path(env)
-        values = arg_values(env)
-
-        if values.empty?
+        if arg_values.empty?
           env.fetch(:_root)
         else
-          File.expand_path(values.first)
+          File.expand_path(arg_values.first)
         end
       end
     end
@@ -159,7 +153,7 @@ TXT
       private
 
       def subject(env)
-        arg_values(env).first.to_s.sub(/^:/, '')
+        arg_values.first.to_s.sub(/^:/, '')
       end
     end
 
@@ -185,7 +179,7 @@ TXT
       private
 
       def run_script(env)
-        Gitsh::FileRunner.run(env: env, path: path(env))
+        Gitsh::FileRunner.run(env: env, path: path)
         true
       rescue Gitsh::ParseError => e
         env.puts_error("gitsh: #{e.message}")
@@ -193,11 +187,11 @@ TXT
       end
 
       def valid_arguments?
-        args.length == 1
+        arg_values.length == 1
       end
 
-      def path(env)
-        File.expand_path(arg_values(env).first)
+      def path
+        File.expand_path(arg_values.first)
       end
     end
 

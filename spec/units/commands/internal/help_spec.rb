@@ -8,7 +8,7 @@ describe Gitsh::Commands::InternalCommand::Help do
     context "with no arguments" do
       it "prints out some stuff" do
         env = spy('env', puts: nil)
-        command = described_class.new('help', arguments())
+        command = described_class.new('help', [])
 
         expect(command.execute(env)).to be_truthy
         expect(env).to have_received(:puts).at_least(1).times
@@ -18,7 +18,7 @@ describe Gitsh::Commands::InternalCommand::Help do
     context "with an argument that matches an existing command" do
       it "prints out command-specific information" do
         env = spy('env', puts: nil)
-        command = described_class.new('help', arguments('set'))
+        command = described_class.new('help', ['set'])
         set_command = double('Set', help_message: 'Sets variables')
         allow(Gitsh::Commands::InternalCommand).to receive(:command_class).
           with('set').
@@ -32,7 +32,7 @@ describe Gitsh::Commands::InternalCommand::Help do
     context 'with a colon-prefixed argument' do
       it 'strips the colon' do
         env = spy('env', puts: nil)
-        command = described_class.new('help', arguments(':set'))
+        command = described_class.new('help', [':set'])
         set_command = double('Set', help_message: 'Sets variables')
         allow(Gitsh::Commands::InternalCommand).to receive(:command_class).
           with('set').
@@ -48,7 +48,7 @@ describe Gitsh::Commands::InternalCommand::Help do
         env = spy('env', puts: nil)
         command = described_class.new(
           'help',
-          arguments("we don't do this here"),
+          ["we don't do this here"],
         )
 
         expect(command.execute(env)).to be_truthy

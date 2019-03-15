@@ -9,12 +9,12 @@ describe Gitsh::Commands::InternalCommand do
     end
 
     it 'returns an Exit command when given the command "exit"' do
-      command = described_class.new('exit', arguments())
+      command = described_class.new('exit', [])
       expect(command).to be_a described_class::Exit
     end
 
     it 'returns an Exit command when given the command "q"' do
-      command = described_class.new('q', arguments())
+      command = described_class.new('q', [])
       expect(command).to be_a described_class::Exit
     end
 
@@ -24,12 +24,12 @@ describe Gitsh::Commands::InternalCommand do
     end
 
     it 'returns a Help command when given the command "help"' do
-      command = described_class.new('help', arguments())
+      command = described_class.new('help', [])
       expect(command).to be_a described_class::Help
     end
 
     it 'returns a Source command when given the command "source"' do
-      command = described_class.new('source', arguments('/some/path'))
+      command = described_class.new('source', ['/some/path'])
       expect(command).to be_a described_class::Source
     end
 

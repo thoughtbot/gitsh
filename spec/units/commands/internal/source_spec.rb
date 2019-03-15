@@ -9,7 +9,7 @@ describe Gitsh::Commands::InternalCommand::Source do
       it "calls the FileRunner and returns true" do
         env = double('env')
         allow(Gitsh::FileRunner).to receive(:run)
-        command = described_class.new('source', arguments('/path'))
+        command = described_class.new('source', ['/path'])
 
         result = command.execute(env)
 
@@ -22,7 +22,7 @@ describe Gitsh::Commands::InternalCommand::Source do
     context "with no file argument" do
       it "prints a usage message and returns false" do
         env = spy('env', puts_error: nil)
-        command = described_class.new('source', arguments())
+        command = described_class.new('source', [])
 
         result = command.execute(env)
 
@@ -34,7 +34,7 @@ describe Gitsh::Commands::InternalCommand::Source do
     context 'with a file that fails to parse' do
       it 'prints an error message and returns false' do
         env = spy('env', puts_error: nil)
-        command = described_class.new('source', arguments('/bad_script'))
+        command = described_class.new('source', ['/bad_script'])
         allow(Gitsh::FileRunner).
           to receive(:run).and_raise(Gitsh::ParseError, 'Oh no!')
 

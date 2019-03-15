@@ -7,7 +7,7 @@ describe Gitsh::Commands::InternalCommand::Echo do
   describe '#execute' do
     it 'prints all arguments to the environment joined with a space' do
       env = double('env', puts: nil)
-      command = described_class.new('echo', arguments('foo', 'bar'))
+      command = described_class.new('echo', ['foo', 'bar'])
 
       expect(command.execute(env)).to be_truthy
       expect(env).to have_received(:puts).with('foo bar')
@@ -15,7 +15,7 @@ describe Gitsh::Commands::InternalCommand::Echo do
 
     it 'prints a newline when no arguments are passed' do
       env = double('env', puts: nil)
-      command = described_class.new('echo', arguments())
+      command = described_class.new('echo', [])
 
       expect(command.execute(env)).to be_truthy
       expect(env).to have_received(:puts).with('')
