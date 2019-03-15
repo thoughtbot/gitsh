@@ -4,21 +4,11 @@ require 'gitsh/arguments/composite_argument'
 require 'gitsh/arguments/variable_argument'
 require 'gitsh/arguments/subshell'
 require 'gitsh/commands/factory'
-require 'gitsh/commands/git_command'
-require 'gitsh/commands/internal_command'
-require 'gitsh/commands/shell_command'
 require 'gitsh/commands/noop'
 require 'gitsh/commands/tree'
 
 module Gitsh
   class Parser < RLTK::Parser
-    COMMAND_PREFIX_MATCHER = /^([:!])?(.+)$/
-    COMMAND_CLASS_BY_PREFIX = {
-      nil => Gitsh::Commands::GitCommand,
-      ':' => Gitsh::Commands::InternalCommand,
-      '!' => Gitsh::Commands::ShellCommand,
-    }.freeze
-
     left :EOL
     left :SEMICOLON
     left :OR
@@ -39,13 +29,7 @@ module Gitsh
     end
 
     production(:command, 'word argument_list?') do |word, args|
-      prefix, command = COMMAND_PREFIX_MATCHER.match(word).values_at(1, 2)
-
-      Commands::Factory.build(
-        COMMAND_CLASS_BY_PREFIX.fetch(prefix),
-        command: command,
-        args: (args || []),
-      )
+      Commands::Factory.build(command: word, args: (args || []))
     end
 
     production(:argument_list) do

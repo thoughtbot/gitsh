@@ -10,7 +10,6 @@ describe Gitsh::Parser do
 
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
-        Gitsh::Commands::GitCommand,
         command: 'commit', args: [],
       )
     end
@@ -22,8 +21,7 @@ describe Gitsh::Parser do
 
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
-        Gitsh::Commands::InternalCommand,
-        command: 'echo', args: [],
+        command: ':echo', args: [],
       )
     end
 
@@ -34,8 +32,7 @@ describe Gitsh::Parser do
 
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
-        Gitsh::Commands::ShellCommand,
-        command: 'ls', args: [],
+        command: '!ls', args: [],
       )
     end
 
@@ -48,7 +45,6 @@ describe Gitsh::Parser do
 
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
-        Gitsh::Commands::GitCommand,
         command: 'commit', args: [],
       )
     end
@@ -63,7 +59,6 @@ describe Gitsh::Parser do
 
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
-        Gitsh::Commands::GitCommand,
         command: 'commit',
         args: [string('-m'), string('WIP')],
       )
@@ -79,7 +74,6 @@ describe Gitsh::Parser do
 
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
-        Gitsh::Commands::GitCommand,
         command: 'commit',
         args: [string('-m'), var('message')],
       )
@@ -96,12 +90,10 @@ describe Gitsh::Parser do
 
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
-        Gitsh::Commands::InternalCommand,
-        command: 'echo',
+        command: ':echo',
         args: [var('message')],
       )
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
-        Gitsh::Commands::GitCommand,
         command: 'commit',
         args: [string('-m'), subshell(command)],
       )
@@ -118,7 +110,6 @@ describe Gitsh::Parser do
 
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
-        Gitsh::Commands::GitCommand,
         command: 'commit',
         args: [
           string('-m'),
@@ -136,7 +127,6 @@ describe Gitsh::Parser do
 
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
-        Gitsh::Commands::GitCommand,
         command: 'commit',
         args: [],
       )
@@ -187,7 +177,6 @@ describe Gitsh::Parser do
 
       expect(result).to eq command
       expect(Gitsh::Commands::Factory).to have_received(:build).with(
-        Gitsh::Commands::GitCommand,
         command: 'commit', args: [],
       )
     end
