@@ -3,7 +3,7 @@ require 'gitsh/arguments/string_argument'
 require 'gitsh/arguments/composite_argument'
 require 'gitsh/arguments/variable_argument'
 require 'gitsh/arguments/subshell'
-require 'gitsh/commands/factory'
+require 'gitsh/commands/lazy_command'
 require 'gitsh/commands/noop'
 require 'gitsh/commands/tree'
 
@@ -29,7 +29,7 @@ module Gitsh
     end
 
     production(:command, 'word argument_list?') do |word, args|
-      Commands::Factory.build(command: word, args: (args || []))
+      Commands::LazyCommand.new(command: word, args: (args || []))
     end
 
     production(:argument_list) do

@@ -6,7 +6,7 @@ require 'gitsh/commands/shell_command'
 
 module Gitsh
   module Commands
-    class Factory
+    class LazyCommand
       COMMAND_PREFIX_MATCHER = /^([:!])?(.+)$/
       COMMAND_CLASS_BY_PREFIX = {
         nil => Gitsh::Commands::GitCommand,
@@ -14,17 +14,13 @@ module Gitsh
         '!' => Gitsh::Commands::ShellCommand,
       }.freeze
 
-      def self.build(*args)
-        new(*args).build
-      end
-
       def initialize(command:, args: [])
         @prefix, @command = COMMAND_PREFIX_MATCHER.match(command).values_at(1, 2)
         @args = args.compact
       end
 
-      def build
-        ErrorHandler.new(command_instance)
+      def execute(env)
+        ErrorHandler.new(command_instance).execute(env)
       end
 
       private

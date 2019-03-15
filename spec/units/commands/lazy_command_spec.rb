@@ -1,16 +1,17 @@
 require 'spec_helper'
-require 'gitsh/commands/factory'
+require 'gitsh/commands/lazy_command'
 
-describe Gitsh::Commands::Factory do
-  describe '#build' do
-    it 'builds Git commands' do
+describe Gitsh::Commands::LazyCommand do
+  describe '#execute' do
+    it 'executes Git commands' do
+      env = double(:env)
       error_handler = stub_error_handler
       command_instance = stub_command_class(Gitsh::Commands::GitCommand)
-      factory = Gitsh::Commands::Factory.new(command: 'status')
+      lazy_command = Gitsh::Commands::LazyCommand.new(command: 'status')
 
-      built_instance = factory.build
+      lazy_command.execute(env)
 
-      expect(built_instance).to be error_handler
+      expect(error_handler).to have_received(:execute).with(env)
       expect(Gitsh::Commands::ErrorHandler).to have_received(:new).with(
         command_instance,
       )
@@ -20,14 +21,18 @@ describe Gitsh::Commands::Factory do
       )
     end
 
-    it 'builds internal commands' do
+    it 'executes internal commands' do
+      env = double(:env)
       error_handler = stub_error_handler
-      command_instance = stub_command_class(Gitsh::Commands::InternalCommand)
-      factory = Gitsh::Commands::Factory.new(command: ':echo')
+      command_instance = stub_command_class(
+        Gitsh::Commands::InternalCommand,
+        instance_class: Gitsh::Commands::InternalCommand::Echo,
+      )
+      lazy_command = Gitsh::Commands::LazyCommand.new(command: ':echo')
 
-      built_instance = factory.build
+      lazy_command.execute(env)
 
-      expect(built_instance).to be error_handler
+      expect(error_handler).to have_received(:execute).with(env)
       expect(Gitsh::Commands::ErrorHandler).to have_received(:new).with(
         command_instance,
       )
@@ -37,14 +42,15 @@ describe Gitsh::Commands::Factory do
       )
     end
 
-    it 'builds shell commands' do
+    it 'executes shell commands' do
+      env = double(:env)
       error_handler = stub_error_handler
       command_instance = stub_command_class(Gitsh::Commands::ShellCommand)
-      factory = Gitsh::Commands::Factory.new(command: '!ls')
+      lazy_command = Gitsh::Commands::LazyCommand.new(command: '!ls')
 
-      built_instance = factory.build
+      lazy_command.execute(env)
 
-      expect(built_instance).to be error_handler
+      expect(error_handler).to have_received(:execute).with(env)
       expect(Gitsh::Commands::ErrorHandler).to have_received(:new).with(
         command_instance,
       )
@@ -56,14 +62,11 @@ describe Gitsh::Commands::Factory do
   end
 
   def stub_error_handler
-    error_handler = double('error_handler')
-    allow(Gitsh::Commands::ErrorHandler).to receive(:new).
-      and_return(error_handler)
-    error_handler
+    stub_command_class(Gitsh::Commands::ErrorHandler)
   end
 
-  def stub_command_class(klass)
-    command_instance = instance_double(klass)
+  def stub_command_class(klass, instance_class: klass)
+    command_instance = instance_double(instance_class, execute: true)
     allow(klass).to receive(:new).and_return(command_instance)
     command_instance
   end

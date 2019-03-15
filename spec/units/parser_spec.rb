@@ -4,53 +4,53 @@ require 'gitsh/parser'
 describe Gitsh::Parser do
   describe '#parse' do
     it 'parses Git commands' do
-      command = stub_command_factory
+      command = stub_lazy_command
 
       result = parse(tokens([:WORD, 'commit'], [:EOS]))
 
       expect(result).to eq command
-      expect(Gitsh::Commands::Factory).to have_received(:build).with(
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
         command: 'commit', args: [],
       )
     end
 
     it 'parses internal commands' do
-      command = stub_command_factory
+      command = stub_lazy_command
 
       result = parse(tokens([:WORD, ':echo'], [:EOS]))
 
       expect(result).to eq command
-      expect(Gitsh::Commands::Factory).to have_received(:build).with(
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
         command: ':echo', args: [],
       )
     end
 
     it 'parses shell commands' do
-      command = stub_command_factory
+      command = stub_lazy_command
 
       result = parse(tokens([:WORD, '!ls'], [:EOS]))
 
       expect(result).to eq command
-      expect(Gitsh::Commands::Factory).to have_received(:build).with(
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
         command: '!ls', args: [],
       )
     end
 
     it 'parses Git commands broken into multiple words' do
-      command = stub_command_factory
+      command = stub_lazy_command
 
       result = parse(tokens(
         [:WORD, 'com'], [:WORD, 'mit'], [:EOS]
       ))
 
       expect(result).to eq command
-      expect(Gitsh::Commands::Factory).to have_received(:build).with(
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
         command: 'commit', args: [],
       )
     end
 
     it 'parses commands with arguments' do
-      command = stub_command_factory
+      command = stub_lazy_command
 
       result = parse(tokens(
         [:WORD, 'commit'], [:SPACE], [:WORD, '-m'], [:SPACE], [:WORD, 'WIP'],
@@ -58,14 +58,14 @@ describe Gitsh::Parser do
       ))
 
       expect(result).to eq command
-      expect(Gitsh::Commands::Factory).to have_received(:build).with(
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
         command: 'commit',
         args: [string('-m'), string('WIP')],
       )
     end
 
     it 'parses commands with variable arguments' do
-      command = stub_command_factory
+      command = stub_lazy_command
 
       result = parse(tokens(
         [:WORD, 'commit'], [:SPACE], [:WORD, '-m'], [:SPACE], [:VAR, 'message'],
@@ -73,14 +73,14 @@ describe Gitsh::Parser do
       ))
 
       expect(result).to eq command
-      expect(Gitsh::Commands::Factory).to have_received(:build).with(
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
         command: 'commit',
         args: [string('-m'), var('message')],
       )
     end
 
     it 'parses commands with subshell arguments' do
-      command = stub_command_factory
+      command = stub_lazy_command
 
       result = parse(tokens(
         [:WORD, 'commit'], [:SPACE], [:WORD, '-m'], [:SPACE],
@@ -89,18 +89,18 @@ describe Gitsh::Parser do
       ))
 
       expect(result).to eq command
-      expect(Gitsh::Commands::Factory).to have_received(:build).with(
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
         command: ':echo',
         args: [var('message')],
       )
-      expect(Gitsh::Commands::Factory).to have_received(:build).with(
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
         command: 'commit',
         args: [string('-m'), subshell(command)],
       )
     end
 
     it 'parses commands with composite arguments' do
-      command = stub_command_factory
+      command = stub_lazy_command
 
       result = parse(tokens(
         [:WORD, 'commit'], [:SPACE], [:WORD, '-m'], [:SPACE],
@@ -109,7 +109,7 @@ describe Gitsh::Parser do
       ))
 
       expect(result).to eq command
-      expect(Gitsh::Commands::Factory).to have_received(:build).with(
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
         command: 'commit',
         args: [
           string('-m'),
@@ -119,14 +119,14 @@ describe Gitsh::Parser do
     end
 
     it 'parses commands surrounded by parentheses' do
-      command = stub_command_factory
+      command = stub_lazy_command
 
       result = parse(tokens(
         [:LEFT_PAREN], [:WORD, 'commit'], [:RIGHT_PAREN], [:EOS],
       ))
 
       expect(result).to eq command
-      expect(Gitsh::Commands::Factory).to have_received(:build).with(
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
         command: 'commit',
         args: [],
       )
@@ -169,14 +169,14 @@ describe Gitsh::Parser do
     end
 
     it 'parses a command with a trailing semicolon' do
-      command = stub_command_factory
+      command = stub_lazy_command
 
       result = parse(tokens(
         [:WORD, 'commit'], [:SEMICOLON], [:EOS],
       ))
 
       expect(result).to eq command
-      expect(Gitsh::Commands::Factory).to have_received(:build).with(
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with(
         command: 'commit', args: [],
       )
     end
@@ -197,9 +197,9 @@ describe Gitsh::Parser do
     described_class.new.parse(tokens)
   end
 
-  def stub_command_factory
+  def stub_lazy_command
     command = double(:command)
-    allow(Gitsh::Commands::Factory).to receive(:build).and_return(command)
+    allow(Gitsh::Commands::LazyCommand).to receive(:new).and_return(command)
     command
   end
 
