@@ -1,3 +1,8 @@
+Layout/IndentArray:
+  Description: Checks the indentation of the first element in an array literal.
+  Enabled: true
+  EnforcedStyle: consistent
+
 Style/StringLiterals:
   Description: Checks if uses of quotes match the configured preference.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#consistent-string-literals
