@@ -15,6 +15,19 @@ describe Gitsh::LineEditorHistoryFilter do
       expect(line_editor_history_filter::HISTORY.to_a).to eq(['hello'])
     end
 
+    it 'enters multi-line commands into the history as a single line' do
+      line_editor_history_filter = described_class.new(fake_line_editor)
+
+      fake_line_editor.type("hello\\n")
+      line_editor_history_filter.readline('>', true)
+      fake_line_editor.type("awesome\\n")
+      line_editor_history_filter.readline('>', true)
+      fake_line_editor.type('world')
+      line_editor_history_filter.readline('>', true)
+
+      expect(line_editor_history_filter::HISTORY.to_a).to eq(['hello awesome world'])
+    end
+
     it 'does not enter blank lines into the history' do
       line_editor_history_filter = described_class.new(fake_line_editor)
 
