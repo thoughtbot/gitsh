@@ -4,5 +4,15 @@ rvm:
   - "2.4"
   - "2.5"
   - "2.6"
-install: bundle install && ./autogen.sh && git config --global user.name 'Travis' && git config --global user.email 'travis@example.com'
-script: RUBY=$(which ruby) ./configure && make && bundle exec rspec
+install:
+  - bundle install
+  - ./autogen.sh
+  - git config --global user.name 'Travis'
+  - git config --global user.email 'travis@example.com'
+  - export LD_LIBRARY_PATH="${MY_RUBY_HOME}/lib"
+script:
+  - RUBY=$(which ruby) ./configure --prefix=$PWD/tmp
+  - make
+  - make install
+  - echo :help | ./tmp/bin/gitsh
+  - bundle exec rspec
