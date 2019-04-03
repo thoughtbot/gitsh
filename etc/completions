@@ -753,7 +753,7 @@ rm $opt* --? $path+
   --ignore-unmatch
   --quiet
 
-show $opt* $anything
+show $opt* $revision+
   --abbrev-commit
   --encoding $anything
   --expand-tabs $anything?
