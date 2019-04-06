@@ -19,7 +19,7 @@ module Gitsh
         private
 
         def normalize_path(token)
-          if token.end_with?('/')
+          if token == '' || token.end_with?('/')
             File.expand_path(token) + '/'
           else
             File.expand_path(token)
