@@ -1,15 +1,12 @@
+require 'gitsh/registry'
 require 'gitsh/tab_completion/automaton'
 require 'gitsh/tab_completion/dsl'
 
 module Gitsh
   module TabCompletion
     class AutomatonFactory
-      def self.build(env)
-        new(env).build
-      end
-
-      def initialize(env)
-        @env = env
+      def self.build
+        new.build
       end
 
       def build
@@ -22,13 +19,15 @@ module Gitsh
 
       private
 
-      attr_reader :env
-
       def config_paths
         [
           File.join(env.config_directory, 'completions'),
           File.join(ENV.fetch('HOME', '/'), '.gitsh_completions'),
         ]
+      end
+
+      def env
+        Registry.env
       end
     end
   end

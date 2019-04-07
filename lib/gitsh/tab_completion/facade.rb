@@ -11,7 +11,7 @@ module Gitsh
     class Facade
       def initialize(line_editor)
         @line_editor = line_editor
-        @automaton = AutomatonFactory.build(env)
+        @automaton = AutomatonFactory.build
       end
 
       def call(input)
