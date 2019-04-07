@@ -30,7 +30,7 @@ module Gitsh
       def command_completions(context, input)
         CommandCompleter.new(
           line_editor,
-          AliasExpander.new(context.prior_words, env).call,
+          AliasExpander.new(context.prior_words).call,
           input,
           automaton,
           escaper,

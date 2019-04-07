@@ -1,12 +1,12 @@
 require 'gitsh/error'
+require 'gitsh/registry'
 require 'gitsh/tab_completion/tokens_to_words'
 
 module Gitsh
   module TabCompletion
     class AliasExpander
-      def initialize(words, env)
+      def initialize(words)
         @words = words
-        @env = env
       end
 
       def call
@@ -19,7 +19,7 @@ module Gitsh
 
       private
 
-      attr_reader :words, :env
+      attr_reader :words
 
       def expandable?
         !expanded_alias.start_with?('!')
@@ -39,6 +39,10 @@ module Gitsh
 
       def expanded_alias
         @_expanded_alias ||= env.fetch("alias.#{words.first}")
+      end
+
+      def env
+        Registry.env
       end
     end
   end
