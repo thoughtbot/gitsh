@@ -14,12 +14,11 @@ module Gitsh
       BLANK_LINE_REGEX = /^\s*$/
       CONTINUATION_PROMPT = '> '.freeze
 
-      def initialize(opts)
+      def initialize(opts = {})
         @line_editor = opts.fetch(:line_editor) do
           LineEditorHistoryFilter.new(Gitsh::LineEditor)
         end
-        @env = opts[:env]
-        @history = opts.fetch(:history) { History.new(@env, @line_editor) }
+        @history = opts.fetch(:history) { History.new(env, @line_editor) }
         @terminal = opts.fetch(:terminal) { Terminal.instance }
       end
 
@@ -68,7 +67,11 @@ module Gitsh
 
       private
 
-      attr_reader :history, :line_editor, :env, :terminal
+      attr_reader :history, :line_editor, :terminal
+
+      def env
+        Registry.env
+      end
 
       def setup_line_editor
         line_editor.completion_proc = TabCompletion::Facade.new(line_editor, env)

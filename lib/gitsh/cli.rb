@@ -10,7 +10,7 @@ module Gitsh
     def initialize(opts={})
       @unparsed_args = opts.fetch(:args, ARGV).clone
       @interactive_input_strategy = opts.fetch(:interactive_input_strategy) do
-        InputStrategies::Interactive.new(env: env)
+        InputStrategies::Interactive.new
       end
     end
 

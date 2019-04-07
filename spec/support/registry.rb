@@ -4,9 +4,12 @@ require 'gitsh/registry'
 module Registry
   def register_env(attrs = {})
     default_atts = {
+      config_directory: File.expand_path('../../etc', __FILE__),
       git_command: fake_git_path,
-      tty?: true,
+      print: nil,
+      puts: nil,
       puts_error: nil,
+      tty?: true,
     }
     Gitsh::Registry[:env] = instance_double(
       Gitsh::Environment,

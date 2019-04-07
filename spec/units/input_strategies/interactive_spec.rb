@@ -37,7 +37,7 @@ describe Gitsh::InputStrategies::Interactive do
 
       input_strategy.setup
 
-      expect(env).to have_received(:puts_error).with('gitsh: my message')
+      expect(Gitsh::Registry.env).to have_received(:puts_error).with('gitsh: my message')
     end
   end
 
@@ -63,7 +63,7 @@ describe Gitsh::InputStrategies::Interactive do
     it 'returns the default command when the user input is blank' do
       input_strategy = build_input_strategy
       allow(line_editor).to receive(:readline).and_return(' ')
-      allow(env).to receive(:fetch).with('gitsh.defaultCommand').
+      allow(Gitsh::Registry.env).to receive(:fetch).with('gitsh.defaultCommand').
         and_return('my default command')
       input_strategy.setup
 
@@ -130,19 +130,18 @@ describe Gitsh::InputStrategies::Interactive do
   describe '#handle_parse_error' do
     it 'outputs the error' do
       input_strategy = build_input_strategy
-      allow(env).to receive(:puts_error)
 
       input_strategy.handle_parse_error('my message')
 
-      expect(env).to have_received(:puts_error).with('gitsh: my message')
+      expect(Gitsh::Registry.env).to have_received(:puts_error).with('gitsh: my message')
     end
   end
 
   def build_input_strategy(options={})
+    register_env(fetch: '')
     described_class.new(
       line_editor: options.fetch(:line_editor, line_editor),
       history: history,
-      env: env,
       terminal: options.fetch(:terminal, terminal),
     )
   end
@@ -160,18 +159,6 @@ describe Gitsh::InputStrategies::Interactive do
       :'completion_append_character=' => nil,
       :'completion_proc=' => nil,
       readline: nil
-    })
-  end
-
-  def env
-    @env ||= double('Environment', {
-      config_directory: '/tmp/gitsh/',
-      fetch: '',
-      print: nil,
-      puts: nil,
-      puts_error: nil,
-      repo_config_color: '',
-      :[] => nil,
     })
   end
 
