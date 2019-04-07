@@ -8,7 +8,6 @@ describe Gitsh::TabCompletion::DSL do
         'stash (apply|drop|pop|show)',
       ].join("\n"))
       start_state = Gitsh::TabCompletion::Automaton::State.new('start')
-      register_env
 
       described_class.load(path, start_state)
 
@@ -23,7 +22,6 @@ describe Gitsh::TabCompletion::DSL do
       it 'does not explode' do
         path = '/not/a/real/path'
         start_state = Gitsh::TabCompletion::Automaton::State.new('start')
-        register_env
 
         expect { described_class.load(path, start_state) }.
           not_to raise_exception

@@ -107,7 +107,6 @@ describe Gitsh::TabCompletion::DSL::Parser do
     end
 
     it 'parses rules with options' do
-      register_env
       result = described_class.parse(tokens(
         [:WORD, 'push'], [:OPT_VAR],
         [:INDENT], [:OPTION, '--force'],
@@ -135,7 +134,6 @@ describe Gitsh::TabCompletion::DSL::Parser do
     end
 
     it 'parses multiple rules in the same input' do
-      register_env
       result = described_class.parse(tokens(
         [:WORD, 'push'], [:BLANK],
         [:WORD, 'pull'], [:BLANK], [:BLANK],
@@ -149,7 +147,6 @@ describe Gitsh::TabCompletion::DSL::Parser do
     end
 
     it 'parses empty input' do
-      register_env
       result = described_class.parse(tokens([:EOS]))
 
       expect(result).to be_a_rule_set_factory
@@ -201,7 +198,6 @@ describe Gitsh::TabCompletion::DSL::Parser do
   end
 
   def parse_single_rule(tokens)
-    register_env
     result = described_class.parse(tokens)
     expect(result).to be_a_rule_set_factory
     result.rules.first.root

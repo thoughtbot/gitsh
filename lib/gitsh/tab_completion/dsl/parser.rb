@@ -1,5 +1,4 @@
 require 'rltk'
-require 'gitsh/registry'
 require 'gitsh/tab_completion/dsl/choice_factory'
 require 'gitsh/tab_completion/dsl/concatenation_factory'
 require 'gitsh/tab_completion/dsl/fallback_transition_factory'
@@ -60,16 +59,12 @@ module Gitsh
           private
 
           def build_matcher(var_name)
-            VARIABLE_TO_MATCHER_CLASS.fetch(var_name).new(gitsh_env)
+            VARIABLE_TO_MATCHER_CLASS.fetch(var_name).new
           rescue KeyError
             raise ParseError.new(
               'Invalid',
               RLTK::Token.new(:VAR, var_name, pos(0)),
             )
-          end
-
-          def gitsh_env
-            Registry.env
           end
         end
 
