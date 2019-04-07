@@ -18,7 +18,7 @@ module Gitsh
         @line_editor = opts.fetch(:line_editor) do
           LineEditorHistoryFilter.new(Gitsh::LineEditor)
         end
-        @history = opts.fetch(:history) { History.new(env, @line_editor) }
+        @history = opts.fetch(:history) { History.new(@line_editor) }
         @terminal = opts.fetch(:terminal) { Terminal.instance }
       end
 

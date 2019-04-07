@@ -1,10 +1,11 @@
+require 'gitsh/registry'
+
 module Gitsh
   class History
     DEFAULT_HISTORY_FILE = "#{Dir.home}/.gitsh_history"
     DEFAULT_HISTORY_SIZE = 500
 
-    def initialize(env, line_editor)
-      @env = env
+    def initialize(line_editor)
       @line_editor = line_editor
     end
 
@@ -25,7 +26,7 @@ module Gitsh
 
     private
 
-    attr_reader :env, :line_editor
+    attr_reader :line_editor
 
     def history_file_exists?
       File.exist?(history_file_path)
@@ -37,6 +38,10 @@ module Gitsh
 
     def history_size
       env.fetch('gitsh.historySize') { DEFAULT_HISTORY_SIZE }.to_i
+    end
+
+    def env
+      Registry.env
     end
   end
 end
