@@ -4,6 +4,7 @@ require 'tmpdir'
 require 'gitsh/cli'
 require 'gitsh/environment'
 require 'gitsh/line_editor_history_filter'
+require 'gitsh/registry'
 require 'rspec/mocks/test_double'
 require File.expand_path('../file_system', __FILE__)
 
@@ -31,6 +32,7 @@ class GitshRunner
     with_a_temporary_home_directory do
       in_a_temporary_directory do
         setup_unix_env
+        populate_registry
         runner = start_runner_thread
         wait_for_prompt
 
@@ -50,6 +52,7 @@ class GitshRunner
     with_a_temporary_home_directory do
       in_a_temporary_directory do
         setup_unix_env
+        populate_registry
         cli.run
       end
     end
@@ -97,7 +100,6 @@ class GitshRunner
   def cli
     Gitsh::CLI.new(
       args: options.fetch(:args, []),
-      env: env,
       interactive_input_strategy: interactive_input_strategy
     )
   end
@@ -125,6 +127,10 @@ class GitshRunner
 
   def wait_for_prompt
     @prompt = line_editor.prompt
+  end
+
+  def populate_registry
+    Gitsh::Registry[:env] = env
   end
 
   def setup_unix_env
