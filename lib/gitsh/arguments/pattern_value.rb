@@ -10,10 +10,12 @@ module Gitsh
       def expand
         options = yield
         matches = options.grep(pattern)
+        # FIXME: only exact matches, i.e. implicit `^...$`
         if matches.any?
           matches
         else
           ['FIXME']
+          # FIXME: fallback to the original gitsh source (not the regexp)
         end
       end
 

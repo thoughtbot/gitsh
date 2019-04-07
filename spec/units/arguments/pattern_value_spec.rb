@@ -11,6 +11,8 @@ describe Gitsh::Arguments::PatternValue do
       expect(result).to eq ['fee', 'fie', 'foe']
     end
 
+    it 'returns only complete matches'
+
     context 'when nothing matches' do
       it 'returns the original pattern'
     end

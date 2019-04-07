@@ -18,7 +18,11 @@ module Gitsh
       end
 
       def execute(env)
-        arg_values = argument_list.values(env)
+        #FIXME: Don't rebuild this
+        require 'gitsh/tab_completion/automaton_factory'
+        completer = TabCompletion::AutomatonFactory.build(env)
+
+        arg_values = argument_list.values(env, completer)
         prefix, command = split_command(arg_values.shift)
         command_class(prefix).new(command, arg_values).execute(env)
       rescue Gitsh::Error => error

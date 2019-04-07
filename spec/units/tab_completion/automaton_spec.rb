@@ -3,169 +3,19 @@ require 'gitsh/tab_completion/matchers/text_matcher'
 require 'gitsh/tab_completion/automaton'
 
 describe Gitsh::TabCompletion::Automaton do
-  describe '#match' do
-    context 'for a deterministic automaton' do
-      it 'returns a set containing the end state' do
-        # --> (0) --- a ---> (1)
-
-        state_0 = described_class::State.new(0)
-        state_1 = described_class::State.new(1)
-        add_text_transition(state_0, 'a', state_1)
-        automaton = described_class.new(state_0)
-
-        expect(automaton.match([])).to eq [state_0].to_set
-        expect(automaton.match(['a'])).to eq [state_1].to_set
-        expect(automaton.match(['b'])).to eq Set.new
-      end
-    end
-
-    context 'for a non-deterministic automaton' do
-      it 'returns a set containing the end states' do
-        #       ,--- a ---,     ,--- b ---,
-        #       |         |     |         |
-        # ---> (0)        |--> (1)        |--> (2)
-        #       |         |     |         |
-        #       '---------'     '---------'
-
-        state_0 = described_class::State.new(0)
-        state_1 = described_class::State.new(1)
-        state_2 = described_class::State.new(2)
-        add_text_transition(state_0, 'a', state_1)
-        state_0.add_free_transition(state_1)
-        add_text_transition(state_1, 'b', state_2)
-        state_1.add_free_transition(state_2)
-        automaton = described_class.new(state_0)
-
-        expect(automaton.match([])).to eq [state_0, state_1, state_2].to_set
-        expect(automaton.match(['a'])).to eq [state_1, state_2].to_set
-        expect(automaton.match(['a', 'b'])).to eq [state_2].to_set
-        expect(automaton.match(['b'])).to eq [state_2].to_set
-      end
-    end
-
-    context 'for a deterministic automaton with a fallback transition' do
-      it 'uses the fallback transition when there is no other match' do
-        # --> (0) --- a ------> (1)
-        #      |
-        #      '-- fallback --> (2)
-
-        state_0 = described_class::State.new(0)
-        state_1 = described_class::State.new(1)
-        state_2 = described_class::State.new(2)
-        add_text_transition(state_0, 'a', state_1)
-        add_fallback_transition(state_0, 'x', state_2)
-        automaton = described_class.new(state_0)
-
-        expect(automaton.match([])).to eq [state_0].to_set
-        expect(automaton.match(['a'])).to eq [state_1].to_set
-        expect(automaton.match(['b'])).to eq [state_2].to_set
-      end
-    end
-
-    context 'for a non-deterministic automaton with a fallback transition' do
-      it 'uses the fallback transition when there is no other match' do
-        # --> (0) --- a ------> (1) -----> (2)
-        #      |
-        #      '-- fallback --> (3) -----> (4)
-
-        state_0 = described_class::State.new(0)
-        state_1 = described_class::State.new(1)
-        state_2 = described_class::State.new(2)
-        state_3 = described_class::State.new(3)
-        state_4 = described_class::State.new(4)
-
-        add_text_transition(state_0, 'a', state_1)
-        state_1.add_free_transition(state_2)
-        add_fallback_transition(state_0, 'x', state_3)
-        state_3.add_free_transition(state_4)
-        automaton = described_class.new(state_0)
-
-        expect(automaton.match([])).to eq [state_0].to_set
-        expect(automaton.match(['a'])).to eq [state_1, state_2].to_set
-        expect(automaton.match(['b'])).to eq [state_3, state_4].to_set
-      end
-    end
-  end
-
   describe '#completions' do
-    context 'for a deterministic automaton' do
-      it 'returns possible completions' do
-        #       ,--- aa ---> (1)
-        #       |
-        # ---> (0)
-        #       |
-        #       '--- bb ---> (2)
+    it 'delegates to a Session' do
+      expected_result = double(:result)
+      session = stub_session(completions: expected_result)
+      start_state = described_class::State.new('start')
+      automaton = described_class.new(start_state)
 
-        state_0 = described_class::State.new(0)
-        state_1 = described_class::State.new(1)
-        state_2 = described_class::State.new(2)
-        add_text_transition(state_0, 'aa', state_1)
-        add_text_transition(state_0, 'ab', state_2)
-        automaton = described_class.new(state_0)
+      result = automaton.completions(['foo', 'bar'], 'prefix')
 
-        expect(automaton.completions([], '')).to eq ['aa', 'ab']
-        expect(automaton.completions([], 'a')).to eq ['aa', 'ab']
-        expect(automaton.completions([], 'ab')).to eq ['ab']
-        expect(automaton.completions([], 'a')).to eq ['aa', 'ab']
-        expect(automaton.completions(['aa'], '')).to eq []
-        expect(automaton.completions(['foo'], '')).to eq []
-      end
-    end
-
-    context 'for a non-deterministic automaton' do
-      it 'returns possible completions' do
-        #       ,--- aa ---,
-        #       |          v
-        # ---> (0)        (1) --- bb ---> (2)
-        #       |          ^
-        #       '----------'
-
-        state_0 = described_class::State.new(0)
-        state_1 = described_class::State.new(1)
-        state_2 = described_class::State.new(2)
-        add_text_transition(state_0, 'aa', state_1)
-        state_0.add_free_transition(state_1)
-        add_text_transition(state_1, 'bb', state_2)
-        automaton = described_class.new(state_0)
-
-        expect(automaton.completions([], '')).to eq ['aa', 'bb']
-        expect(automaton.completions([], 'a')).to eq ['aa']
-        expect(automaton.completions(['aa'], '')).to eq ['bb']
-        expect(automaton.completions(['foo'], '')).to eq []
-      end
-
-      it 'includes matches from fallback transitions' do
-        # --> (0) --- a ------> (1)
-        #      |
-        #      '-- fallback --> (2)
-
-        state_0 = described_class::State.new(0)
-        state_1 = described_class::State.new(1)
-        state_2 = described_class::State.new(2)
-        add_text_transition(state_0, 'a', state_1)
-        add_fallback_transition(state_0, 'x', state_2)
-        automaton = described_class.new(state_0)
-
-        expect(automaton.completions([], '')).to eq ['a', 'x']
-      end
-    end
-
-    it 'filters out duplicates' do
-      #       ,--- aa ---,
-      #       |          v
-      # ---> (0)        (1) --- aa ---> (2)
-      #       |          ^
-      #       '----------'
-
-      state_0 = described_class::State.new(0)
-      state_1 = described_class::State.new(1)
-      state_2 = described_class::State.new(2)
-      add_text_transition(state_0, 'aa', state_1)
-      state_0.add_free_transition(state_1)
-      add_text_transition(state_1, 'aa', state_2)
-      automaton = described_class.new(state_0)
-
-      expect(automaton.completions([], '')).to eq ['aa']
+      expect(result).to eq(expected_result)
+      expect(described_class::Session).to have_received(:new).with(start_state)
+      expect(session).to have_received(:step_through).with(['foo', 'bar'])
+      expect(session).to have_received(:completions).with('prefix')
     end
   end
 
@@ -271,5 +121,12 @@ describe Gitsh::TabCompletion::Automaton do
     Gitsh::TabCompletion::Matchers::TextMatcher.new(word).tap do |matcher|
       start_state.add_fallback_transition(matcher, end_state)
     end
+  end
+
+  def stub_session(attrs)
+    session = instance_double(described_class::Session, attrs)
+    allow(session).to receive(:step_through).and_return(session)
+    allow(described_class::Session).to receive(:new).and_return(session)
+    session
   end
 end

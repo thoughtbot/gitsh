@@ -8,20 +8,22 @@ module Gitsh
       end
 
       def completions(context, token)
-        walker.step_through(context).completions(token)
+        session.step_through(context).completions(token)
       end
 
       def accept_visitor(visitor)
         start_state.accept_visitor(visitor, Set.new)
       end
 
-      def walker
-        Walker.new(start_state)
+      def session
+        Session.new(start_state)
       end
 
-      class Walker
+      class Session
+        attr_reader :current_states
+
         def initialize(start_state)
-          @current_states = Set.new([start_state])
+          @current_states = Set.new(start_state.freely_reachable)
         end
 
         def step_through(values)
@@ -30,24 +32,20 @@ module Gitsh
         end
 
         def step(value)
-          @current_states = @current_states.
+          @current_states = current_states.
             map { |state| state.follow(value) }.
             inject(Set.new, :|)
           self
         end
 
         def completions(prefix = '')
-          @current_states.flat_map { |state| state.completions(prefix) }.uniq
+          current_states.flat_map { |state| state.completions(prefix) }.uniq
         end
       end
 
       private
 
       attr_reader :start_state
-
-      def start_states
-        start_state.freely_reachable
-      end
 
       class State
         attr_reader :name
