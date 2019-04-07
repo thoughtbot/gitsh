@@ -69,10 +69,6 @@ module Gitsh
 
       attr_reader :history, :line_editor, :terminal
 
-      def env
-        Registry.env
-      end
-
       def setup_line_editor
         line_editor.completion_proc = TabCompletion::Facade.new(line_editor, env)
         line_editor.completer_quote_characters = %('")
@@ -116,6 +112,10 @@ module Gitsh
 
       def prompter
         @prompter ||= Prompter.new(env: env, color: terminal.color_support?)
+      end
+
+      def env
+        Registry.env
       end
     end
   end
