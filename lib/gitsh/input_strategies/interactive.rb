@@ -70,7 +70,7 @@ module Gitsh
       attr_reader :history, :line_editor, :terminal
 
       def setup_line_editor
-        line_editor.completion_proc = TabCompletion::Facade.new(line_editor, env)
+        line_editor.completion_proc = TabCompletion::Facade.new(line_editor)
         line_editor.completer_quote_characters = %('")
         line_editor.completer_word_break_characters = ' &|;('
         line_editor.quoting_detection_proc = QuoteDetector.new
