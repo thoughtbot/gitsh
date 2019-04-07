@@ -1,3 +1,4 @@
+require 'gitsh/arguments/string_value'
 require 'gitsh/capturing_environment'
 
 module Gitsh
@@ -10,7 +11,7 @@ module Gitsh
       def value(env)
         capturing_env = CapturingEnvironment.new(env.clone)
         command.execute(capturing_env)
-        [strip_whitespace(capturing_env.captured_output)]
+        [StringValue.new(strip_whitespace(capturing_env.captured_output))]
       end
 
       def ==(other)

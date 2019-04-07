@@ -1,3 +1,5 @@
+require 'gitsh/arguments/string_value'
+
 module Gitsh
   module Arguments
     class StringArgument
@@ -6,7 +8,7 @@ module Gitsh
       end
 
       def value(_env)
-        [raw_value]
+        [StringValue.new(raw_value)]
       end
 
       def ==(other)

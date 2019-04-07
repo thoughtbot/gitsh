@@ -8,8 +8,8 @@ module Gitsh
       def value(env)
         parts.
           map { |part| part.value(env) }.
-          inject { |first, second| first.product(second) }.
-          map { |values| values.join('') }
+          inject(:product).
+          map { |values| values.flatten.inject(:+) }
       end
 
       def ==(other)

@@ -3,11 +3,11 @@ require 'gitsh/arguments/string_argument'
 
 describe Gitsh::Arguments::StringArgument do
   describe '#value' do
-    it 'returns the string passed to the initializer' do
+    it 'returns a StringValue for the string passed to the initializer' do
       arg = described_class.new('Hello world')
       env = double('env')
 
-      expect(arg.value(env)).to eq ['Hello world']
+      expect(arg.value(env)).to eq [string_value('Hello world')]
     end
   end
 

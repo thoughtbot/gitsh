@@ -9,7 +9,7 @@ module Gitsh
     end
 
     def values(env)
-      @args.flat_map { |arg| arg.value(env) }
+      @args.flat_map { |arg| arg.value(env) }.map(&:expand)
     end
 
     private
