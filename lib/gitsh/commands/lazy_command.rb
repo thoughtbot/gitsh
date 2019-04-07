@@ -17,11 +17,7 @@ module Gitsh
         @args = args.compact
       end
 
-      def execute(env)
-        #FIXME: Don't rebuild this
-        require 'gitsh/tab_completion/automaton_factory'
-        completer = TabCompletion::AutomatonFactory.build(env)
-
+      def execute(env, completer)
         arg_values = argument_list.values(env, completer)
         prefix, command = split_command(arg_values.shift)
         command_class(prefix).new(command, arg_values).execute(env)

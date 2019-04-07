@@ -16,7 +16,10 @@ module Gitsh
         when StringValue
           StringValue.new(value + other.value)
         when PatternValue
-          PatternValue.new(Regexp.new(value + other.pattern.source))
+          PatternValue.new(
+            Regexp.escape(value) + other.pattern,
+            value + other.source,
+          )
         else
           raise ArgumentError,
             "Cannot append a #{other.class.name} to a #{self.class.name}"

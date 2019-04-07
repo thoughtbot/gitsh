@@ -6,8 +6,8 @@ module ArgumentValues
     Gitsh::Arguments::StringValue.new(string)
   end
 
-  def pattern_value(pattern)
-    Gitsh::Arguments::PatternValue.new(pattern)
+  def pattern_value(pattern, source)
+    Gitsh::Arguments::PatternValue.new(pattern, source)
   end
 end
 

@@ -4,7 +4,7 @@ module Gitsh
   module Arguments
     class SingleCharacterGlob
       def value(_env)
-        [PatternValue.new(/./)]
+        [PatternValue.new('.', '?')]
       end
 
       def ==(other)

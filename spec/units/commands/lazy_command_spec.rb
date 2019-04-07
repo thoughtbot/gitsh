@@ -7,10 +7,11 @@ describe Gitsh::Commands::LazyCommand do
   describe '#execute' do
     it 'executes Git commands' do
       env = double(:env)
+      completer = stub_completer
       command_instance = stub_command_class(Gitsh::Commands::GitCommand)
       lazy_command = Gitsh::Commands::LazyCommand.new([string('status')])
 
-      lazy_command.execute(env)
+      lazy_command.execute(env, completer)
 
       expect(command_instance).to have_received(:execute).with(env)
       expect(Gitsh::Commands::GitCommand).to have_received(:new).with(
@@ -21,13 +22,14 @@ describe Gitsh::Commands::LazyCommand do
 
     it 'executes internal commands' do
       env = double(:env)
+      completer = stub_completer
       command_instance = stub_command_class(
         Gitsh::Commands::InternalCommand,
         instance_class: Gitsh::Commands::InternalCommand::Echo,
       )
       lazy_command = Gitsh::Commands::LazyCommand.new([string(':echo')])
 
-      lazy_command.execute(env)
+      lazy_command.execute(env, completer)
 
       expect(command_instance).to have_received(:execute).with(env)
       expect(Gitsh::Commands::InternalCommand).to have_received(:new).with(
@@ -38,10 +40,11 @@ describe Gitsh::Commands::LazyCommand do
 
     it 'executes shell commands' do
       env = double(:env)
+      completer = stub_completer
       command_instance = stub_command_class(Gitsh::Commands::ShellCommand)
       lazy_command = Gitsh::Commands::LazyCommand.new([string('!ls')])
 
-      lazy_command.execute(env)
+      lazy_command.execute(env, completer)
 
       expect(command_instance).to have_received(:execute).with(env)
       expect(Gitsh::Commands::ShellCommand).to have_received(:new).with(
@@ -53,12 +56,13 @@ describe Gitsh::Commands::LazyCommand do
     context 'the command raises an error' do
       it 'prints the error and returns false' do
         env = spy('env', puts_error: nil)
+        completer = stub_completer
         command_instance = stub_command_class(Gitsh::Commands::GitCommand)
         allow(command_instance).to receive(:execute).
           and_raise(Gitsh::Error, 'Oh noes!')
         handler = Gitsh::Commands::LazyCommand.new([string('status')])
 
-        expect(handler.execute(env)).to eq false
+        expect(handler.execute(env, completer)).to eq false
         expect(env).to have_received(:puts_error).with('gitsh: Oh noes!')
       end
     end
@@ -66,6 +70,7 @@ describe Gitsh::Commands::LazyCommand do
     context 'with arguments' do
       it 'calculates argument values before passing them on' do
         env = double(:env)
+        completer = stub_completer
         allow(env).to receive(:fetch).with('foo').and_return('value')
         command_instance = stub_command_class(Gitsh::Commands::ShellCommand)
         lazy_command = Gitsh::Commands::LazyCommand.new([
@@ -73,7 +78,7 @@ describe Gitsh::Commands::LazyCommand do
           var('foo'),
         ])
 
-        lazy_command.execute(env)
+        lazy_command.execute(env, completer)
 
         expect(command_instance).to have_received(:execute).with(env)
         expect(Gitsh::Commands::ShellCommand).to have_received(:new).with(
@@ -88,6 +93,23 @@ describe Gitsh::Commands::LazyCommand do
     command_instance = instance_double(instance_class, execute: true)
     allow(klass).to receive(:new).and_return(command_instance)
     command_instance
+  end
+
+  def stub_completer
+    instance_double(
+      Gitsh::TabCompletion::Automaton,
+      session: stub_completer_session,
+    )
+  end
+
+  def stub_completer_session(completions = [])
+    completer_session = instance_double(
+      Gitsh::TabCompletion::Automaton::Session,
+      completions: completions,
+    )
+    allow(completer_session).
+      to receive(:step_through).and_return(completer_session)
+    completer_session
   end
 
   def string(value)

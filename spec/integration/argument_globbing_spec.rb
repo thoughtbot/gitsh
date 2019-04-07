@@ -104,5 +104,13 @@ describe 'Glob patterns in arguments' do
         expect(gitsh).not_to output(/Bad test/)
       end
     end
+
+    it 'does not expand when there is no matching output' do
+      GitshRunner.interactive do |gitsh|
+        gitsh.type('!cat foo?.txt')
+
+        expect(gitsh).to output_error(/cat:.* foo\?\.txt/)
+      end
+    end
   end
 end

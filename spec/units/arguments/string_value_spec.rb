@@ -22,11 +22,11 @@ describe Gitsh::Arguments::StringValue do
 
     it 'concatenates pattern values to string values' do
       foo_string = described_class.new('foo')
-      bar_pattern = pattern_value(/bar/)
+      bar_pattern = pattern_value('.bar', '?bar')
 
       result = foo_string + bar_pattern
 
-      expect(result).to eq(pattern_value(/foobar/))
+      expect(result).to eq(pattern_value('foo.bar', 'foo?bar'))
     end
 
     it 'raises for non-StringValue arguments' do

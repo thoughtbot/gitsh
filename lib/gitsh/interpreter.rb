@@ -27,7 +27,11 @@ module Gitsh
     attr_reader :env, :parser, :lexer, :input_strategy
 
     def execute(input)
-      build_command(input).execute(env)
+      #FIXME: Don't rebuild this
+      require 'gitsh/tab_completion/automaton_factory'
+      completer = TabCompletion::AutomatonFactory.build(env)
+
+      build_command(input).execute(env, completer)
     rescue RLTK::LexingError, RLTK::NotInLanguage, RLTK::BadToken, EOFError
       input_strategy.handle_parse_error('parse error')
     end

@@ -27,10 +27,10 @@ describe Gitsh::ArgumentList do
 
     it 'expands patterns' do
       env = double('env')
-      pattern_arg = spy('pattern_arg', value: [pattern_value(/foo./)])
+      pattern_arg = spy('pattern_arg', value: [pattern_value('foo.', 'foo?')])
       argument_list = Gitsh::ArgumentList.new([pattern_arg])
       completer = stub_completer(
-        ['foo1', 'foo2', 'bar1'],
+        ['foo1', 'foo2', 'bar1', 'foo12345'],
       )
 
       values = argument_list.values(env, completer)

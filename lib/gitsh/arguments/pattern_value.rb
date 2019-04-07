@@ -1,30 +1,35 @@
 module Gitsh
   module Arguments
     class PatternValue
-      attr_reader :pattern
+      attr_reader :pattern, :source
 
-      def initialize(pattern)
+      def initialize(pattern, source)
         @pattern = pattern
+        @source = source
       end
 
       def expand
         options = yield
-        matches = options.grep(pattern)
-        # FIXME: only exact matches, i.e. implicit `^...$`
+        matches = options.grep(regexp)
         if matches.any?
           matches
         else
-          ['FIXME']
-          # FIXME: fallback to the original gitsh source (not the regexp)
+          [source]
         end
       end
 
       def +(other)
         case other
         when PatternValue
-          PatternValue.new(Regexp.new(pattern.source + other.pattern.source))
+          PatternValue.new(
+            pattern + other.pattern,
+            source + other.source,
+          )
         when StringValue
-          PatternValue.new(Regexp.new(pattern.source + other.value))
+          PatternValue.new(
+            pattern + Regexp.escape(other.value),
+            source + other.value,
+          )
         else
           raise ArgumentError,
             "Cannot append a #{other.class.name} to a #{self.class.name}"
@@ -33,6 +38,12 @@ module Gitsh
 
       def ==(other)
         other.is_a?(self.class) && pattern == other.pattern
+      end
+
+      private
+
+      def regexp
+        Regexp.new("^#{pattern}$")
       end
     end
   end

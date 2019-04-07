@@ -7,7 +7,7 @@ describe Gitsh::Arguments::SingleCharacterGlob do
       arg = described_class.new
       env = double('env')
 
-      expect(arg.value(env)).to eq [pattern_value(/./)]
+      expect(arg.value(env)).to eq [pattern_value('.', '?')]
     end
   end
 
