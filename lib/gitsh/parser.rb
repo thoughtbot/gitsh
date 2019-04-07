@@ -4,6 +4,7 @@ require 'gitsh/arguments/string_argument'
 require 'gitsh/arguments/composite_argument'
 require 'gitsh/arguments/variable_argument'
 require 'gitsh/arguments/subshell'
+require 'gitsh/arguments/single_character_glob'
 require 'gitsh/commands/lazy_command'
 require 'gitsh/commands/noop'
 require 'gitsh/commands/tree'
@@ -47,6 +48,7 @@ module Gitsh
       clause(:VAR) { |var| Arguments::VariableArgument.new(var) }
       clause(:subshell) { |program| Arguments::Subshell.new(program) }
       clause(:brace_expansion) { |brace_expansion| brace_expansion }
+      clause(:QUESTION_MARK) { |_| Arguments::SingleCharacterGlob.new }
     end
 
     production(:brace_expansion) do

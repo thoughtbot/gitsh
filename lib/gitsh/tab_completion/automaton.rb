@@ -8,17 +8,37 @@ module Gitsh
       end
 
       def completions(context, token)
-        match(context).flat_map { |state| state.completions(token) }.uniq
-      end
-
-      def match(tokens)
-        tokens.inject(start_states) do |current_states, token|
-          current_states.map { |state| state.follow(token) }.inject(Set.new, :|)
-        end
+        walker.step_through(context).completions(token)
       end
 
       def accept_visitor(visitor)
         start_state.accept_visitor(visitor, Set.new)
+      end
+
+      def walker
+        Walker.new(start_state)
+      end
+
+      class Walker
+        def initialize(start_state)
+          @current_states = Set.new([start_state])
+        end
+
+        def step_through(values)
+          values.each(&method(:step))
+          self
+        end
+
+        def step(value)
+          @current_states = @current_states.
+            map { |state| state.follow(value) }.
+            inject(Set.new, :|)
+          self
+        end
+
+        def completions(prefix = '')
+          @current_states.flat_map { |state| state.completions(prefix) }.uniq
+        end
       end
 
       private

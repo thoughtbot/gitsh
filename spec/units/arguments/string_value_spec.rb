@@ -3,10 +3,10 @@ require 'gitsh/arguments/string_value'
 
 describe Gitsh::Arguments::StringValue do
   describe '#expand' do
-    it 'returns the wrapped string' do
+    it 'returns an array containing the wrapped string' do
       value = described_class.new('test')
 
-      expect(value.expand).to eq('test')
+      expect(value.expand).to eq ['test']
     end
   end
 
@@ -17,8 +17,16 @@ describe Gitsh::Arguments::StringValue do
 
       result = foo + bar
 
-      expect(result).to be_a(described_class)
-      expect(result.expand).to eq('foobar')
+      expect(result).to eq(described_class.new('foobar'))
+    end
+
+    it 'concatenates pattern values to string values' do
+      foo_string = described_class.new('foo')
+      bar_pattern = pattern_value(/bar/)
+
+      result = foo_string + bar_pattern
+
+      expect(result).to eq(pattern_value(/foobar/))
     end
 
     it 'raises for non-StringValue arguments' do

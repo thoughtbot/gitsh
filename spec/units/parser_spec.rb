@@ -198,6 +198,28 @@ describe Gitsh::Parser do
       ])
     end
 
+    it 'parses commands with wild-card arguments' do
+      command = stub_lazy_command
+
+      result = parse(tokens(
+        [:WORD, '!ls'], [:SPACE],
+        [:WORD, 'foo'], [:QUESTION_MARK], [:WORD, '.txt'],
+        [:EOS],
+      ))
+
+      expect(result).to eq command
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with([
+        string('!ls'),
+        composite([
+          string('foo'),
+          composite([
+            single_character_glob,
+            string('.txt'),
+          ]),
+        ]),
+      ])
+    end
+
     it 'parses commands with composite arguments' do
       command = stub_lazy_command
 
@@ -321,6 +343,10 @@ describe Gitsh::Parser do
 
   def brace_expansion(options)
     Gitsh::Arguments::BraceExpansion.new(options)
+  end
+
+  def single_character_glob
+    Gitsh::Arguments::SingleCharacterGlob.new
   end
 
   def composite(parts)

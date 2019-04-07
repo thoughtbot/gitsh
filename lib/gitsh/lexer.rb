@@ -12,6 +12,7 @@ module Gitsh
       '$',                          # Variable or sub-shell prefix
       '(', ')',                     # Parentheses
       '{', '}',                     # Braces (for expansion)
+      '?',                          # Globbing pattern specifiers
     ]).freeze
 
     SOFT_STRING_ESCAPABLES = CharacterClass.new([
@@ -69,6 +70,8 @@ module Gitsh
     rule(/\\\z/) { |_| [:INCOMPLETE, :continuation] }
     rule(/\\#{UNQUOTED_STRING_ESCAPABLES.to_regexp}/) { |t| [:WORD, t[1]] }
     rule(/\\/) { |t| [:WORD, t] }
+
+    rule(/\?/) { |t| [:QUESTION_MARK] }
 
     rule(/\s*#/) { push_state :comment }
     rule(/(?=[\r\n])/, :comment) { pop_state }

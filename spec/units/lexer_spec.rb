@@ -67,7 +67,11 @@ describe Gitsh::Lexer do
       ]
     end
 
-    [' ', "\t", "\f", '\'', '"', '\\', '$', '#', ';', '&', '|', '(', ')'].each do |char|
+    it 'recognises question marks' do
+      expect('?').to produce_tokens ['QUESTION_MARK', 'EOS']
+    end
+
+    [' ', "\t", "\f", '\'', '"', '\\', '$', '#', ';', '&', '|', '(', ')', '{', '}', '?'].each do |char|
       it "recognises unquoted words containing an escaped #{char.inspect}" do
         expect("foo\\#{char}bar").
           to produce_tokens ['WORD(foo)', "WORD(#{char})", 'WORD(bar)', 'EOS']

@@ -88,4 +88,21 @@ describe 'Glob patterns in arguments' do
       end
     end
   end
+
+  context 'wild cards (?)' do
+    it 'expands to include available arguments' do
+      GitshRunner.interactive do |gitsh|
+        write_file('foo1.txt', 'First test')
+        write_file('foo2.txt', 'Second test')
+        write_file('foo32.txt', 'Bad test')
+
+        gitsh.type('!cat foo?.txt')
+
+        expect(gitsh).to output_no_errors
+        expect(gitsh).to output(/First test/)
+        expect(gitsh).to output(/Second test/)
+        expect(gitsh).not_to output(/Bad test/)
+      end
+    end
+  end
 end
