@@ -12,7 +12,7 @@ module Gitsh
       def build
         start_state = Automaton::State.new('start')
         config_paths.each do |path|
-          DSL.load(path, start_state, env)
+          DSL.load(path, start_state)
         end
         Automaton.new(start_state)
       end

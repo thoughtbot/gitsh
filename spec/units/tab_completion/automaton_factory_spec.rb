@@ -19,7 +19,6 @@ describe Gitsh::TabCompletion::AutomatonFactory do
       expect(Gitsh::TabCompletion::DSL).to have_received(:load).with(
         config_path,
         start_state,
-        Gitsh::Registry.env,
       )
     end
   end
