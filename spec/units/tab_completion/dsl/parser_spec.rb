@@ -107,13 +107,14 @@ describe Gitsh::TabCompletion::DSL::Parser do
     end
 
     it 'parses rules with options' do
+      register_env
       result = described_class.parse(tokens(
         [:WORD, 'push'], [:OPT_VAR],
         [:INDENT], [:OPTION, '--force'],
         [:INDENT], [:OPTION, '--remote'], [:VAR, 'remote'],
         [:INDENT], [:OPTION, '--multiple'], [:WORD, '1'], [:WORD, '2'],
         [:EOS],
-      ), gitsh_env: double(:env))
+      ))
 
       rule_factory = result.rules.first
       expect(rule_factory.options).to be_a_choice
@@ -134,11 +135,12 @@ describe Gitsh::TabCompletion::DSL::Parser do
     end
 
     it 'parses multiple rules in the same input' do
+      register_env
       result = described_class.parse(tokens(
         [:WORD, 'push'], [:BLANK],
         [:WORD, 'pull'], [:BLANK], [:BLANK],
         [:WORD, 'fetch'], [:EOS],
-      ), gitsh_env: double(:env))
+      ))
 
       expect(result).to be_a_rule_set_factory
       expect(result.rules.length).to eq(3)
@@ -147,10 +149,8 @@ describe Gitsh::TabCompletion::DSL::Parser do
     end
 
     it 'parses empty input' do
-      result = described_class.parse(
-        tokens([:EOS]),
-        gitsh_env: double(:env),
-      )
+      register_env
+      result = described_class.parse(tokens([:EOS]))
 
       expect(result).to be_a_rule_set_factory
       expect(result.rules).to be_empty
@@ -201,8 +201,8 @@ describe Gitsh::TabCompletion::DSL::Parser do
   end
 
   def parse_single_rule(tokens)
-    env = double(:env)
-    result = described_class.parse(tokens, gitsh_env: env)
+    register_env
+    result = described_class.parse(tokens)
     expect(result).to be_a_rule_set_factory
     result.rules.first.root
   end

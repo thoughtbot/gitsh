@@ -7,7 +7,7 @@ module Gitsh
       def self.load(path, start_state)
         source = File.read(path)
         tokens = Lexer.lex(source, path)
-        factory = Parser.parse(tokens, gitsh_env: Registry.env)
+        factory = Parser.parse(tokens)
         factory.build(start_state)
       rescue Errno::ENOENT
       end

@@ -1,4 +1,5 @@
 require 'rltk'
+require 'gitsh/registry'
 require 'gitsh/tab_completion/dsl/choice_factory'
 require 'gitsh/tab_completion/dsl/concatenation_factory'
 require 'gitsh/tab_completion/dsl/fallback_transition_factory'
@@ -39,11 +40,6 @@ module Gitsh
         }.freeze
 
         class Environment < RLTK::Parser::Environment
-          def initialize(gitsh_env = nil)
-            @gitsh_env = gitsh_env
-            super()
-          end
-
           def maybe_concatenate(factories)
             if factories.length > 1
               ConcatenationFactory.new(factories)
@@ -63,8 +59,6 @@ module Gitsh
 
           private
 
-          attr_reader :gitsh_env
-
           def build_matcher(var_name)
             VARIABLE_TO_MATCHER_CLASS.fetch(var_name).new(gitsh_env)
           rescue KeyError
@@ -73,13 +67,14 @@ module Gitsh
               RLTK::Token.new(:VAR, var_name, pos(0)),
             )
           end
+
+          def gitsh_env
+            Registry.env
+          end
         end
 
         def self.parse(tokens, opts = {})
-          super(
-            tokens,
-            opts.merge(env: Environment.new(opts.fetch(:gitsh_env))),
-          )
+          super
         rescue RLTK::NotInLanguage => error
           raise ParseError.new('Unexpected', error.current)
         end
