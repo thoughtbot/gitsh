@@ -9,10 +9,6 @@ module Gitsh
     extend Registry::Client
     use_registry_for :env
 
-    def initialize(options={})
-      @status_factory = options.fetch(:status_factory, Status)
-    end
-
     def git_dir
       git_output('rev-parse --git-dir')
     end
@@ -26,7 +22,7 @@ module Gitsh
     end
 
     def status
-      status_factory.new(git_output('status --porcelain'), git_dir)
+      Status.new(git_output('status --porcelain'), git_dir)
     end
 
     def branches
@@ -105,8 +101,6 @@ module Gitsh
     end
 
     private
-
-    attr_reader :status_factory
 
     def current_branch_name
       branch_name = git_output('symbolic-ref HEAD --short')
