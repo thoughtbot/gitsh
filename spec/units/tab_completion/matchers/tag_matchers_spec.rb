@@ -14,7 +14,7 @@ describe Gitsh::TabCompletion::Matchers::TagMatcher do
   describe '#completions' do
     context 'given blank input' do
       it 'returns the names of all tags' do
-        register_env(repo_tags: ['v1.0', 'v1.1'])
+        register_repo(tags: ['v1.0', 'v1.1'])
         matcher = described_class.new
 
         expect(matcher.completions('')).to match_array ['v1.0', 'v1.1']
@@ -23,7 +23,7 @@ describe Gitsh::TabCompletion::Matchers::TagMatcher do
 
     context 'given a partial tag name' do
       it 'returns all tag names matching the input' do
-        register_env(repo_tags: ['v1.0', 'v2.0'])
+        register_repo(tags: ['v1.0', 'v2.0'])
         matcher = described_class.new
 
         expect(matcher.completions('v')).

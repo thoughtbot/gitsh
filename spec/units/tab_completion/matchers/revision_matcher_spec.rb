@@ -14,7 +14,7 @@ describe Gitsh::TabCompletion::Matchers::RevisionMatcher do
   describe '#completions' do
     context 'given blank input' do
       it 'returns the names of all heads' do
-        register_env(repo_heads: ['master', 'my-feature'])
+        register_repo(heads: ['master', 'my-feature'])
         matcher = described_class.new
 
         expect(matcher.completions('')).to match_array ['master', 'my-feature']
@@ -23,7 +23,7 @@ describe Gitsh::TabCompletion::Matchers::RevisionMatcher do
 
     context 'given input containing a prefix' do
       it 'returns the name of all heads with the prefix added' do
-        register_env(repo_heads: ['master', 'my-feature'])
+        register_repo(heads: ['master', 'my-feature'])
         matcher = described_class.new
 
         expect(matcher.completions('master..')).
@@ -35,7 +35,7 @@ describe Gitsh::TabCompletion::Matchers::RevisionMatcher do
 
     context 'given a partial revision name' do
       it 'returns all heads matching the input' do
-        register_env(repo_heads: ['master', 'my-feature'])
+        register_repo(heads: ['master', 'my-feature'])
         matcher = described_class.new
 
         expect(matcher.completions('m')).

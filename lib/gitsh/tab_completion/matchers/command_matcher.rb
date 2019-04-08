@@ -7,7 +7,7 @@ module Gitsh
     module Matchers
       class CommandMatcher < BaseMatcher
         extend Registry::Client
-        use_registry_for :env
+        use_registry_for :env, :repo
 
         def initialize(internal_command = Commands::InternalCommand)
           @internal_command = internal_command
@@ -22,7 +22,10 @@ module Gitsh
         attr_reader :internal_command
 
         def all_completions
-          env.git_commands + env.git_aliases + internal_command.commands
+          repo.commands + \
+            repo.aliases + \
+            env.local_aliases + \
+            internal_command.commands
         end
       end
     end

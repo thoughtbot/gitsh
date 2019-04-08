@@ -6,7 +6,7 @@ module Gitsh
     module Matchers
       class BranchMatcher < BaseMatcher
         extend Registry::Client
-        use_registry_for :env
+        use_registry_for :repo
 
         def name
           'branch'
@@ -15,7 +15,7 @@ module Gitsh
         private
 
         def all_completions
-          env.repo_branches
+          repo.branches
         end
       end
     end

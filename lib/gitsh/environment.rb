@@ -19,7 +19,7 @@ module Gitsh
       @output_stream = options.fetch(:output_stream, $stdout)
       @error_stream = options.fetch(:error_stream, $stderr)
       @variables = Hash.new
-      @magic_variables = options.fetch(:magic_variables) { MagicVariables.new(repo) }
+      @magic_variables = options.fetch(:magic_variables) { MagicVariables.new }
       @config_directory = options.fetch(
         :config_directory,
         DEFAULT_CONFIG_DIRECTORY,
@@ -86,54 +86,14 @@ module Gitsh
       input_stream.tty?
     end
 
-    def repo_branches
-      repo.branches
-    end
-
-    def repo_tags
-      repo.tags
-    end
-
-    def repo_remotes
-      repo.remotes
-    end
-
-    def repo_heads
-      repo.heads
-    end
-
-    def repo_current_head
-      repo.current_head
-    end
-
-    def repo_status
-      repo.status
-    end
-
-    def repo_config_color(name, default)
-      if color_override = fetch(name) { false }
-        repo.color(color_override)
-      else
-        repo.config_color(name, default)
-      end
-    end
-
-    def git_commands
-      repo.commands
-    end
-
-    def git_aliases
-      (repo.aliases + local_aliases).sort
-    end
-
-    private
-
-    attr_reader :variables, :magic_variables
-
     def local_aliases
       variables.keys.
         select { |key| key.to_s.start_with?('alias.') }.
         map { |key| key.to_s.sub('alias.', '') }
     end
+
+    private
+
+    attr_reader :variables, :magic_variables
   end
 end

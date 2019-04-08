@@ -13,7 +13,7 @@ describe Gitsh::TabCompletion::Matchers::RemoteMatcher do
 
   describe '#completions' do
     it 'returns the available Git remotes' do
-      register_env(repo_remotes: ['origin', 'github'])
+      register_repo(remotes: ['origin', 'github'])
       matcher = described_class.new
 
       expect(matcher.completions('')).
@@ -21,7 +21,7 @@ describe Gitsh::TabCompletion::Matchers::RemoteMatcher do
     end
 
     it 'filters the results based on the input' do
-      register_env(repo_remotes: ['origin', 'github'])
+      register_repo(remotes: ['origin', 'github'])
       matcher = described_class.new
 
       expect(matcher.completions('g')).to match_array ['github']

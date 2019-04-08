@@ -238,86 +238,13 @@ describe Gitsh::Environment do
     end
   end
 
-  describe '#git_aliases' do
-    it 'combines locally-set aliases with global aliases' do
-      register_repo(aliases: ['foo', 'bar'])
+  describe '#local_aliases' do
+    it 'returns names of aliases defined in the gitsh session' do
       env = described_class.new
-      register(env: env)
       env['aliasish'] = 'not relevant'
       env['alias.baz'] = '!echo baz'
 
-      expect(env.git_aliases).to eq ['foo', 'bar', 'baz'].sort
-    end
-  end
-
-  context 'delegated methods' do
-    let(:repo) { Gitsh::Registry[:repo] }
-    let(:env) { described_class.new }
-
-    describe '#repo_branches' do
-      it 'is delegated to the GitRepository' do
-        expect(env).to delegate(:repo_branches).to(repo, :branches)
-      end
-    end
-
-    describe '#repo_tags' do
-      it 'is delegated to the GitRepository' do
-        expect(env).to delegate(:repo_tags).to(repo, :tags)
-      end
-    end
-
-    describe '#repo_heads' do
-      it 'is delegated to the GitRepository' do
-        expect(env).to delegate(:repo_heads).to(repo, :heads)
-      end
-    end
-
-    describe '#repo_current_head' do
-      it 'is delegated to the GitRepository' do
-        expect(env).to delegate(:repo_current_head).to(repo, :current_head)
-      end
-    end
-
-    describe '#repo_status' do
-      it 'is delegated to the GitRepository' do
-        expect(env).to delegate(:repo_status).to(repo, :status)
-      end
-    end
-
-    describe '#git_commands' do
-      it 'is delegated to the GitRepository' do
-        expect(env).to delegate(:git_commands).to(repo, :commands)
-      end
-    end
-
-    describe '#repo_config_color' do
-      context 'when there is no environment variable set' do
-        it 'gets the color setting from the repo' do
-          expected_color = double('color')
-          register_repo(config_color: expected_color, config: nil)
-          env = described_class.new
-
-          color = env.repo_config_color('test.color.foo', 'red')
-
-          expect(color).to eq expected_color
-          expect(Gitsh::Registry[:repo]).to have_received(:config_color).
-            with('test.color.foo', 'red')
-        end
-      end
-
-      context 'when there is an environment variable set' do
-        it 'gets the repo to convert the color to an ANSI escape sequence' do
-          expected_color = double('color')
-          register_repo(color: expected_color, config: nil)
-          env = described_class.new
-
-          env['test.color.foo'] = 'blue'
-          color = env.repo_config_color('test.color.foo', 'red')
-
-          expect(color).to eq expected_color
-          expect(Gitsh::Registry[:repo]).to have_received(:color).with('blue')
-        end
-      end
+      expect(env.local_aliases).to eq ['baz']
     end
   end
 

@@ -6,7 +6,7 @@ module Gitsh
     module Matchers
       class TagMatcher < BaseMatcher
         extend Registry::Client
-        use_registry_for :env
+        use_registry_for :repo
 
         def name
           'tag'
@@ -15,7 +15,7 @@ module Gitsh
         private
 
         def all_completions
-          env.repo_tags
+          repo.tags
         end
       end
     end

@@ -6,7 +6,7 @@ module Gitsh
     module Matchers
       class RevisionMatcher < BaseMatcher
         extend Registry::Client
-        use_registry_for :env
+        use_registry_for :repo
 
         SEPARATORS = /(?:\.\.+|[:^~\\])/
 
@@ -22,7 +22,7 @@ module Gitsh
         private
 
         def all_completions
-          env.repo_heads
+          repo.heads
         end
 
         def split(token)

@@ -13,9 +13,12 @@ describe Gitsh::TabCompletion::Matchers::CommandMatcher do
 
   describe '#completions' do
     it 'returns the available commands (Git, internal, and aliases)' do
+      register_repo(
+        commands: ['add', 'commit'],
+        aliases: ['graph'],
+      )
       register_env(
-        git_commands: ['add', 'commit'],
-        git_aliases: ['graph', 'force'],
+        local_aliases: ['force'],
       )
       internal_command = double(
         :internal_command,
@@ -31,9 +34,12 @@ describe Gitsh::TabCompletion::Matchers::CommandMatcher do
     end
 
     it 'filters the results based on the input' do
+      register_repo(
+        commands: ['add', 'grep'],
+        aliases: ['graph'],
+      )
       register_env(
-        git_commands: ['add', 'grep'],
-        git_aliases: ['graph', 'force'],
+        local_aliases: ['force'],
       )
       internal_command = double(
         :internal_command,

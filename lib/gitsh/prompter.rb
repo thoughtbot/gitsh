@@ -24,7 +24,7 @@ module Gitsh
 
     class Prompt
       extend Registry::Client
-      use_registry_for :env
+      use_registry_for :env, :repo
 
       def initialize(use_color, prompt_color)
         @use_color = use_color
@@ -77,7 +77,7 @@ module Gitsh
 
       def branch_name
         @branch_name ||= if repo_status.initialized?
-          env.repo_current_head
+          repo.current_head
         else
           'uninitialized'
         end
@@ -120,7 +120,7 @@ module Gitsh
       end
 
       def repo_status
-        @repo_status ||= env.repo_status
+        @repo_status ||= repo.status
       end
     end
   end
