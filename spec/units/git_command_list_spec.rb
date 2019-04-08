@@ -7,9 +7,11 @@ describe Gitsh::GitCommandList do
   MODERN_HELP_COMMAND = "#{GIT_COMMAND} help -a --no-verbose".freeze
   LEGACY_HELP_COMMAND = "#{GIT_COMMAND} help -a".freeze
 
+  before { register_env(git_command: GIT_COMMAND) }
+
   describe '#to_a' do
     it 'produces the list of porcelain commands' do
-      commands = Gitsh::GitCommandList.new(env).to_a
+      commands = Gitsh::GitCommandList.new.to_a
 
       expect(commands).to include %(add)
       expect(commands).to include %(commit)
@@ -23,7 +25,7 @@ describe Gitsh::GitCommandList do
       it 'uses that command list' do
         stub_command(MODERN_LIST_COMMAND, output: "commit\nstatus\nadd\n")
 
-        commands = Gitsh::GitCommandList.new(env).to_a
+        commands = Gitsh::GitCommandList.new.to_a
 
         expect(commands).to eq ['add', 'commit', 'status']
       end
@@ -37,7 +39,7 @@ describe Gitsh::GitCommandList do
           output: "Commands:\n  commit   status\n  add\n",
         )
 
-        commands = Gitsh::GitCommandList.new(env).to_a
+        commands = Gitsh::GitCommandList.new.to_a
 
         expect(commands).to eq ['add', 'commit', 'status']
       end
@@ -52,7 +54,7 @@ describe Gitsh::GitCommandList do
           output: "Commands:\n  commit   status\n  add\n",
         )
 
-        commands = Gitsh::GitCommandList.new(env).to_a
+        commands = Gitsh::GitCommandList.new.to_a
 
         expect(commands).to eq ['add', 'commit', 'status']
       end
@@ -64,15 +66,11 @@ describe Gitsh::GitCommandList do
         stub_command(MODERN_HELP_COMMAND, success: false)
         stub_command(LEGACY_HELP_COMMAND, success: false)
 
-        commands = Gitsh::GitCommandList.new(env).to_a
+        commands = Gitsh::GitCommandList.new.to_a
 
         expect(commands).to eq []
       end
     end
-  end
-
-  def env
-    double(git_command: GIT_COMMAND)
   end
 
   def stub_command(command, success: true, output: '')

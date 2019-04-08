@@ -44,7 +44,7 @@ module Gitsh
     end
 
     def commands
-      GitCommandList.new(env).to_a
+      GitCommandList.new.to_a
     end
 
     def aliases
