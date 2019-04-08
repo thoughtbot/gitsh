@@ -5,6 +5,9 @@ require 'gitsh/tab_completion/dsl'
 module Gitsh
   module TabCompletion
     class AutomatonFactory
+      extend Registry::Client
+      use_registry_for :env
+
       def self.build
         new.build
       end
@@ -24,10 +27,6 @@ module Gitsh
           File.join(env.config_directory, 'completions'),
           File.join(ENV.fetch('HOME', '/'), '.gitsh_completions'),
         ]
-      end
-
-      def env
-        Registry.env
       end
     end
   end

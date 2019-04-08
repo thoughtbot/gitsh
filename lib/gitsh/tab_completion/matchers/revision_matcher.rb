@@ -5,6 +5,9 @@ module Gitsh
   module TabCompletion
     module Matchers
       class RevisionMatcher < BaseMatcher
+        extend Registry::Client
+        use_registry_for :env
+
         SEPARATORS = /(?:\.\.+|[:^~\\])/
 
         def name
@@ -25,10 +28,6 @@ module Gitsh
         def split(token)
           parts = token.rpartition(SEPARATORS)
           [parts[0...-1].join, parts[-1]]
-        end
-
-        def env
-          Registry.env
         end
       end
     end

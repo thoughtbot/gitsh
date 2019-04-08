@@ -5,6 +5,9 @@ module Gitsh
   module TabCompletion
     module Matchers
       class RemoteMatcher < BaseMatcher
+        extend Registry::Client
+        use_registry_for :env
+
         def name
           'remote'
         end
@@ -13,10 +16,6 @@ module Gitsh
 
         def all_completions
           env.repo_remotes
-        end
-
-        def env
-          Registry.env
         end
       end
     end

@@ -3,6 +3,9 @@ require 'gitsh/registry'
 module Gitsh
   module TabCompletion
     class VariableCompleter
+      extend Registry::Client
+      use_registry_for :env
+
       def initialize(line_editor, input)
         @line_editor = line_editor
         @input = input
@@ -46,10 +49,6 @@ module Gitsh
           parts = input.rpartition(/\$\{?/)
           [parts[0...-1].join, parts.last]
         )
-      end
-
-      def env
-        Registry.env
       end
     end
   end

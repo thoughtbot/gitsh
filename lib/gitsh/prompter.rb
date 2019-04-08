@@ -12,7 +12,6 @@ module Gitsh
     def initialize(options={})
       @use_color = options.fetch(:color, true)
       @prompt_color = options.fetch(:prompt_color) { PromptColor.new }
-      @options = options
     end
 
     def prompt
@@ -24,6 +23,9 @@ module Gitsh
     attr_reader :use_color, :prompt_color
 
     class Prompt
+      extend Registry::Client
+      use_registry_for :env
+
       def initialize(use_color, prompt_color)
         @use_color = use_color
         @prompt_color = prompt_color
@@ -119,10 +121,6 @@ module Gitsh
 
       def repo_status
         @repo_status ||= env.repo_status
-      end
-
-      def env
-        Registry.env
       end
     end
   end

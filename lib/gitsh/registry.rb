@@ -4,6 +4,15 @@ module Gitsh
   class Registry
     include Singleton
 
+    module Client
+      def use_registry_for(*keys)
+        keys.each do |key|
+          define_method(key) { Registry[key] }
+          private(key)
+        end
+      end
+    end
+
     def self.[]=(name, value)
       instance[name] = value
     end

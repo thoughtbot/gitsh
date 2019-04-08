@@ -2,6 +2,9 @@ require 'gitsh/registry'
 
 module Gitsh
   class History
+    extend Registry::Client
+    use_registry_for :env
+
     DEFAULT_HISTORY_FILE = "#{Dir.home}/.gitsh_history"
     DEFAULT_HISTORY_SIZE = 500
 
@@ -38,10 +41,6 @@ module Gitsh
 
     def history_size
       env.fetch('gitsh.historySize') { DEFAULT_HISTORY_SIZE }.to_i
-    end
-
-    def env
-      Registry.env
     end
   end
 end

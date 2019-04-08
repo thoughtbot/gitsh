@@ -4,6 +4,9 @@ require 'gitsh/registry'
 module Gitsh
   module InputStrategies
     class File
+      extend Registry::Client
+      use_registry_for :env
+
       STDIN_PLACEHOLDER = '-'.freeze
 
       def initialize(opts)
@@ -52,10 +55,6 @@ module Gitsh
 
       def next_line
         file.readline.chomp
-      end
-
-      def env
-        Registry.env
       end
     end
   end

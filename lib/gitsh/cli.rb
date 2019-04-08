@@ -3,10 +3,14 @@ require 'gitsh/exit_statuses'
 require 'gitsh/input_strategies/file'
 require 'gitsh/input_strategies/interactive'
 require 'gitsh/interpreter'
+require 'gitsh/registry'
 require 'gitsh/version'
 
 module Gitsh
   class CLI
+    extend Registry::Client
+    use_registry_for :env
+
     def initialize(opts={})
       @unparsed_args = opts.fetch(:args, ARGV).clone
       @interactive_input_strategy = opts.fetch(:interactive_input_strategy) do
@@ -98,10 +102,6 @@ module Gitsh
         'executable',
       )
       exit EX_UNAVAILABLE
-    end
-
-    def env
-      Registry.env
     end
   end
 end

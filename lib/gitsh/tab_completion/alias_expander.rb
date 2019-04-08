@@ -5,6 +5,9 @@ require 'gitsh/tab_completion/tokens_to_words'
 module Gitsh
   module TabCompletion
     class AliasExpander
+      extend Registry::Client
+      use_registry_for :env
+
       def initialize(words)
         @words = words
       end
@@ -39,10 +42,6 @@ module Gitsh
 
       def expanded_alias
         @_expanded_alias ||= env.fetch("alias.#{words.first}")
-      end
-
-      def env
-        Registry.env
       end
     end
   end

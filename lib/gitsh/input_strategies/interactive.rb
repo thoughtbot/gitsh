@@ -11,6 +11,9 @@ require 'gitsh/terminal'
 module Gitsh
   module InputStrategies
     class Interactive
+      extend Registry::Client
+      use_registry_for :env
+
       BLANK_LINE_REGEX = /^\s*$/
       CONTINUATION_PROMPT = '> '.freeze
 
@@ -112,10 +115,6 @@ module Gitsh
 
       def prompter
         @prompter ||= Prompter.new(color: terminal.color_support?)
-      end
-
-      def env
-        Registry.env
       end
     end
   end
