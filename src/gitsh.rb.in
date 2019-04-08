@@ -3,12 +3,14 @@ $LOAD_PATH.unshift('@rubylibdir@')
 require '@gemsetuppath@'
 require 'gitsh/cli'
 require 'gitsh/environment'
+require 'gitsh/git_repository'
 require 'gitsh/registry'
 
 begin
   Gitsh::Registry[:env] = Gitsh::Environment.new(
     config_directory: '@pkgsysconfdir@',
   )
+  Gitsh::Registry[:repo] = Gitsh::GitRepository.new
   Gitsh::CLI.new.run
 rescue => e
   $stderr.puts "gitsh: Error: #{e.message}"
