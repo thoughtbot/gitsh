@@ -2,11 +2,11 @@ require 'spec_helper'
 require 'gitsh/environment'
 
 describe Gitsh::Environment do
+  before { register_repo }
+
   describe '#[]=' do
     it 'sets a gitsh environment variable' do
-      repository = double('GitRepository', config: nil)
-      factory = double('RepositoryFactory', new: repository)
-      env = described_class.new(repository_factory: factory)
+      env = described_class.new
 
       env['foo'] = 'bar'
       expect(env.fetch('foo')).to eq 'bar'
@@ -38,11 +38,10 @@ describe Gitsh::Environment do
 
     context 'for a Git configuration variable' do
       it 'returns the value of the Git configuration variable' do
-        repository = double('GitRepository')
-        allow(repository).to receive(:config).with('user.name', false).
-          and_return('John Smith')
-        factory = double('RepositoryFactory', new: repository)
-        env = described_class.new(repository_factory: factory)
+        allow(Gitsh::Registry[:repo]).to receive(:config).
+          with('user.name', false).and_return('John Smith')
+        env = described_class.new
+        register(env: env)
 
         expect(env.fetch(:'user.name')).to eq 'John Smith'
         expect(env.fetch('user.name')).to eq 'John Smith'
@@ -51,8 +50,9 @@ describe Gitsh::Environment do
 
     context 'for an unknown variable with a default block given' do
       it 'yields to the block' do
+        repo = Gitsh::GitRepository.new
         env = described_class.new
-        register(env)
+        register(env: env, repo: repo)
 
         expect(env.fetch(:unknown) { 'default' }).to eq 'default'
       end
@@ -60,6 +60,7 @@ describe Gitsh::Environment do
 
     context 'for an unknown variable with no default block given' do
       it 'raises an error' do
+        allow(Gitsh::Registry[:repo]).to receive(:config).and_raise(KeyError)
         env = described_class.new
 
         expect { env.fetch(:unknown) }.
@@ -70,16 +71,12 @@ describe Gitsh::Environment do
 
   describe '#available_variables' do
     it 'returns the names of all available variables' do
-      repository = double('GitRepository')
-      allow(repository).to receive(:available_config_variables).
-        and_return([:'user.name'])
-      factory = double('RepositoryFactory', new: repository)
+      register_repo(available_config_variables: [:'user.name'])
       magic_variables = double('MagicVariables')
       allow(magic_variables).to receive(:available_variables).
         and_return([:_prior])
       env = described_class.new(
         magic_variables: magic_variables,
-        repository_factory: factory,
       )
       env[:foo] = 'bar'
       env['user.name'] = 'Config Override'
@@ -94,6 +91,7 @@ describe Gitsh::Environment do
 
   describe '#clone' do
     it 'creates a copy with an isolated set of variables' do
+      allow(Gitsh::Registry[:repo]).to receive(:config).and_raise(KeyError)
       original = described_class.new
       original['a'] = 'A is set'
 
@@ -154,8 +152,9 @@ describe Gitsh::Environment do
   describe '#git_command' do
     it 'defaults to "/usr/bin/env git"' do
       with_a_temporary_home_directory do
+        repo = Gitsh::GitRepository.new
         env = described_class.new
-        register(env)
+        register(repo: repo, env: env)
 
         expect(env.git_command).to eq '/usr/bin/env git'
       end
@@ -241,19 +240,19 @@ describe Gitsh::Environment do
 
   describe '#git_aliases' do
     it 'combines locally-set aliases with global aliases' do
-      repo = double('GitRepository', aliases: %w( foo bar ))
-      env = described_class.new(repository_factory: double(new: repo))
+      register_repo(aliases: ['foo', 'bar'])
+      env = described_class.new
+      register(env: env)
       env['aliasish'] = 'not relevant'
       env['alias.baz'] = '!echo baz'
 
-      expect(env.git_aliases).to eq %w( foo bar baz ).sort
+      expect(env.git_aliases).to eq ['foo', 'bar', 'baz'].sort
     end
   end
 
   context 'delegated methods' do
-    let(:repo) { double }
-    let(:repo_factory) { double('RepositoryFactory', new: repo) }
-    let(:env) { described_class.new(repository_factory: repo_factory) }
+    let(:repo) { Gitsh::Registry[:repo] }
+    let(:env) { described_class.new }
 
     describe '#repo_branches' do
       it 'is delegated to the GitRepository' do
@@ -295,13 +294,13 @@ describe Gitsh::Environment do
       context 'when there is no environment variable set' do
         it 'gets the color setting from the repo' do
           expected_color = double('color')
-          repo = double('GitRepository', config_color: expected_color, config: nil)
-          env = described_class.new(repository_factory: double(new: repo))
+          register_repo(config_color: expected_color, config: nil)
+          env = described_class.new
 
           color = env.repo_config_color('test.color.foo', 'red')
 
           expect(color).to eq expected_color
-          expect(repo).to have_received(:config_color).
+          expect(Gitsh::Registry[:repo]).to have_received(:config_color).
             with('test.color.foo', 'red')
         end
       end
@@ -309,20 +308,22 @@ describe Gitsh::Environment do
       context 'when there is an environment variable set' do
         it 'gets the repo to convert the color to an ANSI escape sequence' do
           expected_color = double('color')
-          repo = double('GitRepository', color: expected_color, config: nil)
-          env = described_class.new(repository_factory: double(new: repo))
+          register_repo(color: expected_color, config: nil)
+          env = described_class.new
 
           env['test.color.foo'] = 'blue'
           color = env.repo_config_color('test.color.foo', 'red')
 
           expect(color).to eq expected_color
-          expect(repo).to have_received(:color).with('blue')
+          expect(Gitsh::Registry[:repo]).to have_received(:color).with('blue')
         end
       end
     end
   end
 
-  def register(env)
-    Gitsh::Registry[:env] = env
+  def register(entries)
+    entries.each do |key, object|
+      Gitsh::Registry[key] = object
+    end
   end
 end

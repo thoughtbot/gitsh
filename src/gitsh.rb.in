@@ -7,10 +7,10 @@ require 'gitsh/git_repository'
 require 'gitsh/registry'
 
 begin
+  Gitsh::Registry[:repo] = Gitsh::GitRepository.new
   Gitsh::Registry[:env] = Gitsh::Environment.new(
     config_directory: '@pkgsysconfdir@',
   )
-  Gitsh::Registry[:repo] = Gitsh::GitRepository.new
   Gitsh::CLI.new.run
 rescue => e
   $stderr.puts "gitsh: Error: #{e.message}"

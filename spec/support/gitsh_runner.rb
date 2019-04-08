@@ -3,6 +3,7 @@ require 'tempfile'
 require 'tmpdir'
 require 'gitsh/cli'
 require 'gitsh/environment'
+require 'gitsh/git_repository'
 require 'gitsh/line_editor_history_filter'
 require 'gitsh/registry'
 require 'rspec/mocks/test_double'
@@ -130,6 +131,7 @@ class GitshRunner
   end
 
   def populate_registry
+    Gitsh::Registry[:repo] = Gitsh::GitRepository.new
     Gitsh::Registry[:env] = env
   end
 

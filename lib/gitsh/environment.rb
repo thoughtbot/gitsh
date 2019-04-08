@@ -2,9 +2,13 @@ require 'gitsh/error'
 require 'gitsh/git_repository'
 require 'gitsh/line_editor'
 require 'gitsh/magic_variables'
+require 'gitsh/registry'
 
 module Gitsh
   class Environment
+    extend Registry::Client
+    use_registry_for :repo
+
     DEFAULT_GIT_COMMAND = '/usr/bin/env git'.freeze
     DEFAULT_CONFIG_DIRECTORY = '/usr/local/etc/gitsh'.freeze
 
@@ -14,9 +18,8 @@ module Gitsh
       @input_stream = options.fetch(:input_stream, $stdin)
       @output_stream = options.fetch(:output_stream, $stdout)
       @error_stream = options.fetch(:error_stream, $stderr)
-      @repo = options.fetch(:repository_factory, GitRepository).new
       @variables = Hash.new
-      @magic_variables = options.fetch(:magic_variables) { MagicVariables.new(@repo) }
+      @magic_variables = options.fetch(:magic_variables) { MagicVariables.new(repo) }
       @config_directory = options.fetch(
         :config_directory,
         DEFAULT_CONFIG_DIRECTORY,
@@ -125,7 +128,7 @@ module Gitsh
 
     private
 
-    attr_reader :variables, :magic_variables, :repo
+    attr_reader :variables, :magic_variables
 
     def local_aliases
       variables.keys.

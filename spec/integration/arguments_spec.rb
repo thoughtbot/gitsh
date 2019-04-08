@@ -5,6 +5,7 @@ require 'gitsh/environment'
 describe 'When passed arguments' do
   describe '--version' do
     it 'outputs the version, and then exits' do
+      setup_repo
       output, error = setup_output_streams
 
       runner = lambda do
@@ -20,6 +21,7 @@ describe 'When passed arguments' do
   %w(--badger -x).each do |argument|
     describe argument do
       it 'outputs a usage message and exits' do
+        setup_repo
         output, error = setup_output_streams
 
         runner = lambda do
@@ -44,6 +46,10 @@ describe 'When passed arguments' do
         expect(gitsh).to output(/^Fake git: init$/)
       end
     end
+  end
+
+  def setup_repo
+    Gitsh::Registry[:repo] = Gitsh::GitRepository.new
   end
 
   def setup_output_streams
