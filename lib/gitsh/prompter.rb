@@ -11,7 +11,7 @@ module Gitsh
     def initialize(options={})
       @env = options.fetch(:env)
       @use_color = options.fetch(:color, true)
-      @prompt_color = options.fetch(:prompt_color) { PromptColor.new(@env) }
+      @prompt_color = options.fetch(:prompt_color) { PromptColor.new }
       @options = options
     end
 

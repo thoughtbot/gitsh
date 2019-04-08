@@ -1,11 +1,8 @@
 require 'gitsh/colors'
+require 'gitsh/registry'
 
 module Gitsh
   class PromptColor
-    def initialize(env)
-      @env = env
-    end
-
     def status_color(status)
       if !status.initialized?
         env.repo_config_color('gitsh.color.uninitialized', 'normal red')
@@ -20,6 +17,8 @@ module Gitsh
 
     private
 
-    attr_reader :env
+    def env
+      Registry.env
+    end
   end
 end
