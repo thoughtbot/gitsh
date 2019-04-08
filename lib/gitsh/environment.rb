@@ -14,7 +14,7 @@ module Gitsh
       @input_stream = options.fetch(:input_stream, $stdin)
       @output_stream = options.fetch(:output_stream, $stdout)
       @error_stream = options.fetch(:error_stream, $stderr)
-      @repo = options.fetch(:repository_factory, GitRepository).new(self)
+      @repo = options.fetch(:repository_factory, GitRepository).new
       @variables = Hash.new
       @magic_variables = options.fetch(:magic_variables) { MagicVariables.new(@repo) }
       @config_directory = options.fetch(

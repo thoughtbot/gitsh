@@ -2,11 +2,14 @@ require 'open3'
 require 'shellwords'
 require 'gitsh/git_repository/status'
 require 'gitsh/git_command_list'
+require 'gitsh/registry'
 
 module Gitsh
   class GitRepository
-    def initialize(env, options={})
-      @env = env
+    extend Registry::Client
+    use_registry_for :env
+
+    def initialize(options={})
       @status_factory = options.fetch(:status_factory, Status)
     end
 
@@ -103,7 +106,7 @@ module Gitsh
 
     private
 
-    attr_reader :env, :status_factory
+    attr_reader :status_factory
 
     def current_branch_name
       branch_name = git_output('symbolic-ref HEAD --short')

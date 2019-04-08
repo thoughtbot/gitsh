@@ -52,6 +52,7 @@ describe Gitsh::Environment do
     context 'for an unknown variable with a default block given' do
       it 'yields to the block' do
         env = described_class.new
+        register(env)
 
         expect(env.fetch(:unknown) { 'default' }).to eq 'default'
       end
@@ -154,6 +155,7 @@ describe Gitsh::Environment do
     it 'defaults to "/usr/bin/env git"' do
       with_a_temporary_home_directory do
         env = described_class.new
+        register(env)
 
         expect(env.git_command).to eq '/usr/bin/env git'
       end
@@ -318,5 +320,9 @@ describe Gitsh::Environment do
         end
       end
     end
+  end
+
+  def register(env)
+    Gitsh::Registry[:env] = env
   end
 end

@@ -5,11 +5,13 @@ require 'gitsh/git_repository'
 describe Gitsh::GitRepository do
   include Color
 
+  before { register_env(git_command: '/usr/bin/env git') }
+
   describe '#git_dir' do
     it 'returns the path to the .git directory' do
       with_a_temporary_home_directory do
         in_a_temporary_directory do
-          repo = Gitsh::GitRepository.new(env)
+          repo = Gitsh::GitRepository.new
           run 'git init'
 
           expect(repo.git_dir).to eq '.git'
@@ -23,7 +25,7 @@ describe Gitsh::GitRepository do
       with_a_temporary_home_directory do
         in_a_temporary_directory do
           root_dir = Dir.pwd
-          repo = Gitsh::GitRepository.new(env)
+          repo = Gitsh::GitRepository.new
           run 'git init'
 
           expect(repo.root_dir).to eq(root_dir)
@@ -40,7 +42,7 @@ describe Gitsh::GitRepository do
       it 'returns the empty string' do
         with_a_temporary_home_directory do
           in_a_temporary_directory do
-            repo = Gitsh::GitRepository.new(env)
+            repo = Gitsh::GitRepository.new
 
             expect(repo.root_dir).to eq('')
           end
@@ -53,7 +55,7 @@ describe Gitsh::GitRepository do
     it 'returns the name of the current git branch' do
       with_a_temporary_home_directory do
         in_a_temporary_directory do
-          repo = Gitsh::GitRepository.new(env)
+          repo = Gitsh::GitRepository.new
           run 'git init'
           expect(repo.current_head).to eq 'master'
           run 'git checkout -b my-feature'
@@ -65,7 +67,7 @@ describe Gitsh::GitRepository do
     it 'returns the name of the current git branch with a forward slash' do
       with_a_temporary_home_directory do
         in_a_temporary_directory do
-          repo = Gitsh::GitRepository.new(env)
+          repo = Gitsh::GitRepository.new
           run 'git init'
           run 'git checkout -b feature/foo'
           expect(repo.current_head).to eq 'feature/foo'
@@ -76,7 +78,7 @@ describe Gitsh::GitRepository do
     it 'returns the name of an annotated tag if there is no branch' do
       with_a_temporary_home_directory do
         in_a_temporary_directory do
-          repo = Gitsh::GitRepository.new(env)
+          repo = Gitsh::GitRepository.new
           run 'git init'
           run 'git commit --allow-empty -m "First"'
           run 'git tag -m "Tag pointing to first" first'
@@ -91,7 +93,7 @@ describe Gitsh::GitRepository do
     it 'returns the an abbreviated SHA if there is no branch or tag' do
       with_a_temporary_home_directory do
         in_a_temporary_directory do
-          repo = Gitsh::GitRepository.new(env)
+          repo = Gitsh::GitRepository.new
           run 'git init'
           run 'git commit --allow-empty -m "First"'
           run 'git commit --allow-empty -m "Second"'
@@ -104,7 +106,7 @@ describe Gitsh::GitRepository do
 
     it 'returns nil in an uninitialized repository' do
       Dir.chdir('/') do
-        repo = Gitsh::GitRepository.new(env)
+        repo = Gitsh::GitRepository.new
         expect(repo.current_head).to be_nil
       end
     end
@@ -114,7 +116,7 @@ describe Gitsh::GitRepository do
     it 'produces all the branch names' do
       with_a_temporary_home_directory do
         in_a_temporary_directory do
-          repo = Gitsh::GitRepository.new(env)
+          repo = Gitsh::GitRepository.new
           run 'git init'
           run 'git commit --allow-empty -m "Something swell"'
 
@@ -133,7 +135,7 @@ describe Gitsh::GitRepository do
     it 'produces all the tag names' do
       with_a_temporary_home_directory do
         in_a_temporary_directory do
-          repo = Gitsh::GitRepository.new(env)
+          repo = Gitsh::GitRepository.new
           run 'git init'
           run 'git commit --allow-empty -m "Something swell"'
           run 'git tag v1.0'
@@ -153,7 +155,7 @@ describe Gitsh::GitRepository do
     it 'produces all the branches and tags' do
       with_a_temporary_home_directory do
         in_a_temporary_directory do
-          repo = Gitsh::GitRepository.new(env)
+          repo = Gitsh::GitRepository.new
           run 'git init'
           run 'git commit --allow-empty -m "Something swell"'
           expect(repo.heads).to eq %w( master )
@@ -170,7 +172,7 @@ describe Gitsh::GitRepository do
       commands = double(:commands)
       command_list = instance_double(Gitsh::GitCommandList, to_a: commands)
       allow(Gitsh::GitCommandList).to receive(:new).and_return(command_list)
-      repo = Gitsh::GitRepository.new(env)
+      repo = Gitsh::GitRepository.new
 
       expect(repo.commands).to eq(commands)
     end
@@ -180,7 +182,7 @@ describe Gitsh::GitRepository do
     it 'produces the list of aliases' do
       with_a_temporary_home_directory do
         in_a_temporary_directory do
-          repo = Gitsh::GitRepository.new(env)
+          repo = Gitsh::GitRepository.new
           run 'git init'
           run 'git config --local alias.zecho "!echo zzz"'
           run 'git config --local alias.zecho-with-newline "!echo z\nzz"'
@@ -199,7 +201,7 @@ describe Gitsh::GitRepository do
       it 'returns a git configuration value' do
         with_a_temporary_home_directory do
           in_a_temporary_directory do
-            repo = Gitsh::GitRepository.new(env)
+            repo = Gitsh::GitRepository.new
             git_alias = '!echo zzz'
             run 'git init'
             run "git config --local alias.zecho '#{git_alias}'"
@@ -214,7 +216,7 @@ describe Gitsh::GitRepository do
       it 'raises a KeyError' do
         with_a_temporary_home_directory do
           in_a_temporary_directory do
-            repo = Gitsh::GitRepository.new(env)
+            repo = Gitsh::GitRepository.new
 
             expect {
               repo.config('not-a.real-variable')
@@ -228,7 +230,7 @@ describe Gitsh::GitRepository do
       it 'yields to the block' do
         with_a_temporary_home_directory do
           in_a_temporary_directory do
-            repo = Gitsh::GitRepository.new(env)
+            repo = Gitsh::GitRepository.new
 
             expect(repo.config('not-a.real-variable') { 'a-default' }).
               to eq 'a-default'
@@ -242,7 +244,7 @@ describe Gitsh::GitRepository do
     it 'returns a list of all Git configuration variables' do
       with_a_temporary_home_directory do
         in_a_temporary_directory do
-          repo = described_class.new(env)
+          repo = described_class.new
           run 'git init'
           run 'git config --local user.name "Grace Hopper"'
 
@@ -257,7 +259,7 @@ describe Gitsh::GitRepository do
       it 'returns a color code for the color described by the setting' do
         with_a_temporary_home_directory do
           in_a_temporary_directory do
-            repo = Gitsh::GitRepository.new(env)
+            repo = Gitsh::GitRepository.new
             run 'git init'
             run 'git config --local example.color red'
 
@@ -273,7 +275,7 @@ describe Gitsh::GitRepository do
       it 'returns a color code for the color described by the default' do
         with_a_temporary_home_directory do
           in_a_temporary_directory do
-            repo = Gitsh::GitRepository.new(env)
+            repo = Gitsh::GitRepository.new
 
             color = repo.config_color('example.color', 'blue')
 
@@ -288,7 +290,7 @@ describe Gitsh::GitRepository do
     it 'returns a color code for the color described by the argument' do
       with_a_temporary_home_directory do
         in_a_temporary_directory do
-          repo = Gitsh::GitRepository.new(env)
+          repo = Gitsh::GitRepository.new
 
           color = repo.color('blue')
 
@@ -302,7 +304,7 @@ describe Gitsh::GitRepository do
     it 'returns a human-readable name for a revision' do
       with_a_temporary_home_directory do
         in_a_temporary_directory do
-          repo = Gitsh::GitRepository.new(env)
+          repo = Gitsh::GitRepository.new
           run 'git init'
           run 'git commit --allow-empty -m "A commit"'
 
@@ -314,7 +316,7 @@ describe Gitsh::GitRepository do
     it 'returns nil for an unknown revision' do
       with_a_temporary_home_directory do
         in_a_temporary_directory do
-          repo = Gitsh::GitRepository.new(env)
+          repo = Gitsh::GitRepository.new
           run 'git init'
           run 'git commit --allow-empty -m "A commit"'
 
@@ -328,7 +330,7 @@ describe Gitsh::GitRepository do
     it 'returns the merge-base of two revisions' do
       with_a_temporary_home_directory do
         in_a_temporary_directory do
-          repo = Gitsh::GitRepository.new(env)
+          repo = Gitsh::GitRepository.new
           run 'git init'
           run 'git commit --allow-empty -m "Base commit"'
           run 'git checkout -b branch-a master'
@@ -351,9 +353,5 @@ describe Gitsh::GitRepository do
 
   def run(command)
     Open3.capture3(command)
-  end
-
-  def env
-    double(git_command: '/usr/bin/env git')
   end
 end
