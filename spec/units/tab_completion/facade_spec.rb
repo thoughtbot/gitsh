@@ -46,7 +46,6 @@ describe Gitsh::TabCompletion::Facade do
         expect(Gitsh::TabCompletion::VariableCompleter).to have_received(:new).with(
           line_editor,
           'name=$g',
-          Gitsh::Registry.env,
         )
         expect(variable_completer).to have_received(:call)
         expect(Gitsh::TabCompletion::CommandCompleter).

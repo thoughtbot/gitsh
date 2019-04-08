@@ -4,7 +4,6 @@ require 'gitsh/tab_completion/command_completer'
 require 'gitsh/tab_completion/context'
 require 'gitsh/tab_completion/escaper'
 require 'gitsh/tab_completion/variable_completer'
-require 'gitsh/registry'
 
 module Gitsh
   module TabCompletion
@@ -38,15 +37,11 @@ module Gitsh
       end
 
       def variable_completions(input)
-        VariableCompleter.new(line_editor, input, env).call
+        VariableCompleter.new(line_editor, input).call
       end
 
       def escaper
         @escaper ||= Escaper.new(line_editor)
-      end
-
-      def env
-        Registry.env
       end
     end
   end

@@ -1,10 +1,11 @@
+require 'gitsh/registry'
+
 module Gitsh
   module TabCompletion
     class VariableCompleter
-      def initialize(line_editor, input, env)
+      def initialize(line_editor, input)
         @line_editor = line_editor
         @input = input
-        @env = env
       end
 
       def call
@@ -16,7 +17,7 @@ module Gitsh
 
       private
 
-      attr_reader :line_editor, :input, :env
+      attr_reader :line_editor, :input
 
       def completion_append_character
         if prefix.end_with?('{')
@@ -45,6 +46,10 @@ module Gitsh
           parts = input.rpartition(/\$\{?/)
           [parts[0...-1].join, parts.last]
         )
+      end
+
+      def env
+        Registry.env
       end
     end
   end
