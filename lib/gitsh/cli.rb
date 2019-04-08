@@ -28,17 +28,13 @@ module Gitsh
     attr_reader :unparsed_args, :script_file_argument,
       :interactive_input_strategy
 
-    def env
-      Registry.env
-    end
-
     def interpreter
       Interpreter.new(env: env, input_strategy: input_strategy)
     end
 
     def input_strategy
       if script_file
-        InputStrategies::File.new(env: env, path: script_file)
+        InputStrategies::File.new(path: script_file)
       else
         interactive_input_strategy
       end
@@ -102,6 +98,10 @@ module Gitsh
         'executable',
       )
       exit EX_UNAVAILABLE
+    end
+
+    def env
+      Registry.env
     end
   end
 end

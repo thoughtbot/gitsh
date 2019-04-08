@@ -25,7 +25,7 @@ module Gitsh
     end
 
     def input_strategy
-      InputStrategies::File.new(env: env, path: path)
+      InputStrategies::File.new(path: path)
     end
   end
 end
