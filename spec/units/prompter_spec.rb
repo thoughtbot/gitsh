@@ -10,10 +10,10 @@ describe Gitsh::Prompter do
     context 'with the default prompt format' do
       context 'an un-initialized git repository' do
         it 'displays an uninitialized prompt' do
-          env = env_double(
+          register_env(
             repo_status: double("Status", initialized?: false),
           )
-          prompter = Gitsh::Prompter.new(env: env)
+          prompter = Gitsh::Prompter.new
 
           expect(prompter.prompt).to eq(
             "#{cwd_basename} #{red}uninitialized!!#{clear} "
@@ -23,8 +23,8 @@ describe Gitsh::Prompter do
 
       context 'a clean repository' do
         it 'displays the branch name and a clean symbol' do
-          env = env_double(repo_current_head: 'my-feature')
-          prompter = Gitsh::Prompter.new(env: env)
+          register_env(repo_current_head: 'my-feature')
+          prompter = Gitsh::Prompter.new
 
           expect(prompter.prompt).to eq(
             "#{cwd_basename} #{red}my-feature@#{clear} "
@@ -34,14 +34,14 @@ describe Gitsh::Prompter do
 
       context 'a repository with untracked files' do
         it 'displays the branch name and an untracked symbol' do
-          env = env_double(
+          register_env(
             repo_status: double(
               "Status",
               initialized?: true,
               has_untracked_files?: true,
             ),
           )
-          prompter = Gitsh::Prompter.new(env: env)
+          prompter = Gitsh::Prompter.new
 
           expect(prompter.prompt).to eq(
             "#{cwd_basename} #{red}master!#{clear} "
@@ -51,7 +51,7 @@ describe Gitsh::Prompter do
 
       context 'a repository with uncommitted changes' do
         it 'displays the branch name an a modified symbol' do
-          env = env_double(
+          register_env(
             repo_status: double(
               "Status",
               initialized?: true,
@@ -59,7 +59,7 @@ describe Gitsh::Prompter do
               has_untracked_files?: false,
             ),
           )
-          prompter = Gitsh::Prompter.new(env: env)
+          prompter = Gitsh::Prompter.new
 
           expect(prompter.prompt).to eq(
             "#{cwd_basename} #{red}master&#{clear} "
@@ -69,7 +69,7 @@ describe Gitsh::Prompter do
 
       context 'with color disabled' do
         it 'displays the prompt without colors' do
-          env = env_double(
+          register_env(
             repo_status: double(
               "Status",
               initialized?: true,
@@ -77,7 +77,7 @@ describe Gitsh::Prompter do
               has_untracked_files?: false,
             ),
           )
-          prompter = Gitsh::Prompter.new(color: false, env: env)
+          prompter = Gitsh::Prompter.new(color: false)
 
           expect(prompter.prompt).to eq "#{cwd_basename} master& "
         end
@@ -85,8 +85,8 @@ describe Gitsh::Prompter do
 
       context 'with a long branch name' do
         it 'displays the shortened branch name' do
-          env = env_double(repo_current_head: "best-branch-name-ever-forever")
-          prompter = Gitsh::Prompter.new(env: env)
+          register_env(repo_current_head: "best-branch-name-ever-forever")
+          prompter = Gitsh::Prompter.new
 
           expect(prompter.prompt).to eq "#{cwd_basename} #{red}best-branch-nam…@#{clear} "
         end
@@ -95,7 +95,7 @@ describe Gitsh::Prompter do
 
     context 'with a custom prompt format' do
       it 'replaces %# with the prompt terminator' do
-        env = env_double(
+        register_env(
           repo_status: double(
             "Status",
             initialized?: true,
@@ -104,13 +104,13 @@ describe Gitsh::Prompter do
           ),
           format: "%#",
         )
-        prompter = Gitsh::Prompter.new(env: env)
+        prompter = Gitsh::Prompter.new
 
         expect(prompter.prompt).to eq "& "
       end
 
       it 'replaces %c with a color code based on the status' do
-        env = env_double(
+        register_env(
           repo_status: double(
             "Status",
             initialized?: true,
@@ -119,48 +119,48 @@ describe Gitsh::Prompter do
           ),
           format: "%c",
         )
-        prompter = Gitsh::Prompter.new(env: env)
+        prompter = Gitsh::Prompter.new
 
         expect(prompter.prompt).to eq "#{red} "
       end
 
       it 'replaces %w with the code to restore the default color' do
-        env = env_double(format: '%w')
-        prompter = Gitsh::Prompter.new(env: env)
+        register_env(format: '%w')
+        prompter = Gitsh::Prompter.new
 
         expect(prompter.prompt).to eq "#{clear} "
       end
 
       it 'replaces %b with the full current HEAD name' do
-        env = env_double(
+        register_env(
           repo_current_head: 'a-really-long-branch-name',
           format: '%b',
         )
-        prompter = Gitsh::Prompter.new(env: env)
+        prompter = Gitsh::Prompter.new
 
         expect(prompter.prompt).to eq 'a-really-long-branch-name '
       end
 
       it 'replaces %B with the abbreviated current HEAD name' do
-        env = env_double(
+        register_env(
           repo_current_head: 'a-really-long-branch-name',
           format: '%B',
         )
-        prompter = Gitsh::Prompter.new(env: env)
+        prompter = Gitsh::Prompter.new
 
         expect(prompter.prompt).to eq 'a-really-long-b… '
       end
 
       it 'replaces %d with the absolute path of the current directory' do
-        env = env_double(format: '%d')
-        prompter = Gitsh::Prompter.new(env: env)
+        register_env(format: '%d')
+        prompter = Gitsh::Prompter.new
 
         expect(prompter.prompt).to eq "#{Dir.getwd.sub(/\A#{Dir.home}/, '~')} "
       end
 
       it 'replaces %D with the basename of the current directory' do
-        env = env_double(format: '%D')
-        prompter = Gitsh::Prompter.new(env: env)
+        register_env(format: '%D')
+        prompter = Gitsh::Prompter.new
 
         expect(prompter.prompt).to eq(
           "#{File.basename(Dir.getwd.sub(/\A#{Dir.home}/, '~'))} "
@@ -168,27 +168,27 @@ describe Gitsh::Prompter do
       end
 
       it 'replaces %g with the absolute path of the current git binary' do
-        env = env_double(
+        register_env(
           format: '%g',
           git_command: '/usr/local/bin/my-custom-git',
         )
-        prompter = Gitsh::Prompter.new(env: env)
+        prompter = Gitsh::Prompter.new
 
         expect(prompter.prompt).to eq '/usr/local/bin/my-custom-git '
       end
 
       it 'replaces %G with the basename of the current git binary' do
-        env = env_double(
+        register_env(
           format: '%G',
           git_command: '/usr/local/bin/my-custom-git',
         )
-        prompter = Gitsh::Prompter.new(env: env)
+        prompter = Gitsh::Prompter.new
 
         expect(prompter.prompt).to eq 'my-custom-git '
       end
     end
 
-    def env_double(attrs={})
+    def register_env(attrs={})
       format = attrs.delete(:format)
       default_attrs = {
         repo_status: double(
@@ -201,12 +201,10 @@ describe Gitsh::Prompter do
         repo_config_color: red,
         git_command: '/usr/local/bin/my-custom-git',
       }
-      double('Environment', default_attrs.merge(attrs)).tap do |env|
-        allow(env).to receive(:[]).with('gitsh.prompt').and_return(format)
-        allow(env).to receive(:fetch).with('gitsh.prompt').and_return(
-          format || Gitsh::Prompter::DEFAULT_FORMAT
-        )
-      end
+      super(default_attrs.merge(attrs))
+      allow(Gitsh::Registry.env).to receive(:fetch).with('gitsh.prompt').and_return(
+        format || Gitsh::Prompter::DEFAULT_FORMAT
+      )
     end
   end
 end

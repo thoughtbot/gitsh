@@ -2,6 +2,7 @@
 
 require 'gitsh/colors'
 require 'gitsh/prompt_color'
+require 'gitsh/registry'
 
 module Gitsh
   class Prompter
@@ -9,23 +10,21 @@ module Gitsh
     BRANCH_CHAR_LIMIT = 15
 
     def initialize(options={})
-      @env = options.fetch(:env)
       @use_color = options.fetch(:color, true)
       @prompt_color = options.fetch(:prompt_color) { PromptColor.new }
       @options = options
     end
 
     def prompt
-      Prompt.new(env, use_color, prompt_color).to_s
+      Prompt.new(use_color, prompt_color).to_s
     end
 
     private
 
-    attr_reader :env, :use_color, :prompt_color
+    attr_reader :use_color, :prompt_color
 
     class Prompt
-      def initialize(env, use_color, prompt_color)
-        @env = env
+      def initialize(use_color, prompt_color)
         @use_color = use_color
         @prompt_color = prompt_color
       end
@@ -48,7 +47,7 @@ module Gitsh
 
       private
 
-      attr_reader :env, :prompt_color
+      attr_reader :prompt_color
 
       def working_directory
         Dir.getwd.sub(/\A#{Dir.home}/, '~')
@@ -120,6 +119,10 @@ module Gitsh
 
       def repo_status
         @repo_status ||= env.repo_status
+      end
+
+      def env
+        Registry.env
       end
     end
   end
