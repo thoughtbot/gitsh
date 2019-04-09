@@ -11,8 +11,8 @@ module Gitsh
     extend Registry::Client
     use_registry_for :env
 
-    def initialize(opts={})
-      @unparsed_args = opts.fetch(:args, ARGV).clone
+    def initialize(args)
+      @unparsed_args = args.clone
     end
 
     def run

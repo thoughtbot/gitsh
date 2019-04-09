@@ -8,7 +8,7 @@ describe Gitsh::CLI do
         register_env
         interpreter = stub_interpreter
         interactive_input_strategy = stub_interactive_input_strategy
-        cli = Gitsh::CLI.new(args: [])
+        cli = Gitsh::CLI.new([])
 
         cli.run
 
@@ -23,7 +23,7 @@ describe Gitsh::CLI do
         register_env(tty?: false)
         interpreter = stub_interpreter
         file_input_strategy = stub_file_input_strategy
-        cli = Gitsh::CLI.new(args: [])
+        cli = Gitsh::CLI.new([])
 
         cli.run
 
@@ -40,7 +40,7 @@ describe Gitsh::CLI do
         register_env
         interpreter = stub_interpreter
         file_input_strategy = stub_file_input_strategy
-        cli = Gitsh::CLI.new(args: ['path/to/a/script'])
+        cli = Gitsh::CLI.new(['path/to/a/script'])
 
         cli.run
 
@@ -58,7 +58,7 @@ describe Gitsh::CLI do
         interpreter = stub_interpreter
         allow(interpreter).to receive(:run).
           and_raise(Gitsh::NoInputError, 'Oh no!')
-        cli = Gitsh::CLI.new(args: ['path/to/a/script'])
+        cli = Gitsh::CLI.new(['path/to/a/script'])
 
         expect { cli.run }.to raise_exception(SystemExit)
         expect(Gitsh::Registry.env).
@@ -69,7 +69,7 @@ describe Gitsh::CLI do
     context 'with invalid arguments' do
       it 'exits with a usage message' do
         register_env
-        cli = Gitsh::CLI.new(args: %w( --bad-argument ))
+        cli = Gitsh::CLI.new(['--bad-argument'])
 
         expect { cli.run }.to raise_exception(SystemExit)
       end
@@ -78,7 +78,7 @@ describe Gitsh::CLI do
     context 'with a non-existent git' do
       it 'exits with a helpful error message' do
         register_env(git_command: 'nonexistent')
-        cli = Gitsh::CLI.new(args: [])
+        cli = Gitsh::CLI.new([])
 
         expect { cli.run }.to raise_exception(SystemExit)
         expect(Gitsh::Registry.env).to have_received(:puts_error).with(
@@ -94,7 +94,7 @@ describe Gitsh::CLI do
         non_executable.close
         begin
           register_env(git_command: non_executable.path)
-          cli = Gitsh::CLI.new(args: [])
+          cli = Gitsh::CLI.new([])
 
           expect { cli.run }.to raise_exception(SystemExit)
           expect(Gitsh::Registry.env).to have_received(:puts_error).with(

@@ -9,7 +9,7 @@ describe 'When passed arguments' do
       output, error = setup_output_streams
 
       runner = lambda do
-        Gitsh::CLI.new(args: %w(--version)).run
+        Gitsh::CLI.new(%w(--version)).run
       end
 
       expect(runner).to raise_error SystemExit
@@ -25,7 +25,7 @@ describe 'When passed arguments' do
         output, error = setup_output_streams
 
         runner = lambda do
-          Gitsh::CLI.new(args: [argument]).run
+          Gitsh::CLI.new([argument]).run
         end
 
         expect(runner).to raise_error SystemExit

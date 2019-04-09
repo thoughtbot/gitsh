@@ -99,9 +99,7 @@ class GitshRunner
   end
 
   def cli
-    Gitsh::CLI.new(
-      args: options.fetch(:args, []),
-    )
+    Gitsh::CLI.new(options.fetch(:args, []))
   end
 
   def env

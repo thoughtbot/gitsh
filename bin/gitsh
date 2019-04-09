@@ -24,4 +24,4 @@ Gitsh::Registry[:line_editor] = Gitsh::LineEditorHistoryFilter.new(
   Gitsh::LineEditor,
 )
 
-Gitsh::CLI.new.run
+Gitsh::CLI.new(ARGV).run
