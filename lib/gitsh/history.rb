@@ -3,14 +3,10 @@ require 'gitsh/registry'
 module Gitsh
   class History
     extend Registry::Client
-    use_registry_for :env
+    use_registry_for :env, :line_editor
 
     DEFAULT_HISTORY_FILE = "#{Dir.home}/.gitsh_history"
     DEFAULT_HISTORY_SIZE = 500
-
-    def initialize(line_editor)
-      @line_editor = line_editor
-    end
 
     def load
       File.read(history_file_path).lines.each do |command|
@@ -28,8 +24,6 @@ module Gitsh
     end
 
     private
-
-    attr_reader :line_editor
 
     def history_file_exists?
       File.exist?(history_file_path)

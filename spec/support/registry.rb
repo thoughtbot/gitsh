@@ -1,9 +1,16 @@
 require 'gitsh/colors'
 require 'gitsh/environment'
 require 'gitsh/git_repository'
+require 'gitsh/line_editor'
 require 'gitsh/registry'
 
 module Registry
+  def register(entries)
+    entries.each do |name, object|
+      Gitsh::Registry[name] = object
+    end
+  end
+
   def register_env(attrs = {})
     default_attrs = {
       config_directory: File.expand_path('../../etc', __FILE__),
@@ -32,6 +39,21 @@ module Registry
     }
     Gitsh::Registry[:repo] = instance_double(
       Gitsh::GitRepository,
+      default_attrs.merge(attrs),
+    )
+  end
+
+  def register_line_editor(attrs = {})
+    default_attrs = {
+      :'completion_append_character=' => nil,
+      :'completer_quote_characters=' => nil,
+      :'completer_word_break_characters=' => nil,
+      :'completion_proc=' => nil,
+      :'quoting_detection_proc=' => nil,
+      readline: nil
+    }
+    Gitsh::Registry[:line_editor] = class_double(
+      Gitsh::LineEditor,
       default_attrs.merge(attrs),
     )
   end

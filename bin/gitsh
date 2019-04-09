@@ -12,11 +12,16 @@ end
 require 'gitsh/cli'
 require 'gitsh/environment'
 require 'gitsh/git_repository'
+require 'gitsh/line_editor_history_filter'
+require 'gitsh/line_editor'
 require 'gitsh/registry'
 
 Gitsh::Registry[:repo] = Gitsh::GitRepository.new
 Gitsh::Registry[:env] = Gitsh::Environment.new(
   config_directory: File.expand_path('../../etc', __FILE__),
+)
+Gitsh::Registry[:line_editor] = Gitsh::LineEditorHistoryFilter.new(
+  Gitsh::LineEditor,
 )
 
 Gitsh::CLI.new.run

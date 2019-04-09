@@ -101,13 +101,6 @@ class GitshRunner
   def cli
     Gitsh::CLI.new(
       args: options.fetch(:args, []),
-      interactive_input_strategy: interactive_input_strategy
-    )
-  end
-
-  def interactive_input_strategy
-    Gitsh::InputStrategies::Interactive.new(
-      line_editor: line_editor,
     )
   end
 
@@ -132,6 +125,7 @@ class GitshRunner
   def populate_registry
     Gitsh::Registry[:repo] = Gitsh::GitRepository.new
     Gitsh::Registry[:env] = env
+    Gitsh::Registry[:line_editor] = line_editor
   end
 
   def setup_unix_env

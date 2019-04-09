@@ -12,16 +12,13 @@ module Gitsh
   module InputStrategies
     class Interactive
       extend Registry::Client
-      use_registry_for :env
+      use_registry_for :env, :line_editor
 
       BLANK_LINE_REGEX = /^\s*$/
       CONTINUATION_PROMPT = '> '.freeze
 
       def initialize(opts = {})
-        @line_editor = opts.fetch(:line_editor) do
-          LineEditorHistoryFilter.new(Gitsh::LineEditor)
-        end
-        @history = opts.fetch(:history) { History.new(@line_editor) }
+        @history = opts.fetch(:history) { History.new }
         @terminal = opts.fetch(:terminal) { Terminal.instance }
       end
 
@@ -70,7 +67,7 @@ module Gitsh
 
       private
 
-      attr_reader :history, :line_editor, :terminal
+      attr_reader :history, :terminal
 
       def setup_line_editor
         line_editor.completion_proc = TabCompletion::Facade.new(line_editor)

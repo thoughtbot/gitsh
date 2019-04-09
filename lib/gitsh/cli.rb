@@ -13,9 +13,6 @@ module Gitsh
 
     def initialize(opts={})
       @unparsed_args = opts.fetch(:args, ARGV).clone
-      @interactive_input_strategy = opts.fetch(:interactive_input_strategy) do
-        InputStrategies::Interactive.new
-      end
     end
 
     def run
@@ -29,8 +26,7 @@ module Gitsh
 
     private
 
-    attr_reader :unparsed_args, :script_file_argument,
-      :interactive_input_strategy
+    attr_reader :unparsed_args, :script_file_argument
 
     def interpreter
       Interpreter.new(env: env, input_strategy: input_strategy)
@@ -40,7 +36,7 @@ module Gitsh
       if script_file
         InputStrategies::File.new(path: script_file)
       else
-        interactive_input_strategy
+        InputStrategies::Interactive.new
       end
     end
 

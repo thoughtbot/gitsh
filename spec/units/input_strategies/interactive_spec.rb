@@ -3,6 +3,7 @@ require 'gitsh/input_strategies/interactive'
 
 describe Gitsh::InputStrategies::Interactive do
   before { stub_file_runner }
+  let!(:line_editor) { register_line_editor }
 
   describe '#setup' do
     it 'loads the history' do
@@ -84,7 +85,8 @@ describe Gitsh::InputStrategies::Interactive do
     it 'handles a SIGWINCH' do
       line_editor = SignallingLineEditor.new('WINCH')
       allow(line_editor).to receive(:set_screen_size)
-      input_strategy = build_input_strategy(line_editor: line_editor)
+      register(line_editor: line_editor)
+      input_strategy = build_input_strategy
 
       input_strategy.setup
       expect { input_strategy.read_command }.not_to raise_exception
@@ -94,12 +96,13 @@ describe Gitsh::InputStrategies::Interactive do
     it 'handles a SIGWINCH when the terminal size cannot be determined' do
       line_editor = SignallingLineEditor.new('WINCH')
       allow(line_editor).to receive(:set_screen_size)
+      register(line_editor: line_editor)
       terminal = double('Terminal', color_support?: true)
       allow(terminal).to receive(:size).and_raise(
         Gitsh::Terminal::UnknownSizeError,
         'Unknown terminal size',
       )
-      input_strategy = build_input_strategy(readline: line_editor, terminal: terminal)
+      input_strategy = build_input_strategy(terminal: terminal)
 
       input_strategy.setup
       expect { input_strategy.read_command }.not_to raise_exception
@@ -140,7 +143,6 @@ describe Gitsh::InputStrategies::Interactive do
   def build_input_strategy(options={})
     register_env(fetch: '')
     described_class.new(
-      line_editor: options.fetch(:line_editor, line_editor),
       history: history,
       terminal: options.fetch(:terminal, terminal),
     )
@@ -152,14 +154,6 @@ describe Gitsh::InputStrategies::Interactive do
 
   def history
     @history ||= spy('history', load: nil, save: nil)
-  end
-
-  def line_editor
-    @line_editor ||= spy('LineEditor', {
-      :'completion_append_character=' => nil,
-      :'completion_proc=' => nil,
-      readline: nil
-    })
   end
 
   def terminal

@@ -4,12 +4,17 @@ require '@gemsetuppath@'
 require 'gitsh/cli'
 require 'gitsh/environment'
 require 'gitsh/git_repository'
+require 'gitsh/line_editor_history_filter'
+require 'gitsh/line_editor'
 require 'gitsh/registry'
 
 begin
   Gitsh::Registry[:repo] = Gitsh::GitRepository.new
   Gitsh::Registry[:env] = Gitsh::Environment.new(
     config_directory: '@pkgsysconfdir@',
+  )
+  Gitsh::Registry[:line_editor] = Gitsh::LineEditorHistoryFilter.new(
+    Gitsh::LineEditor,
   )
   Gitsh::CLI.new.run
 rescue => e
