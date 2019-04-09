@@ -4,14 +4,11 @@ require 'gitsh/exit_statuses'
 require 'gitsh/input_strategies/file'
 require 'gitsh/input_strategies/interactive'
 require 'gitsh/interpreter'
-require 'gitsh/program_name'
 require 'gitsh/version'
 
 module Gitsh
   class CLI
     def initialize(opts={})
-      $PROGRAM_NAME = PROGRAM_NAME
-
       @env = opts.fetch(:env, Environment.new)
       @unparsed_args = opts.fetch(:args, ARGV).clone
       @interactive_input_strategy = opts.fetch(:interactive_input_strategy) do
