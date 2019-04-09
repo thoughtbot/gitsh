@@ -108,7 +108,6 @@ class GitshRunner
   def interactive_input_strategy
     Gitsh::InputStrategies::Interactive.new(
       line_editor: line_editor,
-      env: env
     )
   end
 
