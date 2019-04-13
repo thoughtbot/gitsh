@@ -2,8 +2,6 @@ require 'spec_helper'
 require 'gitsh/environment'
 
 describe Gitsh::Environment do
-  before { register_repo }
-
   describe '#[]=' do
     it 'sets a gitsh environment variable' do
       env = described_class.new
@@ -38,7 +36,8 @@ describe Gitsh::Environment do
 
     context 'for a Git configuration variable' do
       it 'returns the value of the Git configuration variable' do
-        allow(Gitsh::Registry[:repo]).to receive(:config).
+        repo = register_repo
+        allow(repo).to receive(:config).
           with('user.name', false).and_return('John Smith')
         env = described_class.new
         register(env: env)
@@ -60,7 +59,8 @@ describe Gitsh::Environment do
 
     context 'for an unknown variable with no default block given' do
       it 'raises an error' do
-        allow(Gitsh::Registry[:repo]).to receive(:config).and_raise(KeyError)
+        repo = register_repo
+        allow(repo).to receive(:config).and_raise(KeyError)
         env = described_class.new
 
         expect { env.fetch(:unknown) }.
@@ -89,7 +89,8 @@ describe Gitsh::Environment do
 
   describe '#clone' do
     it 'creates a copy with an isolated set of variables' do
-      allow(Gitsh::Registry[:repo]).to receive(:config).and_raise(KeyError)
+      repo = register_repo
+      allow(repo).to receive(:config).and_raise(KeyError)
       original = described_class.new
       original['a'] = 'A is set'
 
@@ -243,12 +244,6 @@ describe Gitsh::Environment do
       env['alias.baz'] = '!echo baz'
 
       expect(env.local_aliases).to eq ['baz']
-    end
-  end
-
-  def register(entries)
-    entries.each do |key, object|
-      Gitsh::Registry[key] = object
     end
   end
 

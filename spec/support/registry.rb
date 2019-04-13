@@ -20,10 +20,17 @@ module Registry
       puts_error: nil,
       tty?: true,
     }
-    Gitsh::Registry[:env] = instance_double(
-      Gitsh::Environment,
-      default_attrs.merge(attrs),
-    )
+    env = instance_double(Gitsh::Environment, default_attrs.merge(attrs))
+    allow(env).to receive(:fetch).and_yield
+    Gitsh::Registry[:env] = env
+  end
+
+  def registered_env
+    Gitsh::Registry[:env]
+  end
+
+  def set_registered_env_value(key, value)
+    allow(Gitsh::Registry[:env]).to receive(:fetch).with(key).and_return(value)
   end
 
   def register_repo(attrs = {})
@@ -53,10 +60,13 @@ module Registry
       :'quoting_detection_proc=' => nil,
       readline: nil
     }
-    Gitsh::Registry[:line_editor] = class_double(
-      Gitsh::LineEditor,
-      default_attrs.merge(attrs),
-    )
+    line_editor = class_double(Gitsh::LineEditor, default_attrs.merge(attrs))
+    line_editor.const_set('HISTORY', [])
+    Gitsh::Registry[:line_editor] = line_editor
+  end
+
+  def registered_line_editor
+    Gitsh::Registry[:line_editor]
   end
 end
 

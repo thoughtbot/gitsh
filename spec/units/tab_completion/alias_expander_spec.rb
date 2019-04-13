@@ -6,8 +6,7 @@ describe Gitsh::TabCompletion::AliasExpander do
     context 'when the first word is an alias for a Git command' do
       it 'expands the alias' do
         register_env
-        allow(Gitsh::Registry.env).to receive(:fetch).with('alias.alias').
-          and_return('expanded command')
+        set_registered_env_value('alias.alias', 'expanded command')
 
         expect(expand(['alias', 'argument'])).
           to eq ['expanded', 'command', 'argument']
@@ -16,8 +15,8 @@ describe Gitsh::TabCompletion::AliasExpander do
 
     context 'when the first word is an alias for a shell command' do
       it 'does not expand the alias' do
-        register_env
-        allow(Gitsh::Registry.env).to receive(:fetch).with('alias.alias').
+        env = register_env
+        allow(env).to receive(:fetch).with('alias.alias').
           and_return('!shell command')
 
         expect(expand(['alias', 'argument'])).
@@ -28,7 +27,7 @@ describe Gitsh::TabCompletion::AliasExpander do
     context 'when the first word is not an alias' do
       it 'returns the words' do
         register_env
-        allow(Gitsh::Registry.env).to receive(:fetch).with('alias.foo').
+        allow(registered_env).to receive(:fetch).with('alias.foo').
           and_raise(Gitsh::UnsetVariableError)
         words = ['foo', 'bar']
 

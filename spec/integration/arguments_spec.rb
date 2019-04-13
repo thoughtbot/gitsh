@@ -49,16 +49,14 @@ describe 'When passed arguments' do
   end
 
   def setup_repo
-    Gitsh::Registry[:repo] = Gitsh::GitRepository.new
+    register(repo: Gitsh::GitRepository.new)
   end
 
   def setup_output_streams
     output = StringIO.new
     error = StringIO.new
-    Gitsh::Registry[:env] = Gitsh::Environment.new(
-      output_stream: output,
-      error_stream: error,
-    )
+    env = Gitsh::Environment.new(output_stream: output, error_stream: error)
+    register(env: env)
     [output, error]
   end
 end

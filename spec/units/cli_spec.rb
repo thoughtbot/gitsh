@@ -54,14 +54,14 @@ describe Gitsh::CLI do
 
     context 'with an unreadable script file' do
       it 'exits' do
-        register_env
+        env = register_env
         interpreter = stub_interpreter
         allow(interpreter).to receive(:run).
           and_raise(Gitsh::NoInputError, 'Oh no!')
         cli = Gitsh::CLI.new(['path/to/a/script'])
 
         expect { cli.run }.to raise_exception(SystemExit)
-        expect(Gitsh::Registry.env).
+        expect(env).
           to have_received(:puts_error).with('gitsh: Oh no!')
       end
     end
@@ -77,11 +77,11 @@ describe Gitsh::CLI do
 
     context 'with a non-existent git' do
       it 'exits with a helpful error message' do
-        register_env(git_command: 'nonexistent')
+        env = register_env(git_command: 'nonexistent')
         cli = Gitsh::CLI.new([])
 
         expect { cli.run }.to raise_exception(SystemExit)
-        expect(Gitsh::Registry.env).to have_received(:puts_error).with(
+        expect(env).to have_received(:puts_error).with(
           "gitsh: nonexistent: No such file or directory\nEnsure git is on "\
           'your PATH, or specify the path to git using the --git option',
         )
@@ -93,11 +93,11 @@ describe Gitsh::CLI do
         non_executable = Tempfile.new('git')
         non_executable.close
         begin
-          register_env(git_command: non_executable.path)
+          env = register_env(git_command: non_executable.path)
           cli = Gitsh::CLI.new([])
 
           expect { cli.run }.to raise_exception(SystemExit)
-          expect(Gitsh::Registry.env).to have_received(:puts_error).with(
+          expect(env).to have_received(:puts_error).with(
             "gitsh: #{non_executable.path}: Permission denied\nEnsure git is "\
             'executable',
           )

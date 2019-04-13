@@ -25,10 +25,6 @@ module Gitsh
       instance.clear
     end
 
-    def self.env
-      instance[:env]
-    end
-
     def initialize
       clear
     end

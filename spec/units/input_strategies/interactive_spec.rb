@@ -5,6 +5,7 @@ describe Gitsh::InputStrategies::Interactive do
   before do
     register_env(fetch: '')
     register_line_editor
+    register_repo
 
     stub_file_runner
     stub_history
@@ -37,7 +38,7 @@ describe Gitsh::InputStrategies::Interactive do
 
       described_class.new.setup
 
-      expect(Gitsh::Registry.env).to have_received(:puts_error).with('gitsh: my message')
+      expect(registered_env).to have_received(:puts_error).with('gitsh: my message')
     end
   end
 
@@ -64,8 +65,7 @@ describe Gitsh::InputStrategies::Interactive do
     it 'returns the default command when the user input is blank' do
       input_strategy = described_class.new
       allow(registered_line_editor).to receive(:readline).and_return(' ')
-      allow(Gitsh::Registry.env).to receive(:fetch).with('gitsh.defaultCommand').
-        and_return('my default command')
+      set_registered_env_value('gitsh.defaultCommand', 'my default command')
       input_strategy.setup
 
       expect(input_strategy.read_command).to eq 'my default command'
@@ -135,7 +135,7 @@ describe Gitsh::InputStrategies::Interactive do
 
       input_strategy.handle_parse_error('my message')
 
-      expect(Gitsh::Registry.env).to have_received(:puts_error).with('gitsh: my message')
+      expect(registered_env).to have_received(:puts_error).with('gitsh: my message')
     end
   end
 
@@ -151,9 +151,5 @@ describe Gitsh::InputStrategies::Interactive do
   def stub_terminal
     allow(Gitsh::Terminal).to receive(:color_support?).and_return(true)
     allow(Gitsh::Terminal).to receive(:size).and_return([24, 80])
-  end
-
-  def registered_line_editor
-    Gitsh::Registry[:line_editor]
   end
 end

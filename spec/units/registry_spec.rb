@@ -11,15 +11,6 @@ describe Gitsh::Registry do
     end
   end
 
-  describe '.env' do
-    it 'allows convenient access to the Environment instance' do
-      env = double(:env)
-      Gitsh::Registry[:env] = env
-
-      expect(Gitsh::Registry.env).to eq(env)
-    end
-  end
-
   describe '.clear' do
     it 'removes everything from the registry' do
       Gitsh::Registry[:env] = double(:env)

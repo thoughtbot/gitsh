@@ -6,8 +6,8 @@ describe Gitsh::TabCompletion::Facade do
   describe '#call' do
     context 'given input not ending with a variable' do
       it 'invokes the CommandCompleter' do
-        register_env
-        allow(Gitsh::Registry.env).
+        env = register_env
+        allow(env).
           to receive(:fetch).and_raise(Gitsh::UnsetVariableError)
         register_line_editor(line_buffer: 'add -p $path lib/')
         command_completer = stub_command_completer
