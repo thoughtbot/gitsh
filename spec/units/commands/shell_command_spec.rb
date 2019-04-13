@@ -6,16 +6,15 @@ describe Gitsh::Commands::ShellCommand do
     it 'delegates to the Gitsh::ShellCommandRunner' do
       env = double(:env)
       expected_result = double(:result)
-      mock_runner = double(:shell_command_runner, run: expected_result)
+      stub_shell_command_runner(expected_result)
 
       command = described_class.new(
         'echo',
         ['Hello', 'world'],
-        shell_command_runner: mock_runner,
       )
       result = command.execute(env)
 
-      expect(mock_runner).to have_received(:run).with(
+      expect(Gitsh::ShellCommandRunner).to have_received(:run).with(
         ['/bin/sh', '-c', 'echo Hello world'],
         env,
       )
@@ -24,15 +23,15 @@ describe Gitsh::Commands::ShellCommand do
 
     it 'escapes special characters in arguments' do
       env = double(:env)
-      mock_runner = double(:shell_command_runner, run: double(:result))
+      stub_shell_command_runner
       args = ['with space', '^$']
       escaped_args = ['with\\ space', '\\^\\$']
 
       described_class.
-        new('echo', args, shell_command_runner: mock_runner).
+        new('echo', args).
         execute(env)
 
-      expect(mock_runner).to have_received(:run).with(
+      expect(Gitsh::ShellCommandRunner).to have_received(:run).with(
         ['/bin/sh', '-c', "echo #{escaped_args.join(' ')}"],
         env,
       )
@@ -40,17 +39,21 @@ describe Gitsh::Commands::ShellCommand do
 
     it 'does not escape globbing patterns in arguments' do
       env = double(:env)
-      mock_runner = double(:shell_command_runner, run: double(:result))
+      stub_shell_command_runner
       args = ['*', '[a-z]', '[!a-z]', '?', '\\*']
 
       described_class.
-        new('echo', args, shell_command_runner: mock_runner).
+        new('echo', args).
         execute(env)
 
-      expect(mock_runner).to have_received(:run).with(
+      expect(Gitsh::ShellCommandRunner).to have_received(:run).with(
         ['/bin/sh', '-c', "echo #{args.join(' ')}"],
         env,
       )
     end
+  end
+
+  def stub_shell_command_runner(result = true)
+    allow(Gitsh::ShellCommandRunner).to receive(:run).and_return(result)
   end
 end

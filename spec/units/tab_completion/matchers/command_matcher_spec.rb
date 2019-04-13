@@ -4,7 +4,7 @@ require 'gitsh/tab_completion/matchers/command_matcher'
 describe Gitsh::TabCompletion::Matchers::CommandMatcher do
   describe '#match?' do
     it 'always returns true' do
-      matcher = described_class.new(double(:internal_command))
+      matcher = described_class.new
 
       expect(matcher.match?('foo')).to be_truthy
       expect(matcher.match?('')).to be_truthy
@@ -20,11 +20,10 @@ describe Gitsh::TabCompletion::Matchers::CommandMatcher do
       register_env(
         local_aliases: ['force'],
       )
-      internal_command = double(
-        :internal_command,
-        commands: [':echo', ':help'],
+      allow(Gitsh::Commands::InternalCommand).to receive(:commands).and_return(
+        [':echo', ':help'],
       )
-      matcher = described_class.new(internal_command)
+      matcher = described_class.new
 
       expect(matcher.completions('')).to match_array [
         'add', 'commit',
@@ -41,11 +40,10 @@ describe Gitsh::TabCompletion::Matchers::CommandMatcher do
       register_env(
         local_aliases: ['force'],
       )
-      internal_command = double(
-        :internal_command,
-        commands: [':echo', ':help'],
+      allow(Gitsh::Commands::InternalCommand).to receive(:commands).and_return(
+        [':echo', ':help'],
       )
-      matcher = described_class.new(internal_command)
+      matcher = described_class.new
 
       expect(matcher.completions('gr')).to match_array [
         'graph', 'grep',
@@ -55,15 +53,14 @@ describe Gitsh::TabCompletion::Matchers::CommandMatcher do
 
   describe '#eql?' do
     it 'returns true when given another instance of the same class' do
-      internal_command = double(:internal_command)
-      matcher1 = described_class.new(internal_command)
-      matcher2 = described_class.new(internal_command)
+      matcher1 = described_class.new
+      matcher2 = described_class.new
 
       expect(matcher1).to eql(matcher2)
     end
 
     it 'returns false when given an instance of any other class' do
-      matcher = described_class.new(double(:internal_command))
+      matcher = described_class.new
       other = double(:not_a_matcher)
 
       expect(matcher).not_to eql(other)
@@ -72,9 +69,8 @@ describe Gitsh::TabCompletion::Matchers::CommandMatcher do
 
   describe '#hash' do
     it 'returns the same value for all instances of the class' do
-      internal_command = double(:internal_command)
-      matcher1 = described_class.new(internal_command)
-      matcher2 = described_class.new(internal_command)
+      matcher1 = described_class.new
+      matcher2 = described_class.new
 
       expect(matcher1.hash).to eq(matcher2.hash)
     end

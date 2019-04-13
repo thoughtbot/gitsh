@@ -9,9 +9,8 @@ module Gitsh
     DEFAULT_FORMAT = "%D %c%B%#%w".freeze
     BRANCH_CHAR_LIMIT = 15
 
-    def initialize(options={})
-      @use_color = options.fetch(:color, true)
-      @prompt_color = options.fetch(:prompt_color) { PromptColor.new }
+    def initialize(color: true)
+      @use_color = color
     end
 
     def prompt
@@ -20,7 +19,11 @@ module Gitsh
 
     private
 
-    attr_reader :use_color, :prompt_color
+    attr_reader :use_color
+
+    def prompt_color
+      @prompt_color ||= PromptColor.new
+    end
 
     class Prompt
       extend Registry::Client

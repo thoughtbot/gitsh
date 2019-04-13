@@ -9,23 +9,17 @@ module Gitsh
         extend Registry::Client
         use_registry_for :env, :repo
 
-        def initialize(internal_command = Commands::InternalCommand)
-          @internal_command = internal_command
-        end
-
         def name
           'command'
         end
 
         private
 
-        attr_reader :internal_command
-
         def all_completions
           repo.commands + \
             repo.aliases + \
             env.local_aliases + \
-            internal_command.commands
+            Commands::InternalCommand.commands
         end
       end
     end
