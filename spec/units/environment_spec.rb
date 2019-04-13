@@ -16,10 +16,10 @@ describe Gitsh::Environment do
   describe '#fetch' do
     context 'for a magic variable' do
       it 'returns the value of the magic variable' do
-        magic_variables = double(:magic_variables)
+        magic_variables = stub_magic_variables
         allow(magic_variables).to receive(:fetch).with(:_prior).
           and_return('a-branch-name')
-        env = described_class.new(magic_variables: magic_variables)
+        env = described_class.new
 
         expect(env.fetch(:_prior)).to eq 'a-branch-name'
         expect(env.fetch('_prior')).to eq 'a-branch-name'
@@ -72,12 +72,10 @@ describe Gitsh::Environment do
   describe '#available_variables' do
     it 'returns the names of all available variables' do
       register_repo(available_config_variables: [:'user.name'])
-      magic_variables = double('MagicVariables')
-      allow(magic_variables).to receive(:available_variables).
-        and_return([:_prior])
-      env = described_class.new(
-        magic_variables: magic_variables,
+      magic_variables = stub_magic_variables(
+        available_variables: [:_prior],
       )
+      env = described_class.new
       env[:foo] = 'bar'
       env['user.name'] = 'Config Override'
 
@@ -252,5 +250,11 @@ describe Gitsh::Environment do
     entries.each do |key, object|
       Gitsh::Registry[key] = object
     end
+  end
+
+  def stub_magic_variables(attrs = {})
+    magic_variables = instance_double(Gitsh::MagicVariables, attrs)
+    allow(Gitsh::MagicVariables).to receive(:new).and_return(magic_variables)
+    magic_variables
   end
 end

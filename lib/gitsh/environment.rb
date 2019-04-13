@@ -14,16 +14,15 @@ module Gitsh
 
     attr_reader :input_stream, :output_stream, :error_stream, :config_directory
 
-    def initialize(options={})
-      @input_stream = options.fetch(:input_stream, $stdin)
-      @output_stream = options.fetch(:output_stream, $stdout)
-      @error_stream = options.fetch(:error_stream, $stderr)
+    def initialize(
+      input_stream: $stdin, output_stream: $stdout, error_stream: $stderr,
+      config_directory: DEFAULT_CONFIG_DIRECTORY
+    )
+      @input_stream = input_stream
+      @output_stream = output_stream
+      @error_stream = error_stream
+      @config_directory = config_directory
       @variables = Hash.new
-      @magic_variables = options.fetch(:magic_variables) { MagicVariables.new }
-      @config_directory = options.fetch(
-        :config_directory,
-        DEFAULT_CONFIG_DIRECTORY,
-      )
     end
 
     def initialize_copy(original)
@@ -94,6 +93,10 @@ module Gitsh
 
     private
 
-    attr_reader :variables, :magic_variables
+    attr_reader :variables
+
+    def magic_variables
+      @_magic_variables ||= MagicVariables.new
+    end
   end
 end
