@@ -9,18 +9,16 @@ describe Gitsh::TabCompletion::Facade do
         register_env
         allow(Gitsh::Registry.env).
           to receive(:fetch).and_raise(Gitsh::UnsetVariableError)
-        input = 'add -p $path lib/'
-        line_editor = double(:line_editor, line_buffer: input)
+        register_line_editor(line_buffer: 'add -p $path lib/')
         command_completer = stub_command_completer
         stub_variable_completer
         automaton = stub_automaton_factory
         escaper = stub_escaper
-        facade = described_class.new(line_editor)
+        facade = described_class.new
 
         facade.call('lib/')
 
         expect(Gitsh::TabCompletion::CommandCompleter).to have_received(:new).with(
-          line_editor,
           ['add', '-p', '${path}'],
           'lib/',
           automaton,
@@ -35,16 +33,14 @@ describe Gitsh::TabCompletion::Facade do
     context 'given input ending with a variable' do
       it 'invokes the VariableCompleter' do
         register_env(config_directory: '/tmp/gitsh/')
-        input = ':echo "name=$g'
-        line_editor = double(:line_editor, line_buffer: input)
+        register_line_editor(line_buffer: ':echo "name=$g')
         stub_command_completer
         variable_completer = stub_variable_completer
-        facade = described_class.new(line_editor)
+        facade = described_class.new
 
         facade.call('name=$g')
 
         expect(Gitsh::TabCompletion::VariableCompleter).to have_received(:new).with(
-          line_editor,
           'name=$g',
         )
         expect(variable_completer).to have_received(:call)

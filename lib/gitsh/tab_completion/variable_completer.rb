@@ -4,10 +4,9 @@ module Gitsh
   module TabCompletion
     class VariableCompleter
       extend Registry::Client
-      use_registry_for :env
+      use_registry_for :env, :line_editor
 
-      def initialize(line_editor, input)
-        @line_editor = line_editor
+      def initialize(input)
         @input = input
       end
 
@@ -20,7 +19,7 @@ module Gitsh
 
       private
 
-      attr_reader :line_editor, :input
+      attr_reader :input
 
       def completion_append_character
         if prefix.end_with?('{')

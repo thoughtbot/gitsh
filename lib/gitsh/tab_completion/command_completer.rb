@@ -1,8 +1,12 @@
+require 'gitsh/registry'
+
 module Gitsh
   module TabCompletion
     class CommandCompleter
-      def initialize(line_editor, prior_words, input, automaton, escaper)
-        @line_editor = line_editor
+      extend Registry::Client
+      use_registry_for :line_editor
+
+      def initialize(prior_words, input, automaton, escaper)
         @prior_words = prior_words
         @input = input
         @automaton = automaton
@@ -18,7 +22,7 @@ module Gitsh
 
       private
 
-      attr_reader :line_editor, :prior_words, :input, :automaton, :escaper
+      attr_reader :prior_words, :input, :automaton, :escaper
 
       def completion_append_character
         if incomplete_path?
