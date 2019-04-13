@@ -7,9 +7,9 @@ module Gitsh
       new(opts).run
     end
 
-    def initialize(opts)
-      @env = opts.fetch(:env)
-      @path = opts.fetch(:path)
+    def initialize(env:, path:)
+      @env = env
+      @path = path
     end
 
     def run

@@ -9,8 +9,8 @@ module Gitsh
 
       STDIN_PLACEHOLDER = '-'.freeze
 
-      def initialize(opts)
-        @path = opts.fetch(:path)
+      def initialize(path:)
+        @path = path
       end
 
       def setup
