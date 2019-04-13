@@ -6,13 +6,14 @@ require 'bundler/setup'
 end
 
 require 'gitsh/environment'
+require 'gitsh/registry'
 require 'gitsh/tab_completion/automaton_factory'
 require 'gitsh/tab_completion/visualization'
 
-env = Gitsh::Environment.new(
+Gitsh::Registry[:env] = Gitsh::Environment.new(
   config_directory: File.expand_path('../../etc', __FILE__),
 )
-automaton = Gitsh::TabCompletion::AutomatonFactory.build(env)
+automaton = Gitsh::TabCompletion::AutomatonFactory.build
 viz = Gitsh::TabCompletion::Visualization.new(automaton)
 
 $stdout.puts viz.to_dot
