@@ -13,6 +13,19 @@ module Gitsh
       end
     end
 
+    def self.populate(conf_dir:)
+      require 'gitsh/environment'
+      require 'gitsh/git_repository'
+      require 'gitsh/line_editor_history_filter'
+      require 'gitsh/line_editor'
+
+      instance[:repo] = Gitsh::GitRepository.new
+      instance[:env] = Gitsh::Environment.new(config_directory: conf_dir)
+      instance[:line_editor] = Gitsh::LineEditorHistoryFilter.new(
+        Gitsh::LineEditor,
+      )
+    end
+
     def self.[]=(name, value)
       instance[name] = value
     end
