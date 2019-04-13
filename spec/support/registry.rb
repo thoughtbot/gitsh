@@ -45,10 +45,11 @@ module Registry
 
   def register_line_editor(attrs = {})
     default_attrs = {
-      :'completion_append_character=' => nil,
       :'completer_quote_characters=' => nil,
       :'completer_word_break_characters=' => nil,
+      :'completion_append_character=' => nil,
       :'completion_proc=' => nil,
+      :'completion_suppress_quote=' => nil,
       :'quoting_detection_proc=' => nil,
       readline: nil
     }
