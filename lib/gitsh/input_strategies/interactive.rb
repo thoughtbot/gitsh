@@ -17,13 +17,8 @@ module Gitsh
       BLANK_LINE_REGEX = /^\s*$/
       CONTINUATION_PROMPT = '> '.freeze
 
-      def initialize(opts = {})
-        @history = opts.fetch(:history) { History.new }
-        @terminal = opts.fetch(:terminal) { Terminal.instance }
-      end
-
       def setup
-        history.load
+        History.load
         setup_line_editor
         handle_window_resize
         greet_user
@@ -32,7 +27,7 @@ module Gitsh
 
       def teardown
         env.print "\n"
-        history.save
+        History.save
       end
 
       def read_command
@@ -67,8 +62,6 @@ module Gitsh
 
       private
 
-      attr_reader :history, :terminal
-
       def setup_line_editor
         line_editor.completion_proc = TabCompletion::Facade.new(line_editor)
         line_editor.completer_quote_characters = %('")
@@ -79,7 +72,7 @@ module Gitsh
       def handle_window_resize
         Signal.trap('WINCH') do
           begin
-            line_editor.set_screen_size(*terminal.size)
+            line_editor.set_screen_size(*Terminal.size)
           rescue Terminal::UnknownSizeError
           end
         end
@@ -111,7 +104,7 @@ module Gitsh
       end
 
       def prompter
-        @prompter ||= Prompter.new(color: terminal.color_support?)
+        @prompter ||= Prompter.new(color: Terminal.color_support?)
       end
     end
   end

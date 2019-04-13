@@ -8,7 +8,7 @@ describe Gitsh::Terminal do
       it 'returns true' do
         stub_command 'tput colors', output: "256\n"
 
-        result = Gitsh::Terminal.instance.color_support?
+        result = Gitsh::Terminal.new.color_support?
 
         expect(result).to be_truthy
       end
@@ -18,7 +18,7 @@ describe Gitsh::Terminal do
       it 'returns false' do
         stub_command 'tput colors', output: "-1\n"
 
-        result = Gitsh::Terminal.instance.color_support?
+        result = Gitsh::Terminal.new.color_support?
 
         expect(result).to be_falsey
       end
@@ -28,7 +28,7 @@ describe Gitsh::Terminal do
       it 'returns false' do
         stub_command 'tput colors', success: false
 
-        result = Gitsh::Terminal.instance.color_support?
+        result = Gitsh::Terminal.new.color_support?
 
         expect(result).to be_falsey
       end
@@ -39,7 +39,7 @@ describe Gitsh::Terminal do
     it 'returns an array containing the number of lines and columns the terminal has' do
       stub_command 'stty size', output: "24 80\n"
 
-      result = Gitsh::Terminal.instance.size
+      result = Gitsh::Terminal.new.size
 
       expect(result).to eq [24, 80]
     end
@@ -50,7 +50,7 @@ describe Gitsh::Terminal do
         stub_command 'env LINES="" tput lines', output: "24\n"
         stub_command 'env COLUMNS="" tput cols', output: "80\n"
 
-        result = Gitsh::Terminal.instance.size
+        result = Gitsh::Terminal.new.size
 
         expect(result).to eq [24, 80]
       end
@@ -64,7 +64,7 @@ describe Gitsh::Terminal do
         stub_command 'tput lines', output: "24\n"
         stub_command 'tput cols', output: "80\n"
 
-        result = Gitsh::Terminal.instance.size
+        result = Gitsh::Terminal.new.size
 
         expect(result).to eq [24, 80]
       end
@@ -74,7 +74,7 @@ describe Gitsh::Terminal do
       it 'raises' do
         stub_command anything, success: false
 
-        expect { Gitsh::Terminal.instance.size }.
+        expect { Gitsh::Terminal.new.size }.
           to raise_error(Gitsh::Terminal::UnknownSizeError)
       end
     end

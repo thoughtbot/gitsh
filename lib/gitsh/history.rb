@@ -8,6 +8,14 @@ module Gitsh
     DEFAULT_HISTORY_FILE = "#{Dir.home}/.gitsh_history"
     DEFAULT_HISTORY_SIZE = 500
 
+    def self.load
+      new.load
+    end
+
+    def self.save
+      new.save
+    end
+
     def load
       File.read(history_file_path).lines.each do |command|
         line_editor::HISTORY << command.chomp

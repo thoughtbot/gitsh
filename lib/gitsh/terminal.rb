@@ -3,9 +3,15 @@ require 'open3'
 
 module Gitsh
   class Terminal
-    include Singleton
-
     class UnknownSizeError < StandardError; end
+
+    def self.color_support?
+      new.color_support?
+    end
+
+    def self.size
+      new.size
+    end
 
     def color_support?
       execute('tput colors').to_i > 0
