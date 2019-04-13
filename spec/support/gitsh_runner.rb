@@ -121,9 +121,9 @@ class GitshRunner
   end
 
   def populate_registry
-    Gitsh::Registry[:repo] = Gitsh::GitRepository.new
-    Gitsh::Registry[:env] = env
-    Gitsh::Registry[:line_editor] = line_editor
+    Gitsh::Registry.instance[:repo] = Gitsh::GitRepository.new
+    Gitsh::Registry.instance[:env] = env
+    Gitsh::Registry.instance[:line_editor] = line_editor
   end
 
   def setup_unix_env

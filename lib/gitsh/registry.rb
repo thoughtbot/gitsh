@@ -7,7 +7,7 @@ module Gitsh
     module Client
       def use_registry_for(*keys)
         keys.each do |key|
-          define_method(key) { Registry[key] }
+          define_method(key) { Registry.instance[key] }
           private(key)
         end
       end
@@ -24,14 +24,6 @@ module Gitsh
       instance[:line_editor] = Gitsh::LineEditorHistoryFilter.new(
         Gitsh::LineEditor,
       )
-    end
-
-    def self.[]=(name, value)
-      instance[name] = value
-    end
-
-    def self.[](name)
-      instance[name]
     end
 
     def self.clear

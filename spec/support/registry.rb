@@ -7,7 +7,7 @@ require 'gitsh/registry'
 module Registry
   def register(entries)
     entries.each do |name, object|
-      Gitsh::Registry[name] = object
+      registry[name] = object
     end
   end
 
@@ -22,15 +22,15 @@ module Registry
     }
     env = instance_double(Gitsh::Environment, default_attrs.merge(attrs))
     allow(env).to receive(:fetch).and_yield
-    Gitsh::Registry[:env] = env
+    registry[:env] = env
   end
 
   def registered_env
-    Gitsh::Registry[:env]
+    registry[:env]
   end
 
   def set_registered_env_value(key, value)
-    allow(Gitsh::Registry[:env]).to receive(:fetch).with(key).and_return(value)
+    allow(registry[:env]).to receive(:fetch).with(key).and_return(value)
   end
 
   def register_repo(attrs = {})
@@ -44,7 +44,7 @@ module Registry
         has_modified_files?: false,
       ),
     }
-    Gitsh::Registry[:repo] = instance_double(
+    registry[:repo] = instance_double(
       Gitsh::GitRepository,
       default_attrs.merge(attrs),
     )
@@ -62,11 +62,15 @@ module Registry
     }
     line_editor = class_double(Gitsh::LineEditor, default_attrs.merge(attrs))
     line_editor.const_set('HISTORY', [])
-    Gitsh::Registry[:line_editor] = line_editor
+    registry[:line_editor] = line_editor
   end
 
   def registered_line_editor
-    Gitsh::Registry[:line_editor]
+    registry[:line_editor]
+  end
+
+  def registry
+    Gitsh::Registry.instance
   end
 end
 
