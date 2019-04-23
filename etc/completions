@@ -722,7 +722,7 @@ remote prune $opt* $remote+
 remote (--verbose|-v)? update $opt* $remote+
   --prune
 
-reset $opt* $revision --? $path*
+reset $opt* $revision? --? $path*
   --hard
   --keep
   --merge
