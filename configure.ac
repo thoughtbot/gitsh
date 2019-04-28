@@ -5,7 +5,7 @@ AC_PREREQ([2.68])
 AC_INIT(gitsh, 0.14, hello@thoughtbot.com)
 AM_INIT_AUTOMAKE([subdir-objects])
 
-AC_ARG_VAR([VERSION_SUFFIX])
+AC_ARG_VAR([VERSION_SUFFIX], [Appended to PACKAGE_VERSION when building, e.g., for pre-release builds])
 AS_IF([test -n "$VERSION_SUFFIX"], [AC_SUBST([PACKAGE_VERSION], ["$PACKAGE_VERSION$VERSION_SUFFIX"])])
 
 AC_ARG_VAR([RUBY],[The path of the Ruby binary to use])
