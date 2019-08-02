@@ -32,10 +32,7 @@ module Gitsh
       Commands::LazyCommand.new(args)
     end
 
-    production(:argument_list) do
-      clause('.argument') { |arg| [arg] }
-      clause('.argument_list SPACE .argument') { |list, arg| list + [arg] }
-    end
+    nonempty_list(:argument_list, :argument, :SPACE)
 
     production(:argument) do
       clause('argument_part') { |part| part }
