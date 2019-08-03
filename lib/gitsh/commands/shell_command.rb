@@ -13,7 +13,7 @@ module Gitsh
       end
 
       def execute(env)
-        ShellCommandRunner.run(command_with_arguments(env), env)
+        ShellCommandRunner.run(command_with_arguments, env)
       end
 
       private
