@@ -11,7 +11,7 @@ describe Gitsh::Arguments::Subshell do
 
       output = subshell.value(env)
 
-      expect(output).to eq 'expected output'
+      expect(output).to eq ['expected output']
       expect(wrapped_command).to have_received(:execute).with(capturing_environment)
     end
   end

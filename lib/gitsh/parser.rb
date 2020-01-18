@@ -1,4 +1,5 @@
 require 'rltk'
+require 'gitsh/arguments/brace_expansion'
 require 'gitsh/arguments/string_argument'
 require 'gitsh/arguments/composite_argument'
 require 'gitsh/arguments/variable_argument'
@@ -32,10 +33,7 @@ module Gitsh
       Commands::LazyCommand.new(args)
     end
 
-    production(:argument_list) do
-      clause('.argument') { |arg| [arg] }
-      clause('.argument_list SPACE .argument') { |list, arg| list + [arg] }
-    end
+    nonempty_list(:argument_list, :argument, :SPACE)
 
     production(:argument) do
       clause('argument_part') { |part| part }
@@ -48,6 +46,37 @@ module Gitsh
       clause(:word) { |word| Arguments::StringArgument.new(word) }
       clause(:VAR) { |var| Arguments::VariableArgument.new(var) }
       clause(:subshell) { |program| Arguments::Subshell.new(program) }
+      clause(:brace_expansion) { |brace_expansion| brace_expansion }
+    end
+
+    production(:brace_expansion) do
+      # Two or more items between braces
+      clause('LEFT_BRACE .brace_expansion_list RIGHT_BRACE') do |options|
+        Arguments::BraceExpansion.new(options)
+      end
+
+      # Zero or one items between braces: literal that does not expand
+      clause('LEFT_BRACE .brace_expansion_term RIGHT_BRACE') do |term|
+        Arguments::CompositeArgument.new([
+          Arguments::StringArgument.new('{'),
+          term,
+          Arguments::StringArgument.new('}'),
+        ])
+      end
+    end
+
+    production(:brace_expansion_list) do
+      clause('.brace_expansion_term COMMA .brace_expansion_term') do |left, right|
+        [left, right]
+      end
+      clause('.brace_expansion_term COMMA .brace_expansion_list') do |option, list|
+        [option] + list
+      end
+    end
+
+    production(:brace_expansion_term) do
+      clause(:argument) { |arg| arg }
+      clause('') { Arguments::StringArgument.new('') }
     end
 
     production(:word, 'WORD+') { |words| words.inject(:+) }

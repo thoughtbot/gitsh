@@ -6,7 +6,10 @@ module Gitsh
       end
 
       def value(env)
-        parts.map { |part| part.value(env) }.join('')
+        parts.
+          map { |part| part.value(env) }.
+          inject { |first, second| first.product(second) }.
+          map { |values| values.join('') }
       end
 
       def ==(other)

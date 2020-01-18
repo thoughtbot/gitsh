@@ -6,7 +6,7 @@ module Gitsh
       end
 
       def value(env)
-        env.fetch(variable_name)
+        [env.fetch(variable_name)]
       end
 
       def ==(other)

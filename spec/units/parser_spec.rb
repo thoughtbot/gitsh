@@ -73,6 +73,131 @@ describe Gitsh::Parser do
       ])
     end
 
+    it 'parses commands with brace expansion in arguments' do
+      command = stub_lazy_command
+
+      result = parse(tokens(
+        [:WORD, ':echo'], [:SPACE], [:WORD, 'h'],
+        [:LEFT_BRACE], [:WORD, 'ello'], [:COMMA], [:WORD, 'i'], [:RIGHT_BRACE],
+        [:EOS],
+      ))
+
+      expect(result).to eq command
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with([
+        string(':echo'),
+        composite([
+          string('h'),
+          brace_expansion([string('ello'), string('i')]),
+        ]),
+      ])
+    end
+
+    it 'parses commands with brace expansion including empty options' do
+      command = stub_lazy_command
+
+      result = parse(tokens(
+        [:WORD, ':echo'], [:SPACE], [:WORD, 'git'], [:LEFT_BRACE],
+        [:COMMA], [:COMMA], [:WORD, 'sh'], [:COMMA], [:COMMA],
+        [:RIGHT_BRACE], [:EOS],
+      ))
+
+      expect(result).to eq command
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with([
+        string(':echo'),
+        composite([
+          string('git'),
+          brace_expansion([
+            string(''),
+            string(''),
+            string('sh'),
+            string(''),
+            string(''),
+          ]),
+        ]),
+      ])
+    end
+
+    it 'parses commands with nested brace expansion arguments' do
+      command = stub_lazy_command
+
+      result = parse(tokens(
+        [:WORD, ':echo'], [:SPACE], [:LEFT_BRACE],
+        [:LEFT_BRACE], [:WORD, '1'], [:COMMA], [:WORD, '2'], [:RIGHT_BRACE],
+        [:COMMA], [:WORD, '3'], [:RIGHT_BRACE], [:EOS],
+      ))
+
+      expect(result).to eq command
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with([
+        string(':echo'),
+        brace_expansion([
+          brace_expansion([string('1'), string('2')]),
+          string('3'),
+        ]),
+      ])
+    end
+
+    it 'parses commands with adjacent brace expansion in arguments' do
+      command = stub_lazy_command
+
+      result = parse(tokens(
+        [:WORD, ':echo'], [:SPACE],
+        [:WORD, '1'],
+        [:LEFT_BRACE], [:WORD, '2'], [:COMMA], [:WORD, '3'], [:RIGHT_BRACE],
+        [:LEFT_BRACE], [:WORD, '4'], [:COMMA], [:WORD, '5'], [:COMMA],
+          [:WORD, '6'], [:RIGHT_BRACE],
+        [:EOS],
+      ))
+
+      expect(result).to eq command
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with([
+        string(':echo'),
+        composite([
+          string('1'),
+          composite([
+            brace_expansion([string('2'), string('3')]),
+            brace_expansion([string('4'), string('5'), string('6')]),
+          ]),
+        ]),
+      ])
+    end
+
+    it 'parses commands with braces that contain no expansion' do
+      command = stub_lazy_command
+
+      result = parse(tokens(
+        [:WORD, ':echo'], [:SPACE], [:LEFT_BRACE], [:WORD, 1], [:RIGHT_BRACE],
+        [:EOS],
+      ))
+
+      expect(result).to eq command
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with([
+        string(':echo'),
+        composite([
+          string('{'),
+          string(1),
+          string('}'),
+        ]),
+      ])
+    end
+
+    it 'parses commands with empty braces' do
+      command = stub_lazy_command
+
+      result = parse(tokens(
+        [:WORD, ':echo'], [:SPACE], [:LEFT_BRACE], [:RIGHT_BRACE], [:EOS],
+      ))
+
+      expect(result).to eq command
+      expect(Gitsh::Commands::LazyCommand).to have_received(:new).with([
+        string(':echo'),
+        composite([
+          string('{'),
+          string(''),
+          string('}'),
+        ]),
+      ])
+    end
+
     it 'parses commands with composite arguments' do
       command = stub_lazy_command
 
@@ -192,6 +317,10 @@ describe Gitsh::Parser do
 
   def subshell(content)
     Gitsh::Arguments::Subshell.new(content)
+  end
+
+  def brace_expansion(options)
+    Gitsh::Arguments::BraceExpansion.new(options)
   end
 
   def composite(parts)

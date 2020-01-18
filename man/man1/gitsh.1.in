@@ -320,7 +320,9 @@ argument, the string delimiters
 the variable or sub-shell prefix
 .Pf ( Ic $ Ns ),
 parentheses
-.Pf ( Ic ( ) Ns ),
+.Pf ( Ic () Ns ),
+braces
+.Pf ( Ic {} Ns ),
 and any character which would indicated the end of the argument
 (spaces,
 .Ic &|;# Ns )
@@ -353,6 +355,27 @@ but a single
 .Ic \e
 will also be interpreted as a literal as long as it isn't followed by
 a character that can be escaped in the current context.
+.
+.Sh ARGUMENT EXPANSION
+Like many general-purposes shells, gitsh supports argument expansions.
+.Pp
+.Em Brace expansion
+provides a short hand for consecutive arguments that are similar to each
+other. A typical example is renaming a file, where portions of the name
+remain the same. For example, the following two commands are equivalent:
+.Bd -literal -offset indent
+mv foo_{old,new}.txt
+mv foo_old.txt foo_new.txt
+.Ed
+.Pp
+Note that empty braces
+.Pf ( Ic {} Ns ),
+or braces containing no comma characters (like the Git arguments
+.Ic @{u}
+or
+.Ic stash@{1} )
+are literals: no expansion occurs.
+.
 .Sh CONFIGURATION
 The following
 .Xr git-config 1

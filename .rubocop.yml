@@ -3,6 +3,11 @@ Layout/IndentArray:
   Enabled: true
   EnforcedStyle: consistent
 
+Layout/FirstParameterIndentation:
+  Description: Checks the indentation of the first parameter in a method call.
+  Enabled: true
+  EnforcedStyle: consistent
+
 Style/StringLiterals:
   Description: Checks if uses of quotes match the configured preference.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#consistent-string-literals
@@ -47,3 +52,6 @@ Style/TrailingCommaInHashLiteral:
 
 Style/EmptyMethod:
   Enabled: false
+
+Style/SymbolArray:
+  EnforcedStyle: brackets

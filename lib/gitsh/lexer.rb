@@ -11,6 +11,7 @@ module Gitsh
       '\\',                         # Escape character
       '$',                          # Variable or sub-shell prefix
       '(', ')',                     # Parentheses
+      '{', '}',                     # Braces (for expansion)
     ]).freeze
 
     SOFT_STRING_ESCAPABLES = CharacterClass.new([
@@ -22,6 +23,12 @@ module Gitsh
     HARD_STRING_ESCAPABLES = CharacterClass.new([
       '\\',                         # Escape character
       "'",                          # String terminator
+    ]).freeze
+
+    BRACE_EXPANSION_ESCAPABLES = CharacterClass.new([
+      '\\',                         # Escape character
+      '{', '}',                     # Braces (for nested expansions)
+      ',',                          # Comma (for separating expansion values)
     ]).freeze
 
     class Environment < RLTK::Lexer::Environment
@@ -88,6 +95,24 @@ module Gitsh
     end
     rule(/\\/, :soft_string) { [:WORD, '\\'] }
     rule(/"/, :soft_string) { pop_state }
+
+    [:default, :brace_expansion].each do |state|
+      rule(/\{/, state) do
+        push_state(:brace_expansion)
+        :LEFT_BRACE
+      end
+    end
+    rule(/#{BRACE_EXPANSION_ESCAPABLES.to_negative_regexp}+/, :brace_expansion) do |t|
+      [:WORD, t]
+    end
+    rule(/\\#{BRACE_EXPANSION_ESCAPABLES.to_regexp}/, :brace_expansion) do |t|
+      [:WORD, t[1]]
+    end
+    rule(/,/, :brace_expansion) { :COMMA }
+    rule(/\}/, :brace_expansion) do
+      pop_state
+      :RIGHT_BRACE
+    end
 
     [:default, :soft_string].each do |state|
       rule(/\$/, state) { push_state(:need_var_name) }
