@@ -1,8 +1,9 @@
+require 'gitsh/registry'
+
 module Gitsh
   class MagicVariables
-    def initialize(repo)
-      @repo = repo
-    end
+    extend Registry::Client
+    use_registry_for :repo
 
     def fetch(key)
       if available_variables.include?(key)
@@ -17,8 +18,6 @@ module Gitsh
     end
 
     private
-
-    attr_reader :repo
 
     def _prior
       repo.revision_name('@{-1}') ||

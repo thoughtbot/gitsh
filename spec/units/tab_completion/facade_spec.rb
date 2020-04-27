@@ -6,18 +6,19 @@ describe Gitsh::TabCompletion::Facade do
   describe '#call' do
     context 'given input not ending with a variable' do
       it 'invokes the CommandCompleter' do
-        input = 'add -p $path lib/'
-        line_editor = double(:line_editor, line_buffer: input)
+        env = register_env
+        allow(env).
+          to receive(:fetch).and_raise(Gitsh::UnsetVariableError)
+        register_line_editor(line_buffer: 'add -p $path lib/')
         command_completer = stub_command_completer
         stub_variable_completer
         automaton = stub_automaton_factory
         escaper = stub_escaper
-        facade = described_class.new(line_editor, stub_env)
+        facade = described_class.new
 
         facade.call('lib/')
 
         expect(Gitsh::TabCompletion::CommandCompleter).to have_received(:new).with(
-          line_editor,
           ['add', '-p', '${path}'],
           'lib/',
           automaton,
@@ -31,19 +32,16 @@ describe Gitsh::TabCompletion::Facade do
 
     context 'given input ending with a variable' do
       it 'invokes the VariableCompleter' do
-        input = ':echo "name=$g'
-        line_editor = double(:line_editor, line_buffer: input)
+        register_env(config_directory: '/tmp/gitsh/')
+        register_line_editor(line_buffer: ':echo "name=$g')
         stub_command_completer
         variable_completer = stub_variable_completer
-        env = double(:env, config_directory: '/tmp/gitsh/')
-        facade = described_class.new(line_editor, env)
+        facade = described_class.new
 
         facade.call('name=$g')
 
         expect(Gitsh::TabCompletion::VariableCompleter).to have_received(:new).with(
-          line_editor,
           'name=$g',
-          env,
         )
         expect(variable_completer).to have_received(:call)
         expect(Gitsh::TabCompletion::CommandCompleter).
@@ -76,11 +74,5 @@ describe Gitsh::TabCompletion::Facade do
     command_completer = instance_double(klass)
     allow(klass).to receive(method).and_return(command_completer)
     command_completer
-  end
-
-  def stub_env
-    env = double(:env)
-    allow(env).to receive(:fetch).and_raise(Gitsh::UnsetVariableError)
-    env
   end
 end

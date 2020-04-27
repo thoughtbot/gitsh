@@ -11,20 +11,14 @@ require 'gitsh/terminal'
 module Gitsh
   module InputStrategies
     class Interactive
+      extend Registry::Client
+      use_registry_for :env, :line_editor
+
       BLANK_LINE_REGEX = /^\s*$/
       CONTINUATION_PROMPT = '> '.freeze
 
-      def initialize(opts)
-        @line_editor = opts.fetch(:line_editor) do
-          LineEditorHistoryFilter.new(Gitsh::LineEditor)
-        end
-        @env = opts[:env]
-        @history = opts.fetch(:history) { History.new(@env, @line_editor) }
-        @terminal = opts.fetch(:terminal) { Terminal.instance }
-      end
-
       def setup
-        history.load
+        History.load
         setup_line_editor
         handle_window_resize
         greet_user
@@ -33,7 +27,7 @@ module Gitsh
 
       def teardown
         env.print "\n"
-        history.save
+        History.save
       end
 
       def read_command
@@ -68,10 +62,8 @@ module Gitsh
 
       private
 
-      attr_reader :history, :line_editor, :env, :terminal
-
       def setup_line_editor
-        line_editor.completion_proc = TabCompletion::Facade.new(line_editor, env)
+        line_editor.completion_proc = TabCompletion::Facade.new
         line_editor.completer_quote_characters = %('")
         line_editor.completer_word_break_characters = ' &|;('
         line_editor.quoting_detection_proc = QuoteDetector.new
@@ -80,7 +72,7 @@ module Gitsh
       def handle_window_resize
         Signal.trap('WINCH') do
           begin
-            line_editor.set_screen_size(*terminal.size)
+            line_editor.set_screen_size(*Terminal.size)
           rescue Terminal::UnknownSizeError
           end
         end
@@ -112,7 +104,7 @@ module Gitsh
       end
 
       def prompter
-        @prompter ||= Prompter.new(env: env, color: terminal.color_support?)
+        @prompter ||= Prompter.new(color: Terminal.color_support?)
       end
     end
   end

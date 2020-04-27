@@ -1,25 +1,28 @@
 require 'gitsh/colors'
+require 'gitsh/registry'
 
 module Gitsh
   class PromptColor
-    def initialize(env)
-      @env = env
-    end
+    extend Registry::Client
+    use_registry_for :env, :repo
 
     def status_color(status)
       if !status.initialized?
-        env.repo_config_color('gitsh.color.uninitialized', 'normal red')
+        color_setting('gitsh.color.uninitialized', default: 'normal red')
       elsif status.has_untracked_files?
-        env.repo_config_color('gitsh.color.untracked', 'red')
+        color_setting('gitsh.color.untracked', default: 'red')
       elsif status.has_modified_files?
-        env.repo_config_color('gitsh.color.modified', 'yellow')
+        color_setting('gitsh.color.modified', default: 'yellow')
       else
-        env.repo_config_color('gitsh.color.default', 'blue')
+        color_setting('gitsh.color.default', default: 'blue')
       end
     end
 
     private
 
-    attr_reader :env
+    def color_setting(setting_name, default:)
+      color_name = env.fetch(setting_name) { default }
+      repo.color(color_name)
+    end
   end
 end

@@ -1,3 +1,4 @@
+require 'gitsh/registry'
 require 'gitsh/tab_completion/matchers/base_matcher'
 require 'gitsh/commands/internal_command'
 
@@ -5,10 +6,8 @@ module Gitsh
   module TabCompletion
     module Matchers
       class CommandMatcher < BaseMatcher
-        def initialize(env, internal_command = Commands::InternalCommand)
-          @env = env
-          @internal_command = internal_command
-        end
+        extend Registry::Client
+        use_registry_for :env, :repo
 
         def name
           'command'
@@ -16,10 +15,11 @@ module Gitsh
 
         private
 
-        attr_reader :env, :internal_command
-
         def all_completions
-          env.git_commands + env.git_aliases + internal_command.commands
+          repo.commands + \
+            repo.aliases + \
+            env.local_aliases + \
+            Commands::InternalCommand.commands
         end
       end
     end

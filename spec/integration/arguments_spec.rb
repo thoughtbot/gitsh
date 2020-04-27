@@ -2,32 +2,30 @@ require 'spec_helper'
 require 'gitsh/cli'
 require 'gitsh/environment'
 
-describe '--version' do
-  it 'outputs the version, and then exits' do
-    output = StringIO.new
-    error = StringIO.new
-    env = Gitsh::Environment.new(output_stream: output, error_stream: error)
+describe 'When passed arguments' do
+  describe '--version' do
+    it 'outputs the version, and then exits' do
+      setup_repo
+      output, error = setup_output_streams
 
-    runner = lambda do
-      Gitsh::CLI.new(args: %w(--version), env: env).run
+      runner = lambda do
+        Gitsh::CLI.new(%w(--version)).run
+      end
+
+      expect(runner).to raise_error SystemExit
+      expect(error.string).to be_empty
+      expect(output.string.chomp).to eq Gitsh::VERSION
     end
-
-    expect(runner).to raise_error SystemExit
-    expect(error.string).to be_empty
-    expect(output.string.chomp).to eq Gitsh::VERSION
   end
-end
 
-describe 'Unexpected arguments' do
   %w(--badger -x).each do |argument|
-    context "with the argument #{argument.inspect}" do
+    describe argument do
       it 'outputs a usage message and exits' do
-        output = StringIO.new
-        error = StringIO.new
-        env = Gitsh::Environment.new(output_stream: output, error_stream: error)
+        setup_repo
+        output, error = setup_output_streams
 
         runner = lambda do
-          Gitsh::CLI.new(args: [argument], env: env).run
+          Gitsh::CLI.new([argument]).run
         end
 
         expect(runner).to raise_error SystemExit
@@ -38,15 +36,27 @@ describe 'Unexpected arguments' do
       end
     end
   end
-end
 
-describe '--git' do
-  it 'uses the requested git binary' do
-    GitshRunner.interactive(args: ['--git', fake_git_path]) do |gitsh|
-      gitsh.type('init')
+  describe '--git' do
+    it 'uses the requested git binary' do
+      GitshRunner.interactive(args: ['--git', fake_git_path]) do |gitsh|
+        gitsh.type('init')
 
-      expect(gitsh).to output_no_errors
-      expect(gitsh).to output(/^Fake git: init$/)
+        expect(gitsh).to output_no_errors
+        expect(gitsh).to output(/^Fake git: init$/)
+      end
     end
+  end
+
+  def setup_repo
+    register(repo: Gitsh::GitRepository.new)
+  end
+
+  def setup_output_streams
+    output = StringIO.new
+    error = StringIO.new
+    env = Gitsh::Environment.new(output_stream: output, error_stream: error)
+    register(env: env)
+    [output, error]
   end
 end

@@ -2,25 +2,27 @@ require 'gitsh/error'
 require 'gitsh/git_repository'
 require 'gitsh/line_editor'
 require 'gitsh/magic_variables'
+require 'gitsh/registry'
 
 module Gitsh
   class Environment
+    extend Registry::Client
+    use_registry_for :repo
+
     DEFAULT_GIT_COMMAND = '/usr/bin/env git'.freeze
     DEFAULT_CONFIG_DIRECTORY = '/usr/local/etc/gitsh'.freeze
 
     attr_reader :input_stream, :output_stream, :error_stream, :config_directory
 
-    def initialize(options={})
-      @input_stream = options.fetch(:input_stream, $stdin)
-      @output_stream = options.fetch(:output_stream, $stdout)
-      @error_stream = options.fetch(:error_stream, $stderr)
-      @repo = options.fetch(:repository_factory, GitRepository).new(self)
+    def initialize(
+      input_stream: $stdin, output_stream: $stdout, error_stream: $stderr,
+      config_directory: DEFAULT_CONFIG_DIRECTORY
+    )
+      @input_stream = input_stream
+      @output_stream = output_stream
+      @error_stream = error_stream
+      @config_directory = config_directory
       @variables = Hash.new
-      @magic_variables = options.fetch(:magic_variables) { MagicVariables.new(@repo) }
-      @config_directory = options.fetch(
-        :config_directory,
-        DEFAULT_CONFIG_DIRECTORY,
-      )
     end
 
     def initialize_copy(original)
@@ -83,54 +85,18 @@ module Gitsh
       input_stream.tty?
     end
 
-    def repo_branches
-      repo.branches
-    end
-
-    def repo_tags
-      repo.tags
-    end
-
-    def repo_remotes
-      repo.remotes
-    end
-
-    def repo_heads
-      repo.heads
-    end
-
-    def repo_current_head
-      repo.current_head
-    end
-
-    def repo_status
-      repo.status
-    end
-
-    def repo_config_color(name, default)
-      if color_override = fetch(name) { false }
-        repo.color(color_override)
-      else
-        repo.config_color(name, default)
-      end
-    end
-
-    def git_commands
-      repo.commands
-    end
-
-    def git_aliases
-      (repo.aliases + local_aliases).sort
-    end
-
-    private
-
-    attr_reader :variables, :magic_variables, :repo
-
     def local_aliases
       variables.keys.
         select { |key| key.to_s.start_with?('alias.') }.
         map { |key| key.to_s.sub('alias.', '') }
+    end
+
+    private
+
+    attr_reader :variables
+
+    def magic_variables
+      @_magic_variables ||= MagicVariables.new
     end
   end
 end

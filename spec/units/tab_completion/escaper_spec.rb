@@ -5,8 +5,8 @@ describe Gitsh::TabCompletion::Escaper do
   describe '#escape' do
     context 'without any quote characters' do
       it 'escapes spaces, slashes, quotes, operators, etc.' do
-        line_editor = double(:line_editor, completion_quote_character: nil)
-        escaper = described_class.new(line_editor)
+        register_line_editor(completion_quote_character: nil)
+        escaper = described_class.new
 
         expect(escaper.escape(%q(option))).to eq %q(option)
         expect(escaper.escape(%q(with space))).to eq %q(with\ space)
@@ -23,8 +23,8 @@ describe Gitsh::TabCompletion::Escaper do
 
     context 'with an unclosed single quote' do
       it 'escapes slashes and single quotes' do
-        line_editor = double(:line_editor, completion_quote_character: '\'')
-        escaper = described_class.new(line_editor)
+        register_line_editor(completion_quote_character: '\'')
+        escaper = described_class.new
 
         expect(escaper.escape(%q(option))).to eq %q(option)
         expect(escaper.escape(%q(with space))).to eq %q(with space)
@@ -41,8 +41,8 @@ describe Gitsh::TabCompletion::Escaper do
 
     context 'with an unclosed double quote' do
       it 'escapes slashes, double quotes, and $' do
-        line_editor = double(:line_editor, completion_quote_character: '"')
-        escaper = described_class.new(line_editor)
+        register_line_editor(completion_quote_character: '"')
+        escaper = described_class.new
 
         expect(escaper.escape(%q(option))).to eq %q(option)
         expect(escaper.escape(%q(with space))).to eq %q(with space)
@@ -61,8 +61,8 @@ describe Gitsh::TabCompletion::Escaper do
   describe '#unescape' do
     context 'without any quote characters' do
       it 'unescapes spaces, slashes, quotes, operators, etc.' do
-        line_editor = double(:line_editor, completion_quote_character: nil)
-        escaper = described_class.new(line_editor)
+        register_line_editor(completion_quote_character: nil)
+        escaper = described_class.new
 
         expect(escaper.unescape(%q(option))).to eq %q(option)
         expect(escaper.unescape(%q(with\ space))).to eq %q(with space)
@@ -79,8 +79,8 @@ describe Gitsh::TabCompletion::Escaper do
 
     context 'with an unclosed single quote' do
       it 'unescapes slashes and single quotes' do
-        line_editor = double(:line_editor, completion_quote_character: '\'')
-        escaper = described_class.new(line_editor)
+        register_line_editor(completion_quote_character: '\'')
+        escaper = described_class.new
 
         expect(escaper.unescape(%q(option))).to eq %q(option)
         expect(escaper.unescape(%q(with\ space))).to eq %q(with\ space)
@@ -97,8 +97,8 @@ describe Gitsh::TabCompletion::Escaper do
 
     context 'with an unclosed double quote' do
       it 'unescapes slashes, double quotes, and $' do
-        line_editor = double(:line_editor, completion_quote_character: '"')
-        escaper = described_class.new(line_editor)
+        register_line_editor(completion_quote_character: '"')
+        escaper = described_class.new
 
         expect(escaper.unescape(%q(option))).to eq %q(option)
         expect(escaper.unescape(%q(with\ space))).to eq %q(with\ space)

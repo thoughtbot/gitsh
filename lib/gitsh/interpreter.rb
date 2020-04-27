@@ -6,11 +6,9 @@ require 'gitsh/parser'
 
 module Gitsh
   class Interpreter
-    def initialize(options)
-      @env = options.fetch(:env)
-      @lexer = options.fetch(:lexer, Lexer)
-      @parser = options.fetch(:parser, Parser)
-      @input_strategy = options.fetch(:input_strategy)
+    def initialize(env:, input_strategy:)
+      @env = env
+      @input_strategy = input_strategy
     end
 
     def run
@@ -24,7 +22,7 @@ module Gitsh
 
     private
 
-    attr_reader :env, :parser, :lexer, :input_strategy
+    attr_reader :env, :input_strategy
 
     def execute(input)
       build_command(input).execute(env)
@@ -33,13 +31,13 @@ module Gitsh
     end
 
     def build_command(input)
-      tokens = lexer.lex(input)
+      tokens = Lexer.lex(input)
 
       if incomplete_command?(tokens)
         continuation = input_strategy.read_continuation
         build_multi_line_command(input, continuation)
       else
-        parser.parse(tokens)
+        Parser.parse(tokens)
       end
     end
 

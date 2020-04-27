@@ -1,12 +1,12 @@
+require 'gitsh/registry'
 require 'gitsh/tab_completion/matchers/base_matcher'
 
 module Gitsh
   module TabCompletion
     module Matchers
       class RemoteMatcher < BaseMatcher
-        def initialize(env)
-          @env = env
-        end
+        extend Registry::Client
+        use_registry_for :repo
 
         def name
           'remote'
@@ -14,10 +14,8 @@ module Gitsh
 
         private
 
-        attr_reader :env
-
         def all_completions
-          env.repo_remotes
+          repo.remotes
         end
       end
     end

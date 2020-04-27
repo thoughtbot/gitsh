@@ -17,7 +17,6 @@ describe Gitsh::FileRunner do
         input_strategy: input_strategy,
       )
       expect(Gitsh::InputStrategies::File).to have_received(:new).with(
-        env: env,
         path: 'my/path',
       )
     end

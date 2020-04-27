@@ -6,9 +6,7 @@ describe Gitsh::InputStrategies::File do
   describe '#setup' do
     context 'with a file that does not exist' do
       it 'raises a NoInputError' do
-        env = double('Environment')
         input_strategy = described_class.new(
-          env: env,
           path: 'no/such/script',
         )
 
@@ -23,11 +21,7 @@ describe Gitsh::InputStrategies::File do
       it 'raises a NoInputError' do
         script = temp_file('script', "commit -m 'Changes'\npush -f")
         allow(File).to receive(:open).and_raise(Errno::EACCES)
-        env = double('Environment')
-        input_strategy = described_class.new(
-          env: env,
-          path: script.path,
-        )
+        input_strategy = described_class.new(path: script.path)
 
         expect { input_strategy.setup }.to raise_exception(
           Gitsh::NoInputError,
@@ -53,9 +47,7 @@ describe Gitsh::InputStrategies::File do
   describe '#read_command' do
     it 'returns each line of the file followed by a nil' do
       script = temp_file('script', "commit -m 'Changes'\npush -f")
-      input_strategy = described_class.new(
-        path: script.path,
-      )
+      input_strategy = described_class.new(path: script.path)
       input_strategy.setup
 
       expect(input_strategy.read_command).to eq 'commit -m \'Changes\''
@@ -66,11 +58,8 @@ describe Gitsh::InputStrategies::File do
     context 'with -' do
       it 'reads each line from STDIN' do
         input_stream = StringIO.new("push\npull\n")
-        env = double('Environment', input_stream: input_stream)
-        input_strategy = described_class.new(
-          env: env,
-          path: '-',
-        )
+        register_env(input_stream: input_stream)
+        input_strategy = described_class.new(path: '-')
         input_strategy.setup
 
         expect(input_strategy.read_command).to eq 'push'

@@ -1,19 +1,18 @@
 require 'optparse'
-require 'gitsh/environment'
 require 'gitsh/exit_statuses'
 require 'gitsh/input_strategies/file'
 require 'gitsh/input_strategies/interactive'
 require 'gitsh/interpreter'
+require 'gitsh/registry'
 require 'gitsh/version'
 
 module Gitsh
   class CLI
-    def initialize(opts={})
-      @env = opts.fetch(:env, Environment.new)
-      @unparsed_args = opts.fetch(:args, ARGV).clone
-      @interactive_input_strategy = opts.fetch(:interactive_input_strategy) do
-        InputStrategies::Interactive.new(env: @env)
-      end
+    extend Registry::Client
+    use_registry_for :env
+
+    def initialize(args)
+      @unparsed_args = args.clone
     end
 
     def run
@@ -27,8 +26,7 @@ module Gitsh
 
     private
 
-    attr_reader :env, :unparsed_args, :script_file_argument,
-      :interactive_input_strategy
+    attr_reader :unparsed_args, :script_file_argument
 
     def interpreter
       Interpreter.new(env: env, input_strategy: input_strategy)
@@ -36,9 +34,9 @@ module Gitsh
 
     def input_strategy
       if script_file
-        InputStrategies::File.new(env: env, path: script_file)
+        InputStrategies::File.new(path: script_file)
       else
-        interactive_input_strategy
+        InputStrategies::Interactive.new
       end
     end
 

@@ -1,8 +1,9 @@
+require 'gitsh/registry'
+
 module Gitsh
   class GitCommandList
-    def initialize(env)
-      @env = env
-    end
+    extend Registry::Client
+    use_registry_for :env
 
     def to_a
       try_using(commands_from_list_cmds) do
@@ -13,8 +14,6 @@ module Gitsh
     end
 
     private
-
-    attr_accessor :env
 
     def try_using(result, default: [])
       if result && result.any?

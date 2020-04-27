@@ -4,22 +4,18 @@ require 'gitsh/shell_command_runner'
 module Gitsh
   module Commands
     class GitCommand
-      def initialize(command, arg_values, options = {})
+      def initialize(command, arg_values)
         @command = command
         @arg_values = arg_values
-        @shell_command_runner = options.fetch(
-          :shell_command_runner,
-          ShellCommandRunner,
-        )
       end
 
       def execute(env)
-        shell_command_runner.run(command_with_arguments(env), env)
+        ShellCommandRunner.run(command_with_arguments(env), env)
       end
 
       private
 
-      attr_reader :command, :arg_values, :shell_command_runner
+      attr_reader :command, :arg_values
 
       def command_with_arguments(env)
         if autocorrect_enabled?(env) && command == 'git'

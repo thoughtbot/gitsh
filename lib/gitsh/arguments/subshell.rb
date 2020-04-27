@@ -3,7 +3,7 @@ require 'gitsh/capturing_environment'
 module Gitsh
   module Arguments
     class Subshell
-      def initialize(command, options = {})
+      def initialize(command)
         @command = command
       end
 

@@ -2,30 +2,34 @@
 
 require 'gitsh/colors'
 require 'gitsh/prompt_color'
+require 'gitsh/registry'
 
 module Gitsh
   class Prompter
     DEFAULT_FORMAT = "%D %c%B%#%w".freeze
     BRANCH_CHAR_LIMIT = 15
 
-    def initialize(options={})
-      @env = options.fetch(:env)
-      @use_color = options.fetch(:color, true)
-      @prompt_color = options.fetch(:prompt_color) { PromptColor.new(@env) }
-      @options = options
+    def initialize(color: true)
+      @use_color = color
     end
 
     def prompt
-      Prompt.new(env, use_color, prompt_color).to_s
+      Prompt.new(use_color, prompt_color).to_s
     end
 
     private
 
-    attr_reader :env, :use_color, :prompt_color
+    attr_reader :use_color
+
+    def prompt_color
+      @prompt_color ||= PromptColor.new
+    end
 
     class Prompt
-      def initialize(env, use_color, prompt_color)
-        @env = env
+      extend Registry::Client
+      use_registry_for :env, :repo
+
+      def initialize(use_color, prompt_color)
         @use_color = use_color
         @prompt_color = prompt_color
       end
@@ -48,7 +52,7 @@ module Gitsh
 
       private
 
-      attr_reader :env, :prompt_color
+      attr_reader :prompt_color
 
       def working_directory
         Dir.getwd.sub(/\A#{Dir.home}/, '~')
@@ -76,7 +80,7 @@ module Gitsh
 
       def branch_name
         @branch_name ||= if repo_status.initialized?
-          env.repo_current_head
+          repo.current_head
         else
           'uninitialized'
         end
@@ -119,7 +123,7 @@ module Gitsh
       end
 
       def repo_status
-        @repo_status ||= env.repo_status
+        @repo_status ||= repo.status
       end
     end
   end

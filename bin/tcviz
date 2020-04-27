@@ -5,14 +5,12 @@ require 'bundler/setup'
   $LOAD_PATH.unshift(File.expand_path("../../#{directory}", __FILE__))
 end
 
-require 'gitsh/environment'
+require 'gitsh/registry'
 require 'gitsh/tab_completion/automaton_factory'
 require 'gitsh/tab_completion/visualization'
 
-env = Gitsh::Environment.new(
-  config_directory: File.expand_path('../../etc', __FILE__),
-)
-automaton = Gitsh::TabCompletion::AutomatonFactory.build(env)
+Gitsh::Registry.populate(conf_dir: File.expand_path('../../etc', __FILE__))
+automaton = Gitsh::TabCompletion::AutomatonFactory.build
 viz = Gitsh::TabCompletion::Visualization.new(automaton)
 
 $stdout.puts viz.to_dot

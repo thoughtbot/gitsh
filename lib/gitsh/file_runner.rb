@@ -7,9 +7,9 @@ module Gitsh
       new(opts).run
     end
 
-    def initialize(opts)
-      @env = opts.fetch(:env)
-      @path = opts.fetch(:path)
+    def initialize(env:, path:)
+      @env = env
+      @path = path
     end
 
     def run
@@ -25,7 +25,7 @@ module Gitsh
     end
 
     def input_strategy
-      InputStrategies::File.new(env: env, path: path)
+      InputStrategies::File.new(path: path)
     end
   end
 end

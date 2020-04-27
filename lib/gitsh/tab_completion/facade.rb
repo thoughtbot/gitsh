@@ -1,3 +1,4 @@
+require 'gitsh/registry'
 require 'gitsh/tab_completion/alias_expander'
 require 'gitsh/tab_completion/automaton_factory'
 require 'gitsh/tab_completion/command_completer'
@@ -8,10 +9,11 @@ require 'gitsh/tab_completion/variable_completer'
 module Gitsh
   module TabCompletion
     class Facade
-      def initialize(line_editor, env)
-        @line_editor = line_editor
-        @env = env
-        @automaton = AutomatonFactory.build(env)
+      extend Registry::Client
+      use_registry_for :line_editor
+
+      def initialize
+        @automaton = AutomatonFactory.build
       end
 
       def call(input)
@@ -25,12 +27,11 @@ module Gitsh
 
       private
 
-      attr_reader :line_editor, :env, :automaton
+      attr_reader :automaton
 
       def command_completions(context, input)
         CommandCompleter.new(
-          line_editor,
-          AliasExpander.new(context.prior_words, env).call,
+          AliasExpander.new(context.prior_words).call,
           input,
           automaton,
           escaper,
@@ -38,11 +39,11 @@ module Gitsh
       end
 
       def variable_completions(input)
-        VariableCompleter.new(line_editor, input, env).call
+        VariableCompleter.new(input).call
       end
 
       def escaper
-        @escaper ||= Escaper.new(line_editor)
+        @escaper ||= Escaper.new
       end
     end
   end

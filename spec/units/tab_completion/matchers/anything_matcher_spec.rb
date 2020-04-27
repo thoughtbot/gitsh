@@ -4,7 +4,7 @@ require 'gitsh/tab_completion/matchers/anything_matcher'
 describe Gitsh::TabCompletion::Matchers::AnythingMatcher do
   describe '#match?' do
     it 'returns true for all input' do
-      matcher = described_class.new(double(:env))
+      matcher = described_class.new
 
       expect(matcher.match?('foo')).to be_truthy
       expect(matcher.match?('--all')).to be_truthy
@@ -14,7 +14,7 @@ describe Gitsh::TabCompletion::Matchers::AnythingMatcher do
 
   describe '#completions' do
     it 'returns an empty array' do
-      matcher = described_class.new(double(:env))
+      matcher = described_class.new
 
       expect(matcher.completions('foo')).to eq([])
       expect(matcher.completions('--all')).to eq([])
@@ -24,14 +24,14 @@ describe Gitsh::TabCompletion::Matchers::AnythingMatcher do
 
   describe '#eql?' do
     it 'returns true when given another instance of the same class' do
-      matcher1 = described_class.new(double(:env))
-      matcher2 = described_class.new(double(:env))
+      matcher1 = described_class.new
+      matcher2 = described_class.new
 
       expect(matcher1).to eql(matcher2)
     end
 
     it 'returns false when given an instance of any other class' do
-      matcher = described_class.new(double(:env))
+      matcher = described_class.new
       other = double(:not_a_matcher)
 
       expect(matcher).not_to eql(other)
@@ -40,8 +40,8 @@ describe Gitsh::TabCompletion::Matchers::AnythingMatcher do
 
   describe '#hash' do
     it 'returns the same value for all instances of the class' do
-      matcher1 = described_class.new(double(:env))
-      matcher2 = described_class.new(double(:env))
+      matcher1 = described_class.new
+      matcher2 = described_class.new
 
       expect(matcher1.hash).to eq(matcher2.hash)
     end

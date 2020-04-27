@@ -1,14 +1,14 @@
+require 'gitsh/registry'
 require 'gitsh/tab_completion/matchers/base_matcher'
 
 module Gitsh
   module TabCompletion
     module Matchers
       class RevisionMatcher < BaseMatcher
-        SEPARATORS = /(?:\.\.+|[:^~\\])/
+        extend Registry::Client
+        use_registry_for :repo
 
-        def initialize(env)
-          @env = env
-        end
+        SEPARATORS = /(?:\.\.+|[:^~\\])/
 
         def name
           'revision'
@@ -21,10 +21,8 @@ module Gitsh
 
         private
 
-        attr_reader :env
-
         def all_completions
-          env.repo_heads
+          repo.heads
         end
 
         def split(token)

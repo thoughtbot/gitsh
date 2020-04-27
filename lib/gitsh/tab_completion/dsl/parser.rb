@@ -39,11 +39,6 @@ module Gitsh
         }.freeze
 
         class Environment < RLTK::Parser::Environment
-          def initialize(gitsh_env = nil)
-            @gitsh_env = gitsh_env
-            super()
-          end
-
           def maybe_concatenate(factories)
             if factories.length > 1
               ConcatenationFactory.new(factories)
@@ -63,10 +58,8 @@ module Gitsh
 
           private
 
-          attr_reader :gitsh_env
-
           def build_matcher(var_name)
-            VARIABLE_TO_MATCHER_CLASS.fetch(var_name).new(gitsh_env)
+            VARIABLE_TO_MATCHER_CLASS.fetch(var_name).new
           rescue KeyError
             raise ParseError.new(
               'Invalid',
@@ -76,10 +69,7 @@ module Gitsh
         end
 
         def self.parse(tokens, opts = {})
-          super(
-            tokens,
-            opts.merge(env: Environment.new(opts.fetch(:gitsh_env))),
-          )
+          super
         rescue RLTK::NotInLanguage => error
           raise ParseError.new('Unexpected', error.current)
         end

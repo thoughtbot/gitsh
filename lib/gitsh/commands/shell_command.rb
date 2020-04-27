@@ -10,19 +10,15 @@ module Gitsh
       def initialize(command, arg_values, options = {})
         @command = command
         @arg_values = arg_values
-        @shell_command_runner = options.fetch(
-          :shell_command_runner,
-          ShellCommandRunner,
-        )
       end
 
       def execute(env)
-        shell_command_runner.run(command_with_arguments, env)
+        ShellCommandRunner.run(command_with_arguments, env)
       end
 
       private
 
-      attr_reader :command, :arg_values, :shell_command_runner
+      attr_reader :command, :arg_values
 
       def command_with_arguments
         [

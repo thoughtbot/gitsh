@@ -2,13 +2,12 @@ require 'open3'
 require 'shellwords'
 require 'gitsh/git_repository/status'
 require 'gitsh/git_command_list'
+require 'gitsh/registry'
 
 module Gitsh
   class GitRepository
-    def initialize(env, options={})
-      @env = env
-      @status_factory = options.fetch(:status_factory, Status)
-    end
+    extend Registry::Client
+    use_registry_for :env
 
     def git_dir
       git_output('rev-parse --git-dir')
@@ -23,7 +22,7 @@ module Gitsh
     end
 
     def status
-      status_factory.new(git_output('status --porcelain'), git_dir)
+      Status.new(git_output('status --porcelain'), git_dir)
     end
 
     def branches
@@ -41,7 +40,7 @@ module Gitsh
     end
 
     def commands
-      GitCommandList.new(env).to_a
+      GitCommandList.new.to_a
     end
 
     def aliases
@@ -102,8 +101,6 @@ module Gitsh
     end
 
     private
-
-    attr_reader :env, :status_factory
 
     def current_branch_name
       branch_name = git_output('symbolic-ref HEAD --short')

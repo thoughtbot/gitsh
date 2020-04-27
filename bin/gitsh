@@ -9,10 +9,8 @@ require 'bundler/setup'
   $LOAD_PATH.unshift(File.expand_path("../../#{directory}", __FILE__))
 end
 
-require 'gitsh/environment'
 require 'gitsh/cli'
+require 'gitsh/registry'
 
-env = Gitsh::Environment.new(
-  config_directory: File.expand_path('../../etc', __FILE__),
-)
-Gitsh::CLI.new(env: env).run
+Gitsh::Registry.populate(conf_dir: File.expand_path('../../etc', __FILE__))
+Gitsh::CLI.new(ARGV).run

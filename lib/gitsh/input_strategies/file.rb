@@ -1,13 +1,16 @@
 require 'gitsh/error'
+require 'gitsh/registry'
 
 module Gitsh
   module InputStrategies
     class File
+      extend Registry::Client
+      use_registry_for :env
+
       STDIN_PLACEHOLDER = '-'.freeze
 
-      def initialize(opts)
-        @env = opts[:env]
-        @path = opts.fetch(:path)
+      def initialize(path:)
+        @path = path
       end
 
       def setup
@@ -40,7 +43,7 @@ module Gitsh
 
       private
 
-      attr_reader :env, :file, :path
+      attr_reader :file, :path
 
       def open_file
         if path == STDIN_PLACEHOLDER

@@ -5,29 +5,30 @@ describe Gitsh::TabCompletion::VariableCompleter do
   describe '#call' do
     context 'with a variable not wrapped in braces' do
       it 'produces variable completions that match the input' do
-        completer = described_class.new(
-          build_line_editor,
-          '$us',
-          build_env(variables: ['user.name', 'user.email', 'greeting']),
+        register_line_editor
+        register_env(
+          available_variables: [:'user.name', :'user.email', :'greeting'],
         )
+        completer = described_class.new('$us')
 
         expect(completer.call).to match_array ['$user.name', '$user.email']
       end
 
       it 'prefixes the completions with the prefix, if there is one' do
-        completer = described_class.new(
-          build_line_editor,
-          'name=$us',
-          build_env(variables: ['user.name', 'user.email', 'greeting']),
+        register_line_editor
+        register_env(
+          available_variables: [:'user.name', :'user.email', :'greeting'],
         )
+        completer = described_class.new('name=$us')
 
         expect(completer.call).
           to match_array ['name=$user.name', 'name=$user.email']
       end
 
       it 'configures the line editor to append a space and not close quotes' do
-        line_editor = build_line_editor
-        completer = described_class.new(line_editor, '$us', build_env)
+        register_env(available_variables: [])
+        line_editor = register_line_editor
+        completer = described_class.new('$us')
 
         completer.call
 
@@ -40,18 +41,19 @@ describe Gitsh::TabCompletion::VariableCompleter do
 
     context 'with a variable wrapped in braces' do
       it 'produces variable completions that match the input' do
-        completer = described_class.new(
-          build_line_editor,
-          '${us',
-          build_env(variables: ['user.name', 'user.email', 'greeting']),
+        register_line_editor
+        register_env(
+          available_variables: [:'user.name', :'user.email', :'greeting'],
         )
+        completer = described_class.new('${us')
 
         expect(completer.call).to match_array ['${user.name', '${user.email']
       end
 
       it 'configures the line editor to append a closing brace and not close quotes' do
-        line_editor = build_line_editor
-        completer = described_class.new(line_editor, '${us', build_env)
+        register_env(available_variables: [])
+        line_editor = register_line_editor
+        completer = described_class.new('${us')
 
         completer.call
 
@@ -61,14 +63,6 @@ describe Gitsh::TabCompletion::VariableCompleter do
           to have_received(:completion_suppress_quote=).with(true)
       end
     end
-  end
-
-  def build_line_editor
-    double(
-      'LineEditor',
-      :completion_append_character= => nil,
-      :completion_suppress_quote= => nil,
-    )
   end
 
   def build_env(variables: [])

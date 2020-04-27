@@ -1,17 +1,17 @@
 require 'gitsh/lexer'
+require 'gitsh/registry'
 
 module Gitsh
   module TabCompletion
     class Escaper
+      extend Registry::Client
+      use_registry_for :line_editor
+
       ESCAPABLES = {
         nil => Gitsh::Lexer::UNQUOTED_STRING_ESCAPABLES,
         '"' => Gitsh::Lexer::SOFT_STRING_ESCAPABLES,
         "'" => Gitsh::Lexer::HARD_STRING_ESCAPABLES,
       }.freeze
-
-      def initialize(line_editor)
-        @line_editor = line_editor
-      end
 
       def escape(option)
         option.gsub(escapables) { |char| "\\#{char}" }
@@ -22,8 +22,6 @@ module Gitsh
       end
 
       private
-
-      attr_reader :line_editor
 
       def escapables
         ESCAPABLES[line_editor.completion_quote_character].to_regexp

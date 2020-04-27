@@ -1,28 +1,26 @@
+require 'gitsh/registry'
 require 'gitsh/tab_completion/automaton'
 require 'gitsh/tab_completion/dsl'
 
 module Gitsh
   module TabCompletion
     class AutomatonFactory
-      def self.build(env)
-        new(env).build
-      end
+      extend Registry::Client
+      use_registry_for :env
 
-      def initialize(env)
-        @env = env
+      def self.build
+        new.build
       end
 
       def build
         start_state = Automaton::State.new('start')
         config_paths.each do |path|
-          DSL.load(path, start_state, env)
+          DSL.load(path, start_state)
         end
         Automaton.new(start_state)
       end
 
       private
-
-      attr_reader :env
 
       def config_paths
         [
