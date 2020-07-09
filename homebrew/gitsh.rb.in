@@ -9,6 +9,12 @@ class Gitsh < Formula
   url 'https://thoughtbot.github.io/@PACKAGE@/@DIST_ARCHIVES@'
   sha256 '@DIST_SHA@'
 
+  head do
+    url 'https://github.com/thoughtbot/@PACKAGE@.git'
+    depends_on 'autoconf' => :build
+    depends_on 'automake' => :build
+  end
+
   def self.old_system_ruby?
     system_ruby_version = `#{SYSTEM_RUBY_PATH} -e "puts RUBY_VERSION"`.chomp
     system_ruby_version < '2.3.0'
@@ -22,6 +28,13 @@ class Gitsh < Formula
   def install
     set_ruby_path
     set_architecture
+
+    if build.head?
+      system "./autogen.sh"
+      git_sha = %x(git log -1 --format=%h).chomp
+      ENV["VERSION_SUFFIX"] = "-head+#{git_sha}"
+    end
+
     system "./configure", "--disable-debug",
                           "--disable-dependency-tracking",
                           "--disable-silent-rules",
