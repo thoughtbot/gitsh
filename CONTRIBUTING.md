@@ -158,4 +158,4 @@ When updating Rubygems for gitsh, there are a few things to consider:
 - Use the minimum supported Ruby version when updating gems to avoid
   installing versions that are incompatible with older Rubies.
 
-[style-guide]: https://github.com/thoughtbot/guides/tree/master/style#ruby
+[style-guide]: https://github.com/thoughtbot/guides/tree/master/ruby
