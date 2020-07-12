@@ -44,6 +44,6 @@ class Gitsh < Formula
   end
 
   def set_architecture
-    ENV['READLINE_ARCH'] = "-arch #{MacOS.preferred_arch}"
+    ENV['READLINE_ARCH'] = "-arch #{Hardware::CPU.arch}"
   end
 end
