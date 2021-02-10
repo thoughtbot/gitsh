@@ -70,7 +70,9 @@ describe 'Chaining methods' do
     end
 
     it 'allows the right hand side to be blank' do
-      GitshRunner.interactive do |gitsh|
+      GitshRunner.interactive(
+        settings: { "init.defaultBranch" => "master" }
+      ) do |gitsh|
         gitsh.type('init;')
         expect(gitsh).to output_no_errors
         expect(gitsh).to output(/Initialized/)
