@@ -55,7 +55,9 @@ describe 'Completing things with tab' do
   end
 
   it 'completes commands after operators' do
-    GitshRunner.interactive do |gitsh|
+    GitshRunner.interactive(
+      settings: { "init.defaultBranch" => "master" }
+    ) do |gitsh|
       gitsh.type("init && :ec\t Hello")
 
       expect(gitsh).to output_no_errors

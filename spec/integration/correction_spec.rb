@@ -3,7 +3,9 @@ require 'spec_helper'
 describe 'Correcting input' do
   context 'when help.autocorrect is enabled' do
     it 'removes the git prefix from a command' do
-      GitshRunner.interactive do |gitsh|
+      GitshRunner.interactive(
+        settings: { "init.defaultBranch" => "master" }
+      ) do |gitsh|
         gitsh.type ':set help.autocorrect 1'
         gitsh.type 'git init'
 

@@ -3,7 +3,9 @@ require 'gitsh/cli'
 
 describe 'Creating a repository' do
   it 'is possible through the gish CLI' do
-    GitshRunner.interactive do |gitsh|
+    GitshRunner.interactive(
+      settings: { "init.defaultBranch" => "master" }
+    ) do |gitsh|
       expect(gitsh).to prompt_with "#{cwd_basename} uninitialized!! "
 
       gitsh.type('init')
